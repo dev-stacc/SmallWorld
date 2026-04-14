@@ -4,18 +4,17 @@
     decoration = import ./decoration.nix;
     windowrule = import ./windowrule.nix;
     input = import ./input.nix;
+    monitor = import ./monitor.nix;
 in {
     wayland.windowManager.hyprland = {
         enable = true;
-        monitor = [
-            "eDP-1, 1920x1080@30, 0x0, 1"
-        ];
         settings = lib.mkMerge [
             bind
             general
             decoration
             windowrule
             input
+            monitor
         ];
     };
 }
