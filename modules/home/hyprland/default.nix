@@ -3,7 +3,7 @@
     general = import ./general.nix;
     decoration = import ./decoration.nix;
     windowrule = import ./windowrule.nix;
-    input = import ./input.nix
+    input = import ./input.nix;
 in {
     wayland.windowManager.hyprland = {
         enable = true;
