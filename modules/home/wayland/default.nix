@@ -3,7 +3,7 @@
     cpuBarsScript = pkgs.writeShellScript "cpu-bars" (builtins.readFile ./scripts/cpu-bars.sh);
     cpuTempsScript = pkgs.writeShellScript "cpu-temps" (builtins.readFile ./scripts/cpu-temps.sh);
     micMuteScript = pkgs.writeShellScript "mic-mute" (builtins.readFile ./scripts/mic-mute.sh);
-    styles =  builtins.readFile ./style.css
+    styles =  builtins.readFile ./style.css;
 in {
     home.file = {
         ".local/bin/fan-speed" = {
