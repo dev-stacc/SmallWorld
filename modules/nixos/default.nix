@@ -4,7 +4,7 @@
         ./hardware-configuration.nix
         ./networking.nix
         ./bluetooth.nix
-        ./sound.nixi
+        ./sound.nix
         ./hyprland.nix
         ./home-manager.nix
         ./stylix.nix
