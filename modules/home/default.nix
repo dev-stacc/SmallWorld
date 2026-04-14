@@ -7,7 +7,9 @@
     
         imports = [
             ./hyprland/default.nix
+            ./kitty/default.nix
             ./stylix.nix
+            ./wayland/default.nix
         ];
     };
 }
