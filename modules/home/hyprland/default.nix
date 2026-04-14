@@ -16,6 +16,6 @@ in {
             decoration
             windowrule
             input
-        ]
+        ];
     };
 }
