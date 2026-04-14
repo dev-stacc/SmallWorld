@@ -3,7 +3,7 @@
 
     stylix = {
         enable = true;
-        autoEnable = true;
+        autoEnable = false;
         
         targets = {
             kitty.enable = true;
