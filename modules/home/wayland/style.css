@@ -5,10 +5,10 @@ window#waybar {
       rgba(0, 0, 0, 0) 99%
     );
     margin: 0;
-    margin-bottom: -6px;
+    margin-bottom: -12px;
     margin-top: -3px;
     color: white;
-    font-size: 6px;
+    font-size: 9px;
     font-family: "JetBrainsMono Nerd Font";
     min-height: 0;
    }

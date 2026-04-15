@@ -24,4 +24,14 @@
             "audio"
         ];
     };
+
+    environment.systemPackages = [
+        "fresh-editor"
+        "vesktop"
+        "fzf"
+        "git"
+        "waybar"
+        "kitty"
+        "vim"
+    ];
 }
