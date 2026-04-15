@@ -15,10 +15,6 @@
             url = "github:hyprwm/Hyprland";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        claude-code = {
-            url = "github:sadjow/claude-code-nix";
-            inputs.nixpakgs.follows = "nixpkgs";
-        };
     };
     
     outputs = { self, nixpkgs, home-manager, stylix, claude-code, ... } @ inputs : {
