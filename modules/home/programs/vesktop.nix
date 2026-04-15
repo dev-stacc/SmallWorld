@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... } : {
-    vesktop = {
+    programs.vesktop = {
     enable = true;
     package = pkgs.vesktop;
     
