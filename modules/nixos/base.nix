@@ -26,12 +26,12 @@
     };
 
     environment.systemPackages = with pkgs; [
-        "fresh-editor"
-        "vesktop"
-        "fzf"
-        "git"
-        "waybar"
-        "kitty"
-        "vim"
+        fresh-editor
+        vesktop
+        fzf
+        git
+        waybar
+        kitty
+        vim
     ];
 }
