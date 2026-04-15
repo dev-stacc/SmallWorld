@@ -25,7 +25,7 @@
         ];
     };
 
-    environment.systemPackages = [
+    environment.systemPackages = with pkgs; [
         "fresh-editor"
         "vesktop"
         "fzf"
