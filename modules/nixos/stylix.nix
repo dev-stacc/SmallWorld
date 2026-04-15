@@ -5,7 +5,7 @@
         enable = true;
         autoEnable = true;
         polarity = "dark";
-        image = "../wallpapers/stillPit.png"
+        image = "../wallpapers/stillPit.png";
 
         targets = {
             gtk.enable = true;
