@@ -4,7 +4,6 @@
     stylix = {
         enable = true;
         autoEnable = true;
-        image = ./wallpapers/stillPit.png;
         polarity = "dark";
 
         targets = {
