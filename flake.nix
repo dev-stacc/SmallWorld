@@ -11,10 +11,17 @@
             url = "github:danth/stylix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        hyprland.url = "github:hyprwm/Hyprland";
+        hyprland = {
+            url = "github:hyprwm/Hyprland";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+        claude-code = {
+            url = "github:sadjow/claude-code-nix";
+            inputs.nixpakgs.follows = "nixpkgs";
+        };
     };
     
-    outputs = { self, nixpkgs, home-manager, stylix, ... } @ inputs : {
+    outputs = { self, nixpkgs, home-manager, stylix, claude-code, ... } @ inputs : {
         nixosConfigurations.Arcturus = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [ ./modules/default.nix ];

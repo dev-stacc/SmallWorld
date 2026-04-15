@@ -1,4 +1,4 @@
-WMON=$(grep -rl "thinkpad" /sys/class/hwmon/*/name 2>/dev/null | head -1 | xargs dirname)
+HWMON=$(grep -rl "thinkpad" /sys/class/hwmon/*/name 2>/dev/null | head -1 | xargs dirname)
     if [ -n "$HWMON" ]; then
         FAN1=$(cat "$HWMON/fan1_input" 2>/dev/null)
         FAN2=$(cat "$HWMON/fan2_input" 2>/dev/null)
