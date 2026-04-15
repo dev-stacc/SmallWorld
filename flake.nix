@@ -17,7 +17,7 @@
         };
     };
     
-    outputs = { self, nixpkgs, home-manager, stylix, claude-code, ... } @ inputs : {
+    outputs = { self, nixpkgs, home-manager, stylix,  ... } @ inputs : {
         nixosConfigurations.Arcturus = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [ ./modules/default.nix ];
