@@ -1,0 +1,18 @@
+* {
+    background-color: ${config.stylix.colors.base00} !important;
+    color: ${config.stylix.colors.base05} !important;
+}
+
+input, textarea, select, button {
+    background-color: ${config.stylix.colors.base02} !important;
+    color: ${config.stylix.colors.base05} !important;
+    border-color: ${config.stylix.colors.base03} !important;
+}
+
+a {
+    color: ${config.stylix.colors.base0D} !important;
+}
+
+a:visited {
+    color: ${config.stylix.colors.base0E} !important;
+}
