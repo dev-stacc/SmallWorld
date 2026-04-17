@@ -1,4 +1,6 @@
 {
-    transparent = true;
-    hide_decoration = true;
+    window = {
+         transparent = true;
+         hide_decoration = true;
+    };
 }
