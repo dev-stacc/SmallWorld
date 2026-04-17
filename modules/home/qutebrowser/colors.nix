@@ -2,7 +2,7 @@
     colors.webpage.darkmode = {
         enabled = true;
         policy = {
-            images = "always";
+            images = "never";
             page = "always";
         };
     };
