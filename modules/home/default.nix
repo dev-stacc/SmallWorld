@@ -10,6 +10,7 @@
             ./kitty/default.nix
             ./wayland/default.nix
             ./programs/default.nix
+            ./qutebrowser/default.nix
         ];
     };
 }

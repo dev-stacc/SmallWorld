@@ -7,13 +7,15 @@ window#waybar {
     margin: 0;
     margin-bottom: -12px;
     margin-top: -3px;
-    color: white;
+    color: #ff4050;
     font-size: 9px;
     font-family: "JetBrainsMono Nerd Font";
     min-height: 0;
+    border-width: 2px;
+    border-color: #ff4050;
    }
    
-   * {
+* {
     padding-left: 9px;
     padding-right: 9px
 }
