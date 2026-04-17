@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... } : let
-    colors = config.stylix.colors;
+    colors = config.stylix.base16Scheme;
 in {
     colors = {
         webpage.darkmode = {
@@ -10,7 +10,10 @@ in {
             };
         };
         completion = {
-            category.border.top = "${colors.base0D}";
+            category.border = lib.mkForce {
+                bottom ="#${colors.base0D}";
+                top = "#${colors.base0D}";
+            };
         };
     };
 }

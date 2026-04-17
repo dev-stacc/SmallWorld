@@ -1,4 +1,4 @@
-{ pkgs, config, ... } : {
+{ pkgs, config, inputs, ... } : {
     home-manager.users.anastasia = {
         home.username = "anastasia";
         home.homeDirectory = "/home/anastasia";
