@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... } : let
     colors = config.stylix.base16Scheme;
 in {
-    completion = {
+    completion = lib.mkDefault {
         even.bg = "#${colors.base00}";
         odd.bg = "#${colors.base00}";
         fg = "#${colors.base0D}";
