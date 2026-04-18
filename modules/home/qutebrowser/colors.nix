@@ -2,6 +2,9 @@
     colors = config.stylix.base16Scheme;
 in {
     colors = lib.mkForce {
+        
+        
+        
         webpage = {
             darkmode = {
                 enabled = true;
@@ -9,15 +12,45 @@ in {
                     images = "never";
                     page = "always";
                 };
-                ppreferred_color_scheme = "dark";
             };
-            bg = "#${colors.base00}99";
+            preferred_color_scheme = "dark";
+            bg = "#${colors.base00}";
         };
+        
+        
+        
         completion = {
-            category.border = {
-                bottom ="#${colors.base0D}";
-                top = "#${colors.base0D}";
+            even.bg = "#${colors.base00}";
+            odd.bg = "#${colors.base00}";
+            fg = "#${colors.base0D}";
+            match.fg ="#${colors.base07}";
+            
+            item.selected = {
+                border = {
+                    bottom ="#${colors.base00}";
+                    top = "#${colors.base00}";
+                };
+                bg = "#${colors.base0D}";
+                fg = "#${colors.base00}";
+                match.fg = "#${colors.base07}";
+            };
+            
+            category = {
+                border = {
+                    bottom ="#${colors.base00}";
+                    top = "#${colors.base0D}";
+                };
+                bg = "#${colors.base00}";
+                fg = "#${colors.base0D}";
+            };
+            
+            scrollbar = {
+                bg = "#${colors.base00}";
+                fg = "#${colors.base00}";
             };
         };
+        
+        
+        
     };
 }
