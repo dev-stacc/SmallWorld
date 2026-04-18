@@ -1,16 +1,20 @@
 { config, lib, pkgs, ... } : let
     colors = config.stylix.base16Scheme;
 in {
-    colors = {
-        webpage.darkmode = {
-            enabled = true;
-            policy = {
-                images = "never";
-                page = "always";
+    colors = lib.mkForce {
+        webpage = {
+            darkmode = {
+                enabled = true;
+                policy = {
+                    images = "never";
+                    page = "always";
+                };
+                ppreferred_color_scheme = "dark";
             };
+            bg = "#${colors.base00}99";
         };
         completion = {
-            category.border = lib.mkForce {
+            category.border = {
                 bottom ="#${colors.base0D}";
                 top = "#${colors.base0D}";
             };

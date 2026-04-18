@@ -7,6 +7,9 @@ in {
         settings = lib.mkMerge [
             colors
             window
+            {
+                content.user_stylesheets = ["${./user_stylesheet.css}"];
+            }
         ];
     };
 }
