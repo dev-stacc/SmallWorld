@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... } : let
     colors = config.stylix.base16Scheme;
 in {
-    webpage = lib.mkDefault {
+    webpage = lib.mkForce {
         darkmode = {
             enabled = true;
             policy = {
