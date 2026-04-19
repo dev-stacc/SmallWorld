@@ -10,6 +10,5 @@ in {
             };
         };
         preferred_color_scheme = "dark";
-        bg = "#${colors.base00}";
     };
 }

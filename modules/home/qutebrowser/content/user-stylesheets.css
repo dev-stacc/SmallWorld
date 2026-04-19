@@ -1,5 +1,18 @@
-body,
-div,
-section {
-    background-color = var(--base00);
+body, html, div {
+    background-color: var(--base00) !important;
+    background: var(--base00) !important;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, a {
+    color: var(--base05) !important;
+}
+
+img {
+    background-color: none;
+}
+
+.md-code-block, .lg-code-block, .sm-code-block {
+    background-color: var(--base00) !important;
+    border-size: 2px;
+    border-color: var(--base0D);
 }
