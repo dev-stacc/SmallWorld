@@ -37,7 +37,7 @@ in {
             fg = "#${colors.base00}";
             selection = {
                 bg = "#${colors.base0D}";
-                fg = "#${colors.base00}"
+                fg = "#${colors.base00}";
             };
         };
     };
