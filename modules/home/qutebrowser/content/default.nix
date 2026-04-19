@@ -3,6 +3,7 @@
     generatedColors = pkgs.writeText "stylix-colors.css" ''
         :root {
             --base00: #${colors.base00};
+            --base00-transparent: #${colors.base00};
             --base01: #${colors.base01};
             --base02: #${colors.base02};
             --base03: #${colors.base03};

@@ -1,18 +1,29 @@
-body, html, div {
-    background-color: var(--base00) !important;
-    background: var(--base00) !important;
+/*html::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events:none;
+    background-color: var(--base00-transparent);
+    z-index: 999999;
+}*/
+
+body, html {
+    background-color: transparent !important;
+    background: none;
+}
+
+div {
+    background-color: transparent !important;
+    background: none;
 }
 
 h1, h2, h3, h4, h5, h6, p, span, a {
     color: var(--base05) !important;
 }
 
-img {
-    background-color: none;
-}
-
-.md-code-block, .lg-code-block, .sm-code-block {
-    background-color: var(--base00) !important;
-    border-size: 2px;
-    border-color: var(--base0D);
+img, video, iframe {
+    background-color: transparent !important;
 }
