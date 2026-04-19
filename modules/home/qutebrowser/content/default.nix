@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... } : let
-    styles = import ./user_stylesheets.css { inherit config lib pkgs; };
-in {
+{ lib,... } : {
     content = lib.mkForce {
         autoplay = false;
         cookies.accept = "no-3rdparty";
@@ -15,6 +13,6 @@ in {
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36";
         };
         
-        user_stylesheets = styles;
+        user_stylesheets = ["${./user_stylesheet.css}"];
     };
 }
