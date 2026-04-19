@@ -2,6 +2,7 @@
     colors = import ./colors/default.nix { inherit config lib pkgs; };
     window = import ./window/default.nix { inherit config lib pkgs; };
     completion = import ./completion.nix { inherit config lib pkgs; };
+    content = import ./content/default.nix { inherit config lib pkgs; };
 in {
     programs.qutebrowser = {
         enable = true;
@@ -9,10 +10,7 @@ in {
             colors
             window
             completion
-            
-            {
-                content.user_stylesheets = ["${./user_stylesheet.css}"];
-            }
+            content
         ];
     };
 }
