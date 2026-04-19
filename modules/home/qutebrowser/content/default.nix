@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... } : let
-    styles = import ./user_stylesheets { inherit config lib pkgs; };
+    styles = import ./user_stylesheets.nix { inherit config lib pkgs; };
 in {
     content = lib.mkForce {
         autoplay = false;
