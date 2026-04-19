@@ -48,7 +48,7 @@ in {
         
         indicator = {
             error = "#${colors.base07}";
-            system = none;
+            system = "none";
         };
     };
 }
