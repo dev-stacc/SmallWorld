@@ -6,6 +6,7 @@
         geolocation = false;
         canvas_reading = false;
         notifications.enabled = false;
+        webgl = false;
         
         headers = {
             do_not_track = true;
