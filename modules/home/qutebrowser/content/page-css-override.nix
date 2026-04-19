@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... } : let
+{ lib, ... } : let
     colors = config.lib.stylix.colors;
     generatedColors = pkgs.writeText "stylix-colors.css" ''
         :root {
@@ -28,5 +28,5 @@
         ${userCss}
     '';
 in {
-  programs.qutebrowser.settings.content.user_stylesheets = [ "${finalCss}" ];
+  programs.qutebrowser.settings.content.user_stylesheets = [ finalCss ];
 }

@@ -1,4 +1,8 @@
-{ lib,... } : {
+{ lib, ... } : {
+    imports = [
+        ./page-css-override.nix { inherit lib; }
+    ];
+    
     content = lib.mkForce {
         autoplay = false;
         cookies.accept = "no-3rdparty";
