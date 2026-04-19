@@ -1,0 +1,5 @@
+body,
+div,
+section {
+    background-color = var(--base00);
+}
