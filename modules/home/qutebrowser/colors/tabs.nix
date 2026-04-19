@@ -2,52 +2,52 @@
     colors = config.stylix.base16Scheme;
 in {
     tabs = lib.mkForce {
-        bar.bg = "#${colors.base0D}";
+        bar.bg = "#${colors.base02}";
 
         even = {
-            bg = "#${colors.base0D}";
-            fg = "#${colors.base0D}";
+            bg = "#${colors.base02}";
+            fg = "#${colors.base02}";
         };
         odd = {
-            bg = "#${colors.base0D}";
-            fg = "#${colors.base0D}";
+            bg = "#${colors.base02}";
+            fg = "#${colors.base02}";
         };
 
         selected = {
             even = {
-                bg = "#${colors.base0D}";
+                bg = "#${colors.base02}";
                 fg = "#${colors.base00}";
             };
             odd = {
-                bg = "#${colors.base0D}";
+                bg = "#${colors.base02}";
                 fg = "#${colors.base00}";
             };
         };
         
         pinned = {
             even = {
-                bg = "#${colors.base0D}";
-                fg = "#${colors.base0D}";
+                bg = "#${colors.base02}";
+                fg = "#${colors.base02}";
             };
             odd = {
-                bg = "#${colors.base0D}";
-                fg = "#${colors.base0D}";
+                bg = "#${colors.base02}";
+                fg = "#${colors.base02}";
             };
 
             selected = {
                 even = {
-                    bg = "#${colors.base0D}";
+                    bg = "#${colors.base02}";
                     fg = "#${colors.base00}";
                 };
                 odd = {
-                    bg = "#${colors.base0D}";
+                    bg = "#${colors.base02}";
                     fg = "#${colors.base00}";
                 };
             };
         };
         
         indicator = {
-            error = "#${colors.base07}";
+            error = "#${colors.base04}";
             system = "none";
         };
     };

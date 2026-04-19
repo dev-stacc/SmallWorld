@@ -28,6 +28,7 @@
         ${builtins.readFile generatedColors}
         ${userCss}
     '';
+    finalCssPath = builtins.toString finalCss;
 in  {
     content = lib.mkForce {
         autoplay = false;

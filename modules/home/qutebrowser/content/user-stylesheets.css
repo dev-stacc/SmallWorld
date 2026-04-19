@@ -1,29 +1,32 @@
-/*html::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events:none;
-    background-color: var(--base00-transparent);
-    z-index: 999999;
-}*/
-
-body, html {
+:root * {
+    border: none !important;
+    border-style: none !important;
+    border-width: 0 !important;
+    outline: 0 !important;
+    
+    background: none !important;
     background-color: transparent !important;
-    background: none;
+    background-image: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    
+    text-shadow: none !important;
+    
+    animation: none !important;
+    transition: none !important;
+    background-blend-mode: normal !important;
 }
 
-div {
-    background-color: transparent !important;
-    background: none;
+h1, h2, h3, h4, h5, h6 {
+    color: var(--base04) !important;
 }
 
-h1, h2, h3, h4, h5, h6, p, span, a {
-    color: var(--base05) !important;
+p, span, div {
+    color:var(--base02) !important;
 }
 
-img, video, iframe {
-    background-color: transparent !important;
+a {
+    color: var(--base02) !important;
+    border-bottom: 2px solid var(--base02) !important;
 }

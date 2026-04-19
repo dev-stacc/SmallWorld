@@ -3,6 +3,6 @@
 in {
     tooltip = lib.mkForce {
         bg = "#${colors.base00}";
-        fg = "#${colors.base0D}";
+        fg = "#${colors.base02}";
     };
 }

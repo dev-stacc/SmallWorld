@@ -3,33 +3,30 @@
 
     stylix = {
         enable = true;
-        autoEnable = true;
+        autoEnable = false;
         polarity = "dark";
-        
-        base16Scheme = {
-            base00 = "0e0202"; #terminal background
-            base01 = "0e0202"; #bg tabs on qutebrowser apparently
-            base02 = "664f4f"; #seems to be the actuall lighterbg
-            base03 = "000000"; #unfocused window border, also bg highlight/selection
-            
-            base04 = "410909"; #comments basically? very muted
-            base05 = "98acf5"; #regular text
-            base06 = "ffe44d"; #emphasis
-            base07 = "ffe44d"; #alert text?
-            
-            base08 = "ffe44d"; #terminal current dir, also be alert bg for hyprland
-            base09 = "00ff88"; ###
-            base0A = "00ffff"; ###
-            base0B = "ffe44d"; #searchbar completion color
-            
-            base0C = "0e0202"; #alert text
-            base0D = "ff4050"; #focused border
-            base0E = "ff4050"; #terminal warning and folders
-            base0F = "410909"; #same as comments basically
-        };
 
-        targets = {
-            gtk.enable = true;
+        base16Scheme = {
+            base00 = "0e0202"; #main BACKGROUND
+            base01 = "000000"; #BLACK
+
+            base02 = "ff4050"; #main FOREGROUND
+            base03 = "98acf5"; #secondary FOREGROUND
+            base04 = "ffe44d"; #highlight FOREGROUND
+            base05 = "666666"; #muted FOREGROUND
+            
+            base06 = "000000"; #emphasis
+            base07 = "000000"; #alert text?
+
+            base08 = "000000"; #terminal current dir, also be alert bg for hyprland
+            base09 = "000000"; ###
+            base0A = "000000"; ###
+            base0B = "000000"; #searchbar completion color
+
+            base0C = "000000"; #alert text
+            base0D = "000000"; #focused border
+            base0E = "000000"; #terminal warning and folders
+            base0F = "000000"; #same as comments basically
         };
 
         fonts = {
