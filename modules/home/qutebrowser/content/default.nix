@@ -1,5 +1,6 @@
 { config, lib, pkgs, ... } : let
     colors = config.lib.stylix.colors;
+    finalCss = (import ./generate-css.nix { inherit config lib pkgs; }).cssPath;
 in  {
     content = lib.mkForce {
         autoplay = false;
@@ -15,5 +16,8 @@ in  {
             referer = "same-domain";
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36";
         };
+            
+        user_stylesheets = lib.mkForce [ "${finalCss}" ];
     };
+
 }

@@ -1,32 +1,37 @@
 :root * {
-    border: none !important;
-    border-style: none !important;
-    border-width: 0 !important;
     outline: 0 !important;
-    
-    background: none !important;
-    background-color: transparent !important;
+    border-color: var(--base02) !important;
+    border-radius: 0;
     background-image: none !important;
     box-shadow: none !important;
-    filter: none !important;
-    backdrop-filter: none !important;
-    
     text-shadow: none !important;
+    background-blend-mode: normal !important;
     
+    /*
+    background: none !important;
+    background-color: transparent !important;
     animation: none !important;
     transition: none !important;
-    background-blend-mode: normal !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    */
+}
+
+:root a,
+:root a *,
+:root [class*="link"],
+:root [class*="Link"] {
+    color: var(--base03) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: var(--base04) !important;
+    color: var(--base03) !important;
 }
 
 p, span, div {
     color:var(--base02) !important;
 }
 
-a {
-    color: var(--base02) !important;
-    border-bottom: 2px solid var(--base02) !important;
+html body a, a, a *, li, li * {
+    color: var(--base03) !important;
 }

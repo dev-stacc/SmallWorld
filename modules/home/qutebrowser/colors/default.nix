@@ -4,6 +4,7 @@
     tabs = import ./tabs.nix { inherit config lib pkgs; };
     statusbar = import ./statusbar.nix { inherit config lib pkgs; };
     tooltip = import ./tooltip.nix { inherit config lib pkgs; };
+    contextmenu = import ./contextmenu { inherit config lib pkgs; };
 in {
     colors = lib.mkMerge [
         completion
@@ -11,5 +12,6 @@ in {
         tabs
         statusbar
         tooltip
+        contextmenu
     ];
 }
