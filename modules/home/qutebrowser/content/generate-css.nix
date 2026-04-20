@@ -1,9 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, fontName, fontSize, ... }:
 
 let
     colors = config.lib.stylix.colors;
     userCss = builtins.readFile ./user-stylesheets.css;
-    
+    fontSizeStr = builtins.toString fontSize;
+
     generatedColors = pkgs.writeText "stylix-colors.css" ''
         :root {
             --base00: #${colors.base00};
@@ -22,6 +23,9 @@ let
             --base0D: #${colors.base0D};
             --base0E: #${colors.base0E};
             --base0F: #${colors.base0F};
+            
+            --fontName: ${fontName};
+            --fontSize: ${fontSizeStr}px;
         }
     '';
     

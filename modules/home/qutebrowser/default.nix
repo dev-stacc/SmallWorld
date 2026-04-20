@@ -1,9 +1,10 @@
-{ pkgs, lib, config, ... } : let
+{ pkgs, lib, config, fontName, fontSize, ... } : let
     colors = import ./colors/default.nix { inherit config lib pkgs; };
     window = import ./window/default.nix { inherit config lib pkgs; };
     completion = import ./completion.nix { inherit config lib pkgs; };
-    content = import ./content/default.nix { inherit config lib pkgs; };
-    css = (import ./content/generate-css.nix { inherit config lib pkgs; }).cssPath;
+    content = import ./content/default.nix { inherit config lib pkgs fontName fontSize; };
+    css = (import ./content/generate-css.nix { inherit config lib pkgs fontName fontSize; }).cssPath;
+    fonts = import ./fonts.nix { inherit config lib pkgs fontName; };
 in {
     programs.qutebrowser = {
         enable = true;
@@ -12,6 +13,7 @@ in {
             window
             completion
             content
+            fonts
         ];
         
         aliases = {

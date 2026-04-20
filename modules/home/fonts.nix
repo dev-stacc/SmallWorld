@@ -8,7 +8,7 @@
             serif = [ fontName ];
         };
         
-        hinting.enable = true;
-        antialias.enable = true;
+        hinting = "none";
+        antialiasing = false;
     };
 }

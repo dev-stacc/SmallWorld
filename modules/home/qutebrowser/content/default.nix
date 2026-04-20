@@ -1,6 +1,6 @@
-{ config, lib, pkgs, ... } : let
+{ config, lib, pkgs, fontName, fontSize, ... } : let
     colors = config.lib.stylix.colors;
-    finalCss = (import ./generate-css.nix { inherit config lib pkgs; }).cssPath;
+    finalCss = (import ./generate-css.nix { inherit config lib pkgs fontName fontSize; }).cssPath;
 in  {
     content = lib.mkForce {
         autoplay = false;

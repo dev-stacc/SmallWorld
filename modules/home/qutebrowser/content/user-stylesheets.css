@@ -6,6 +6,8 @@
     box-shadow: none !important;
     text-shadow: none !important;
     background-blend-mode: normal !important;
+    font-family: var(--fontName), monospace !important;
+    font-size: 10px !important;
     
     /*
     background: none !important;
