@@ -7,16 +7,8 @@
     text-shadow: none !important;
     background-blend-mode: normal !important;
     font-family: var(--fontName), monospace !important;
-    font-size: 18px !important;
-    
-    /*
-    background: none !important;
-    background-color: transparent !important;
-    animation: none !important;
-    transition: none !important;
-    filter: none !important;
-    backdrop-filter: none !important;
-    */
+    font-size: 17px !important;
+    font-weight: normal !important;
 }
 
 :root a,
@@ -26,7 +18,12 @@
     color: var(--base03) !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+:root h1,
+:root h2,
+:root h3,
+:root h4,
+:root h5,
+:root h6 {
     color: var(--base03) !important;
 }
 
