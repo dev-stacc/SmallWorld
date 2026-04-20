@@ -28,7 +28,6 @@
         ${builtins.readFile generatedColors}
         ${userCss}
     '';
-    finalCssPath = builtins.toString finalCss;
 in  {
     content = lib.mkForce {
         autoplay = false;
@@ -47,4 +46,6 @@ in  {
         
         user_stylesheets = lib.mkForce [ "${finalCss}" ];
     };
+    
+    inherit finalCss;
 }
