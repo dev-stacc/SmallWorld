@@ -31,16 +31,16 @@
 
         fonts = {
             monospace = {
-                package = pkgs.nerd-fonts.jetbrains-mono;
-                name = "JetBrainsMono Nerd Font";
+                package = pkgs.departure-mono;
+                name = "Departure Mono";
             };
             sansSerif = {
-                package = pkgs.nerd-fonts.jetbrains-mono;
-                name = "JetBrainsMono Nerd Font";
+                package = pkgs.departure-mono;
+                name = "Departure Mono";
             };
             serif = {
-                package = pkgs.nerd-fonts.jetbrains-mono;
-                name = "JetBrainsMono Nerd Font";
+                package = pkgs.departure-mono;
+                name = "Departure Mono";
             };
             sizes = {
                 terminal = 9;
