@@ -42,7 +42,7 @@ in {
             cursor = "#${colors.base02}";
             cursor_text_color = "#${colors.base00}";
             
-            window_padding_width = 6;
+            window_padding_width = 3;
             
             font_family = fontName;
             font_size = fontSize;

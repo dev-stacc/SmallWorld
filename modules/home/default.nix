@@ -21,6 +21,7 @@
         
         home.packages = with pkgs; [
             departure-mono
+            nerd-fonts.jetbrains-mono
         ];
     };
 }

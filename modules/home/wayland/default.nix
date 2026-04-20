@@ -1,9 +1,20 @@
-{ config, pkgs, ... } : let
+{ config, pkgs, fontName, ... } : let
     fanScript = pkgs.writeShellScript "fan-speed" (builtins.readFile ./scripts/fan-speed.sh);
     cpuBarsScript = pkgs.writeShellScript "cpu-bars" (builtins.readFile ./scripts/cpu-bars.sh);
     cpuTempsScript = pkgs.writeShellScript "cpu-temps" (builtins.readFile ./scripts/cpu-temps.sh);
     micMuteScript = pkgs.writeShellScript "mic-mute" (builtins.readFile ./scripts/mic-mute.sh);
     styles =  builtins.readFile ./style.css;
+
+    finalCss = pkgs.writeText "waybar-stylesheet.css" ''
+        *{
+            font-family:
+                "${fontName}",
+                "JetBrainsMono Nerd Font",
+                monospace;
+            font-size: 15px;
+        }
+        ${styles}
+    '';
 in {
     home.file = {
         ".local/bin/fan-speed" = {
@@ -27,7 +38,7 @@ in {
     programs.waybar = {
         enable = true;
         systemd.enable = true;
-        style = styles;
+        style = finalCss;
         
         settings = {
             mainBar = {
