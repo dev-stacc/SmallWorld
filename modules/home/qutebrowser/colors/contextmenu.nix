@@ -4,7 +4,7 @@ in {
     contextmenu = lib.mkForce {
         disabled = {
             bg = "#${colors.base00}";
-            fg = "#${colors.base02}";
+            fg = "#${colors.base00}";
         };
         menu = {
             bg = "#${colors.base00}";
@@ -12,7 +12,7 @@ in {
         };
         selected = {
             bg = "#${colors.base00}";
-            fg = "#${colors.base02}";
+            fg = "#${colors.base04}";
         };
     };
 }
