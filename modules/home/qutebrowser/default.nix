@@ -3,7 +3,7 @@
     window = import ./window/default.nix { inherit config lib pkgs; };
     completion = import ./completion.nix { inherit config lib pkgs; };
     content = import ./content/default.nix { inherit config lib pkgs; };
-    cssDerivation = content.finalCss;
+    css = (import ./content/generate-css.nix { inherit config lib pkgs; }).cssPath;
 in {
     programs.qutebrowser = {
         enable = true;
@@ -15,7 +15,7 @@ in {
         ];
         
         aliases = {
-            "style-on" = "set content.user_stylesheets [\"${cssDerivation}\"]";
+            "style-on" = "set content.user_stylesheets [\"${css}\"]";
             "style-off" = "set content.user_stylesheets []";
         };
     };
