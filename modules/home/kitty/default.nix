@@ -1,8 +1,7 @@
-{ pkgs, lib, config, ... } : let
+{ pkgs, lib, config, fontName, fontSize, ... } : let
     kittyLauncher = pkgs.writeShellScript "kitty-launcher" (builtins.readFile ./scripts/kitty-launcher.sh);
     kittyControl = pkgs.writeShellScript "kitty-control" (builtins.readFile ./scripts/kitty-control.sh);
     colors = config.stylix.base16Scheme;
-    fonts = config.stylix.fonts;
 in {
     programs.kitty = {
         enable = true;
@@ -43,8 +42,8 @@ in {
             cursor = "#${colors.base02}";
             cursor_text_color = "#${colors.base00}";
             
-            font_family = fonts.monospace.name;
-            font_size = builtins.toString fonts.sizes.terminal;
+            font_family = fontName;
+            font_size = fontSize;
             
         };
     };

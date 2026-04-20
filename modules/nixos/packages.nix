@@ -1,6 +1,5 @@
 { config, pkgs, ... } : {
     environment.systemPackages = with pkgs; [
-        departure-mono
         fresh-editor
         vesktop
         fzf
@@ -9,4 +8,10 @@
         kitty
         vim
     ];
+    
+    fonts.packages = with pkgs; [
+        departure-mono
+    ];
+    
+    fonts.fontConfig.enable = true;
 }
