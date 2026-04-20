@@ -43,10 +43,10 @@
                 name = "Departure Mono";
             };
             sizes = {
-                terminal = 9;
-                applications = 9;
-                desktop = 9;
-                popups = 9;
+                terminal = 11;
+                applications = 11;
+                desktop = 11;
+                popups = 11;
             };
         }; 
     };
