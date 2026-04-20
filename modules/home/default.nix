@@ -16,6 +16,11 @@
             ./wayland/default.nix
             ./programs/default.nix
             ./qutebrowser/default.nix
+            ./fonts.nix
+        ];
+        
+        home.packages = with pkgs; [
+            departure-mono
         ];
     };
 }

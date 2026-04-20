@@ -8,6 +8,5 @@
         ./hyprland.nix
         ./home-manager.nix
         ./stylix.nix
-        ./fonts.nix
     ];
 }
