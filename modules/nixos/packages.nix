@@ -8,10 +8,4 @@
         kitty
         vim
     ];
-    
-    fonts.packages = with pkgs; [
-        departure-mono
-    ];
-    
-    fonts.fontConfig.enable = true;
 }
