@@ -1,13 +1,13 @@
-{
+{ config, ... } : {
     services.hyprpaper = {
         enable = true;
         settings = {
             preload = [
-                "./wallpapers/cyberpunk-bg.jpg"
+                config.stylix.image
             ];
             wallpaper = [{
-                monitpr = "";
-                path = "./wallpapers/cyberpunk-bg.jpg";
+                monitor = "";
+                path = config.stylix.image;
             }];
         };
     };

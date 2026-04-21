@@ -6,6 +6,8 @@
         autoEnable = false;
         polarity = "dark";
         
+        image = ./wallpapers/cyberpunk-bg.jpg;
+        
         base16Scheme = {
             base00 = "0e0202"; #main BACKGROUND
             base01 = "000000"; #BLACK
