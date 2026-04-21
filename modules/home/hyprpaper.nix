@@ -1,10 +1,14 @@
 {
     services.hyprpaper = {
         enable = true;
-        splash = false;
-        wallpaper = [{
-            monitpr = "";
-            path = "./wallpapers/cyberpunk-bg.jpg";
-        }]
+        settings = {
+            preload = [
+                "./wallpapers/cyberpunk-bg.jpg"
+            ];
+            wallpaper = [{
+                monitpr = "";
+                path = "./wallpapers/cyberpunk-bg.jpg";
+            }];
+        };
     };
 }

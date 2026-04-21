@@ -7,5 +7,6 @@
         waybar
         kitty
         vim
+        hyprpaper
     ];
 }
