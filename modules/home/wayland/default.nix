@@ -45,6 +45,8 @@ in {
             mainBar = {
                 layer = "top";
                 position = "top";
+                margin-right = 36;
+                margin-left = 36;
                 
                 modules-left = [
                     "group/cpu-usage"
@@ -59,10 +61,10 @@ in {
                 ];
                 
                 modules-right = [
-                    "group/connect"
+                    "custom/tailscale"
                     "network"
+                    "bluetooth"
                     "battery"
-                    #"power"
                 ];
                 
                 "group/cpu-usage" = {
@@ -79,12 +81,7 @@ in {
                     orientation = "horizontal";
                     modules = ["wireplumber" "custom/mic"];
                 };
-                
-                "group/connect" = {
-                    orientation = "horizontal";
-                    modules = ["bluetooth" "custom/tailscale"];
-                };
-                
+                                
                 cpu = {
                     format = "{usage}%";
                     interval = 1;
