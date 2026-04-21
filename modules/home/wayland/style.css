@@ -18,3 +18,7 @@ window#waybar {
     padding-left: 9px;
     padding-right: 9px
 }
+
+#custom-cores {
+    font-size: 9px;
+}

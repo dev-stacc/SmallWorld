@@ -3,10 +3,11 @@
     cpuBarsScript = pkgs.writeShellScript "cpu-bars" (builtins.readFile ./scripts/cpu-bars.sh);
     cpuTempsScript = pkgs.writeShellScript "cpu-temps" (builtins.readFile ./scripts/cpu-temps.sh);
     micMuteScript = pkgs.writeShellScript "mic-mute" (builtins.readFile ./scripts/mic-mute.sh);
-    styles =  builtins.readFile ./style.css;
+    colors = config.stylix.base16Scheme;
+    styles = builtins.readFile ./style.css;
 
     finalCss = pkgs.writeText "waybar-stylesheet.css" ''
-        *{
+        * {
             font-family:
                 "${fontName}",
                 "JetBrainsMono Nerd Font",
