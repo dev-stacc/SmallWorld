@@ -9,6 +9,7 @@
     font-family: var(--fontName), monospace !important;
     font-size: 17px !important;
     font-weight: normal !important;
+    color: var(--base02);
 }
 
 :root a,
