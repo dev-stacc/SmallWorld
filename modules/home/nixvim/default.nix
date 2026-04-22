@@ -1,4 +1,6 @@
-{ cofig, lib, pkgs, ... } : {
+{ cofig, lib, pkgs, ... } : let 
+    colors = config.stylix.base16Scheme;
+en {
     programs.nixvim = {
         enable = true;
         defaultEditor = true;
@@ -13,7 +15,13 @@
         plugins = import ./plugins.nix;
         
         luasnip.enable = true;
-        
+
+        extraConfigLua = ''
+            require('mini.base16').setup({
+                base00 = "#${colors.base00}"
+            })
+        '';
+
         keymaps = [
             {
                 key = "<leader>e";
