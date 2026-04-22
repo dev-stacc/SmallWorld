@@ -16,6 +16,7 @@
             ./wayland/default.nix
             ./programs/default.nix
             ./qutebrowser/default.nix
+            ./nixvim/default.nix
             ./fonts.nix
             ./hyprpaper.nix
         ];
