@@ -15,6 +15,7 @@ in {
         ];
         
         aliases = {
+            "darkmode" = "config-cycle colors.webpage.darkmode.enabled";
             "style-on" = "set content.user_stylesheets [${css}]";
             "style-off" = "set content.user_stylesheets []";
         };
