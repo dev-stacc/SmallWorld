@@ -2,13 +2,15 @@
     enable = true;
     openOnSetup = false;
     actions = {
-        openfile = {
+        open_file = {
             quit_on_open = false;
             resize_window = true;
         };
     };
-    git = {
-        enable = true;
-        ignore = false;
+    settings = {
+        git = {
+            enable = true;
+            ignore = false;
+        };
     };
 }

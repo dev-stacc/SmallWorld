@@ -3,7 +3,7 @@
     settings = {
         sections = {
             lualine_a = ["mode"];
-            luanine_b = ["branch" "diff" "diagnostics"];
+            luanine_b = [];
             lualine_c = ["filename"];
             lualine_x = ["encoding" "filetype"];
             luanine_y = ["progress"];

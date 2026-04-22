@@ -11,7 +11,7 @@
         };
     
         imports = [
-            inputs.nixvim.homeManagerModules.nixvim
+            inputs.nixvim.homeModules.nixvim
             ./hyprland/default.nix
             ./kitty/default.nix
             ./wayland/default.nix

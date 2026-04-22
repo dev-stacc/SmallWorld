@@ -9,10 +9,7 @@
         lsp = import ./lsp.nix;
         treesitter = import ./treesitter.nix;
         cmp = import ./cmp.nix;
-        lualine = import ./lualine.nix;
-        nvimtree = import ./nvimtree.nix;
-        #snacks = import ./snacks.nix;
-        telescope = import ./telescope.nix;
+        snacks = import ./snacks.nix;
         plugins = import ./plugins.nix;
         
         luasnip.enable = true;

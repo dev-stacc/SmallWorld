@@ -1,3 +1,3 @@
 {
-    nvim-tree.enale = true;
+    nvim-tree = import ./nvimtree.nix;
 }
