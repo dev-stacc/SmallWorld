@@ -16,7 +16,7 @@ in {
 
         luasnip.enable = true;
 
-        extraConfigLua = ''
+    extraConfigLua = ''
         local palette = {
             base00 = "#${colors.base00}",
             base01 = "#${colors.base01}",
@@ -108,7 +108,7 @@ in {
             fg = palette.base04
         })
         vim.api.nvim_set_hl(0, "NvimTreeFolderName", {
-            fg = palette.base03
+            fg = palette.base02
         })
         vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", {
             fg = palette.base02
@@ -117,6 +117,18 @@ in {
             fg = palette.base02
         })
         vim.api.nvim_set_hl(0, "NvimTreeSymlink", {
+            fg = palette.base02
+        })
+        vim.api.nvim_set_hl(0, "NvimTreeFile", {
+            fg = palette.base02
+        })
+        vim.api.nvim_set_hl(0, "NvimTreeWindowPicker", {
+            fg = palette.base02
+        })
+        vim.api.nvim_set_hl(0, "NvimTreeNormal", {
+            fg = palette.base02
+        })
+        vim.api.nvim_set_hl(0, "NvimTreeRootFolder", {
             fg = palette.base02
         })
     '';
