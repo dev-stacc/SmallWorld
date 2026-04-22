@@ -6,13 +6,13 @@
         programs.home-manager.enable = true;
 
         _module.args = {
+            inputs = inputs;
             fontName = lib.mkForce config.stylix.fonts.monospace.name;
             fontSize = lib.mkForce config.stylix.fonts.sizes.terminal;
        };
 
         imports = [
             inputs.nixvim.homeModules.nixvim
-            ./claude/default.nix
             ./hyprland/default.nix
             ./kitty/default.nix
             ./wayland/default.nix
