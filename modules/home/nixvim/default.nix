@@ -11,7 +11,9 @@
         cmp = import ./cmp.nix;
         lualine = import ./lualine.nix;
         nvimtree = import ./nvimtree.nix;
-        snacks = import ./snacks.nix;
+        #snacks = import ./snacks.nix;
+        telescope = import ./telescope.nix;
+        plugins = import ./plugins.nix;
         
         luasnip.enable = true;
         

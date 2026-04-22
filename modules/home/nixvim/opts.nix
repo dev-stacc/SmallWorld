@@ -2,7 +2,6 @@
     number = true;
     relativenumber = false;
     tabstop = 2;
-    shiftidth = 2;
     expandtab = true;
     mouse = "a";
     clipboard = "unnamedplus";

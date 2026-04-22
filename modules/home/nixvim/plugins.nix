@@ -1,0 +1,3 @@
+{
+    nvim-tree.enale = true;
+}
