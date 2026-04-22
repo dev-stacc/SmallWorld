@@ -8,10 +8,11 @@
         _module.args = {
             fontName = lib.mkForce config.stylix.fonts.monospace.name;
             fontSize = lib.mkForce config.stylix.fonts.sizes.terminal;
-        };
-    
+       };
+
         imports = [
             inputs.nixvim.homeModules.nixvim
+            ./claude/default.nix
             ./hyprland/default.nix
             ./kitty/default.nix
             ./wayland/default.nix
@@ -21,11 +22,13 @@
             ./fonts.nix
             ./hyprpaper.nix
         ];
-        
+
         home.packages = with pkgs; [
             departure-mono
             nerd-fonts.jetbrains-mono
             hyprpaper
+            claude-code
         ];
+
     };
 }

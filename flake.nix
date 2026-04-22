@@ -19,9 +19,13 @@
             url = "github:nix-community/nixvim";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        claude-code = {
+            url = "github:sadjow/claude-code-nix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
     
-    outputs = { self, nixpkgs, home-manager, stylix,  ... } @ inputs : {
+    outputs = { self, nixpkgs, home-manager, stylix, claude-code, ... } @ inputs : {
         nixosConfigurations.Arcturus = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [ ./modules/default.nix ];
