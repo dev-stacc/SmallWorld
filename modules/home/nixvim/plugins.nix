@@ -1,5 +1,6 @@
  {
     nvim-tree = import ./nvimtree.nix;
+    web-devicons.enable = true;
     transparent = {
         enable = true;
         settings = {

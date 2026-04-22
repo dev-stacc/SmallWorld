@@ -105,7 +105,10 @@ in {
         })
 
         vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", {
-            fg = palette.base04
+            fg = palette.base03
+        })
+        vim.api.nvim_set_hl(0, "NvimTreeFileIcon", {
+            fg = palette.base03
         })
         vim.api.nvim_set_hl(0, "NvimTreeFolderName", {
             fg = palette.base02
