@@ -1,16 +1,16 @@
 { cofig, lib, pkgs, ... } : {
     programs.nixvim = {
         enable = true;
-        deaultEditor = true;
+        defaultEditor = true;
         
         globals.mapleader = " ";
         
-        opts = import ./opts;
-        lsp = import ./lsp;
-        treesitter = import ./treesitter;
-        cmp = import ./cmp;
-        lualine = import ./lualine;
-        nvimtree = import ./nvimtree;
+        opts = import ./opts.nix;
+        lsp = import ./lsp.nix;
+        treesitter = import ./treesitter.nix;
+        cmp = import ./cmp.nix;
+        lualine = import ./lualine.nix;
+        nvimtree = import ./nvimtree.nix;
         snacks = import ./snacks.nix;
         
         luasnip.enable = true;
