@@ -1,9 +1,5 @@
  {
     nvim-tree = import ./nvimtree.nix;
-    mini = {
-        enable = true;
-        modules = ["base16"];
-    };
     transparent = {
         enable = true;
         settings = {
