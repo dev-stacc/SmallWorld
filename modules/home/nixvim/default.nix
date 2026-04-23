@@ -13,14 +13,16 @@ in {
         lsp = import ./lsp.nix;
         treesitter = import ./treesitter.nix;
         cmp = import ./cmp.nix;
-        plugins = import ./plugins.nix;
-        keymaps = import ./keymaps;
-        plugins.telescope = ./telescope.nix;
-        plugins.nvim-tree = import ./nvimtree;
-        plugins.transparent = import ./transparent;
-        web-devicons.enable = true;
-
+        keymaps = import ./keymaps.nix;
         luasnip.enable = true;
+
         extraConfigLua = extras.extraConfigLua;
+
+        plugins = {
+            web-devicons.enable = true;
+            telescope = import ./telescope.nix;
+            nvim-tree = import ./nvimtree.nix;
+            transparent = import ./transparent.nix;
+        };
     };
 }

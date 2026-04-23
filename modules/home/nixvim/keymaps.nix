@@ -1,4 +1,4 @@
-{
+[
     {
         key = "<leader>e";
         action = "<cmd>NvimTreeToggle<CR>";
@@ -115,4 +115,4 @@
         mode = "n";
         options.desc = "Previous diagnostic";
     }
-}
+]
