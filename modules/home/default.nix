@@ -20,7 +20,7 @@
             ./qutebrowser/default.nix
             ./nixvim/default.nix
             ./fonts.nix
-            ./hyprpaper.nix
+            ./services/hyprpaper.nix
         ];
 
         home.packages = with pkgs; [
@@ -28,6 +28,7 @@
             nerd-fonts.jetbrains-mono
             hyprpaper
             claude-code
+            mako
         ];
 
     };

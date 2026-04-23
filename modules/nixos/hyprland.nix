@@ -14,7 +14,6 @@
     
     environment.systemPackages = [
         pkgs.libnotify
-        pkgs.mako
         pkgs.hyprshot
         pkgs.brightnessctl
     ];
