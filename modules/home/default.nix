@@ -18,6 +18,7 @@
             ./wayland/default.nix
             ./programs/default.nix
             ./qutebrowser/default.nix
+            ./nixcord/default.nix
             ./nixvim/default.nix
             ./fonts.nix
             ./services/hyprpaper.nix
@@ -28,7 +29,6 @@
             nerd-fonts.jetbrains-mono
             hyprpaper
             claude-code
-            mako
         ];
 
     };
