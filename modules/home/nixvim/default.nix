@@ -144,6 +144,12 @@ in {
                 options.desc = "Toggle file explorer";
             }
             {
+                key = "<Tab>";
+                action = "<cmd>wincmd w<CR>";
+                mode = "n";
+                options.desc = "Jump to next window";
+            }
+            {
                 key = "<leader>ff";
                 action = "<cmd>Snacks picker files<CR>";
                 mode = "n";
