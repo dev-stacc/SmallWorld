@@ -1,6 +1,4 @@
-{ config, lib, pkgs, fontName, fontSize, ... }:
-
-let
+{ config, lib, pkgs, fontName, fontSize, ... } : let
     colors = config.lib.stylix.colors;
     userCss = builtins.readFile ./user-stylesheets.css;
     fontSizeStr = builtins.toString fontSize;

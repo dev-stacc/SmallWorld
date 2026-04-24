@@ -1,6 +1,5 @@
 { config, lib, pkgs, inputs, fontName, fontSize, ... } : let
     colors = config.stylix.base16Scheme;
-    finalCss = (import ./generate-css.nix { inherit config lib pkgs fontName fontSize; }).cssPath;
 in {
     programs.nixcord = {
         enable = true;
@@ -34,6 +33,21 @@ in {
             };
         };
 
-        quickCss = lib.mkForce [ "${finalCss}" ];
+        quickCss = ''
+            * {
+                background: none !importat;
+                background-color: transparent !important;
+                shadow: none !important;
+                outline: none !important;
+                font-family: "${fontName}" !important;
+                color: #${colors.base02} !important;
+                border-radius: 0 !important;
+                border-color: #${colors.base02} !important;
+            }
+            
+            [class*="popout_"] {
+                background-color: #${colors.base02} !important;
+            }
+        '';
     };
 }
