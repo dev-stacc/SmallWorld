@@ -23,9 +23,21 @@
             url = "github:sadjow/claude-code-nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        nixcord = {
+            url = "github:FlameFlag/nixcord";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
     
-    outputs = { self, nixpkgs, home-manager, stylix, claude-code, ... } @ inputs : {
+    outputs = {
+        self,
+        nixpkgs,
+        home-manager,
+        stylix,
+        claude-code,
+        nixcord,
+        ...
+    } @ inputs : {
         nixosConfigurations.Arcturus = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [ ./modules/default.nix ];
