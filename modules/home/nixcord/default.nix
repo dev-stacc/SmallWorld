@@ -4,6 +4,7 @@ in {
     programs.nixcord = {
         enable = true;
         vesktop.enable = true;
+        discord.enable = false;
         
         vesktopConfig = {
             customTitleBar = false;
@@ -18,14 +19,11 @@ in {
         };
         
         config = {
-#            useQuickCss = true;
             transparent = true;
             plugins = {
                 noDevtoolsWarning.enable = true;
                 noReplyMention.enable = true;
                 messageLogger.enable = true;
-                
-#                transparent.enable = true;
                 
                 readAllNotificationsButton.enable = true;
                 showHiddenChannels.enable = true;
