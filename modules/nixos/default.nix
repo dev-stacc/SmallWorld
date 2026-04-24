@@ -8,6 +8,7 @@
         ./hyprland.nix
         ./home-manager.nix
         ./stylix.nix
-        ./claude.nix
+        ./overlays.nix
+        ./unfreePredicates.nix
     ];
 }
