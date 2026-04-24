@@ -7,15 +7,17 @@ in {
         discord.enable = false;
 
         vesktopConfig = {
+            useQuickCss = true;
             customTitleBar = false;
             minimizeToTray = false;
             tray = false;
-            hardwareAcceleration = true;
+#            hardwareAcceleration = true;
             disableSmoothScroll = true;
             openLinksWithElectron = false;
             checkUpdates = false;
             enableSplashScreen = false;
             discordBranch = "stable";
+            transparent = true;
         };
         
         config = {
@@ -23,14 +25,14 @@ in {
             plugins = {
                 noDevtoolsWarning.enable = true;
                 noReplyMention.enable = true;
-                messageLogger.enable = true;
-                
+                messageLogger.enable = false;
+
                 readAllNotificationsButton.enable = true;
                 showHiddenChannels.enable = true;
                 friendInvites.enable = true;
             };
         };
 
-        quickCss = import ./quickCss.css;
+        quickCss = builtins.readFile ./quickCss.css;
     };
 }

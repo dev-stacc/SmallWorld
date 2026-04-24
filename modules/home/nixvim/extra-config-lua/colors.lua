@@ -1,27 +1,27 @@
 local palette = {
-    base00 = "#${colors.base00}",
-    base01 = "#${colors.base01}",
-    base02 = "#${colors.base02}",
-    base03 = "#${colors.base03}",
-    base04 = "#${colors.base04}",
-    base05 = "#${colors.base05}",
-    base06 = "#${colors.base06}",
-    base07 = "#${colors.base07}",
-    base08 = "#${colors.base08}",
-    base09 = "#${colors.base09}",
-    base0A = "#${colors.base0A}",
-    base0B = "#${colors.base0B}",
-    base0C = "#${colors.base0C}",
-    base0D = "#${colors.base0D}",
-    base0E = "#${colors.base0E}",
-    base0F = "#${colors.base0F}"
+    base00 = "stylix.base00",
+    base01 = "stylix.base01",
+    base02 = "stylix.base02",
+    base03 = "stylix.base03",
+    base04 = "stylix.base04",
+    base05 = "stylix.base05",
+    base06 = "stylix.base06",
+    base07 = "stylix.base07",
+    base08 = "stylix.base08",
+    base09 = "stylix.base09",
+    base0A = "stylix.base0A",
+    base0B = "stylix.base0B",
+    base0C = "stylix.base0C",
+    base0D = "stylix.base0D",
+    base0E = "stylix.base0E",
+    base0F = "stylix.base0F"
 }
 
 vim.cmd("hi clear")
 vim.o.termguicolors = true
 
 vim.api.nvim_set_hl(0, "Normal", {
-    bg = "none",
+    bg = nil,
     fg = palette.base02
 })
 vim.api.nvim_set_hl(0, "Comment", {
@@ -52,7 +52,8 @@ vim.api.nvim_set_hl(0, "Special", {
     fg = palette.base04
 })
 vim.api.nvim_set_hl(0, "Underlined", {
-    fg = palette.base05, undercurl = true
+    fg = palette.base05,
+    undercurl = true
 })
 vim.api.nvim_set_hl(0, "Error", {
     fg = palette.base04
@@ -72,7 +73,7 @@ vim.api.nvim_set_hl(0, "StatusLine", {
     fg = palette.base02
 })
 vim.api.nvim_set_hl(0, "StatusLineNC", {
-    bg = "none",
+    bg = nil,
     fg = palette.base03
 })
 
@@ -113,6 +114,5 @@ vim.api.nvim_set_hl(0, "NvimTreeNormal", {
     fg = palette.base02
 })
 vim.api.nvim_set_hl(0, "NvimTreeRootFolder", {
-  fg = palette.base02
+    fg = palette.base02
 })
-

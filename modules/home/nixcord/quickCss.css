@@ -1,6 +1,15 @@
-.theme-dark,
-.theme-light {
-    --background-primary: transparent !important;
-    --background-secodary: transparent !important;
-    --background-tertiary: transparent !important;
+:root {
+    --bg-primary: transparent !important;
+    --bg-secondary: transparent !important;
+    --text-normal: transparent !important;
+    --text-muted: transparent !important;
+    --brand-experiment: transparent !important;
+}
+
+.app-2rEoOp {
+    background: transparent !important;
+}
+
+.container-1NXEtd {
+    background: transparent !important;
 }
