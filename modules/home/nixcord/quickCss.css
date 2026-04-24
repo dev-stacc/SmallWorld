@@ -1,0 +1,6 @@
+.theme-dark,
+.theme-light {
+    --background-primary: transparent !important;
+    --background-secodary: transparent !important;
+    --background-tertiary: transparent !important;
+}

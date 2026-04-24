@@ -5,7 +5,7 @@ in {
         enable = true;
         vesktop.enable = true;
         discord.enable = false;
-        
+
         vesktopConfig = {
             customTitleBar = false;
             minimizeToTray = false;
@@ -30,5 +30,7 @@ in {
                 friendInvites.enable = true;
             };
         };
+
+        quickCss = import ./quickCss.css;
     };
 }
