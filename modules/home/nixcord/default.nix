@@ -7,7 +7,7 @@ in {
     home = {
         packages = [ customVesktop ];
         shellAliases = {
-            vesktop = "vesktop --enable-features=UseOzonePlatform --ozone-platform=wayland";
+            vesktop = "vesktop --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland";
         };
     };
 
