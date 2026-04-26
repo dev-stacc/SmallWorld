@@ -23,6 +23,7 @@
             ./nixvim/default.nix
             ./fonts.nix
             ./services/hyprpaper.nix
+            ./services/mako.nix
         ];
 
         home.packages = with pkgs; [
