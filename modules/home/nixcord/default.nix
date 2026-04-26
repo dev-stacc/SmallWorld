@@ -52,7 +52,7 @@ in {
                 readAllNotificationsButton.enable = true;
                 showHiddenChannels.enable = true;
                 friendInvites.enable = true;
-                webScreenShareFixes.enable = false;
+                webScreenShareFixes.enable = true;
             };
         };
 
