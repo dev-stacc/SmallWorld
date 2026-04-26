@@ -10,17 +10,25 @@
     environment.sessionVariables = {
         WLR_NO_HARDWARE_CURSORS = "1";
         NIXOS_OZONE_WL = "1";
+        ELECTRON_OZONE_PLATFORM_HINT = "auto";
     };
     
-    environment.systemPackages = [
-        pkgs.libnotify
-        pkgs.hyprshot
-        pkgs.brightnessctl
+    environment.systemPackages = with pkgs; [
+        libnotify
+        hyprshot
+        brightnessctl
     ];
     
     xdg.portal = {
         enable = true;
-        config.common.default = "*";
+        config.common = {
+            "org.freedesktop.impl.portal.ScreenCast" = [ "hyprland" ];
+            "org.freedesktop.impl.portal.ScreenShot" = [ "hyprland" ];
+            default = [
+                "hyprland"
+                "gtk"
+            ];
+        };
         extraPortals = [
             pkgs.xdg-desktop-portal-hyprland
             pkgs.xdg-desktop-portal-gtk
