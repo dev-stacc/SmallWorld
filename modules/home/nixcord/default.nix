@@ -1,9 +1,19 @@
 { config, lib, pkgs, inputs, fontName, fontSize, ... } : let
     colors = config.stylix.base16Scheme;
+    customVesktop = pkgs.vesktop.override {
+        withSystemVencord = false;
+    };
 in {
+    home = {
+        packages = [ customVesktop ];
+        shellAliases = {
+            vesktop = "vesktop --enable-features=UseOzonePlatform --ozone-platform=wayland";
+        };
+    };
+
     programs.nixcord = {
         enable = true;
-        vesktop.enable = true;
+        vesktop.enable = false;
         discord.enable = false;
 
         vesktopConfig = {
@@ -12,7 +22,7 @@ in {
             minimizeToTray = false;
             tray = false;
             hardwareAcceleration = true;
-            hardwareVideoAcceleration = true;
+            hardwareVideoAcceleration = false;
             disableSmoothScroll = true;
             openLinksWithElectron = false;
             checkUpdates = false;
