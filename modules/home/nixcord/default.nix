@@ -1,55 +1,23 @@
 { config, lib, pkgs, inputs, fontName, fontSize, ... } : let
     colors = config.stylix.base16Scheme;
-    customVesktop = pkgs.symlinkJoin {
-        name = "vesktop";
-        paths = [ (pkgs.vesktop.override { withSystemVencord = false; }) ];
-        buildInputs = [ pkgs.makeWrapper ];
-        postBuild = ''
-            wrapProgram $out/bin/vesktop \
-                --add-flags "--enable-features=WebRTCPipeWireCapturer --ozone-platform=wayland"
-        '';
-    };
 in {
-    home.packages = [ customVesktop ];
-
-    xdg.desktopEntries.vesktop = {
-        name = "Vesktop";
-        exec = "vesktop --enable-features=WebRTCPipeWireCapturer --ozone-platform=wayland %U";
-        icon = "vesktop";
-        terminal = false;
-        categories = [ "Network" "InstantMessaging" ];
-        mimeType = [ "x-scheme-handler/discord" ];
-    };
-
     programs.nixcord = {
         enable = true;
         vesktop.enable = false;
-        discord.enable = false;
+        discord.enable = true;
 
-        vesktopConfig = {
-            useQuickCss = true;
-            customTitleBar = false;
-            minimizeToTray = false;
-            tray = false;
-            hardwareAcceleration = true;
-            hardwareVideoAcceleration = false;
-            disableSmoothScroll = true;
-            openLinksWithElectron = false;
-            checkUpdates = false;
-            enableSplashScreen = false;
-            discordBranch = "stable";
-            transparent = true;
-        };
-        
         config = {
+            useQuickCss = true;
             transparent = true;
             enableReactDevtools = true;
             plugins = {
+                ClearURLs.enable = true;
+
                 noDevtoolsWarning.enable = true;
                 noReplyMention.enable = true;
                 messageLogger.enable = false;
-
                 readAllNotificationsButton.enable = true;
+
                 showHiddenChannels.enable = true;
                 friendInvites.enable = true;
                 webScreenShareFixes.enable = true;

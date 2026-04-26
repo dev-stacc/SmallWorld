@@ -15,14 +15,6 @@ in {
             windowrule
             input
             monitor
-            {
-                "exec-once" = [
-                    "dbus-update-activation-environment --systemd --all"
-                ];
-                env = [
-                    "INTEL_DEBUG,noccs"
-                ];
-            }
         ];
     };
 }
