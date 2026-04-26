@@ -1,14 +1,24 @@
 { config, lib, pkgs, inputs, fontName, fontSize, ... } : let
     colors = config.stylix.base16Scheme;
-    customVesktop = pkgs.vesktop.override {
-        withSystemVencord = false;
+    customVesktop = pkgs.symlinkJoin {
+        name = "vesktop";
+        paths = [ (pkgs.vesktop.override { withSystemVencord = false; }) ];
+        buildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+            wrapProgram $out/bin/vesktop \
+                --add-flags "--enable-features=WebRTCPipeWireCapturer --ozone-platform=wayland"
+        '';
     };
 in {
-    home = {
-        packages = [ customVesktop ];
-        shellAliases = {
-            vesktop = "vesktop --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland";
-        };
+    home.packages = [ customVesktop ];
+
+    xdg.desktopEntries.vesktop = {
+        name = "Vesktop";
+        exec = "vesktop --enable-features=WebRTCPipeWireCapturer --ozone-platform=wayland %U";
+        icon = "vesktop";
+        terminal = false;
+        categories = [ "Network" "InstantMessaging" ];
+        mimeType = [ "x-scheme-handler/discord" ];
     };
 
     programs.nixcord = {
