@@ -5,5 +5,6 @@
         waybar
         kitty
         vim
+        tdf
     ];
 }
