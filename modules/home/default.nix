@@ -31,6 +31,7 @@
             nerd-fonts.jetbrains-mono
             hyprpaper
             claude-code
+            ungoogled-chromium
         ];
 
     };
