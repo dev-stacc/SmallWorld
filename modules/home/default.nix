@@ -32,6 +32,7 @@
             hyprpaper
             claude-code
             ungoogled-chromium
+            tdf
         ];
 
     };
