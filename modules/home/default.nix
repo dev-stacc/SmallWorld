@@ -16,7 +16,7 @@
             inputs.nixcord.homeModules.nixcord
             ./hyprland/default.nix
             ./terminal/default.nix
-            ./wayland/default.nix
+            ./waybar/default.nix
             ./programs/default.nix
             ./qutebrowser/default.nix
             ./nixcord/default.nix
