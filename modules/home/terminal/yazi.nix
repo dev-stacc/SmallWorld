@@ -73,7 +73,7 @@
                     }
                     {
                         mime = "application/zip";
-                        use = [ "extract" ""open ];
+                        use = [ "extract" "open" ];
                     }
                     {
                         mime = "application/gzip";

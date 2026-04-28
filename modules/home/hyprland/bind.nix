@@ -2,19 +2,9 @@
     "$mod" = "SUPER";
     bind = [
         "$mod,Return,exec,kitty"
-        "$mod,
-            D,
-            exec,
-            (pkill -f kitty-launcher && pkill -f kitty-control) ||
-            kitty --title kitty-launcher -e ~/.local/bin/kitty-launcher
-        "
-        "$mod,
-            N,
-            exec,
-            (pkill -f kitty-control && pkill -f kitty-launcher) ||
-            kitty --title kitty-control -e ~/.local/bin/kitty-control
-        "
-        "$mod,E,exec,pkill -f kitty-explorer || kitty-explorer"
+        "$mod,D,exec,pkill kitty-launcher || kitty --title kitty-launcher -e ~/.local/bin/kitty-launcher"
+        "$mod,N,exec,pkill kitty-control || kitty --title kitty-control -e ~/.local/bin/kitty-control"
+        "$mod,E,exec,pkill yazi || kitty --title kitty-explorer -e yazi"
         "$mod SHIFT,C,exec,hyprctl reload"
         "$mod,M,exit,Hyprland"
         "$mod,Q,killactive"

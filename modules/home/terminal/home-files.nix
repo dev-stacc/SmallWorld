@@ -15,5 +15,11 @@ in {
         ".local/share/applications/kitty-explorer.desktop" = {
             source = kittyExplorer;
         };
+        ".config/xdg-desktop-portal-termfilechooser/config" = {
+            text = ''
+                [filechooser]
+                cmd=kitty -e yazi
+            '';     
+        };
     };
 }

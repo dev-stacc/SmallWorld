@@ -25,9 +25,9 @@
     xdg.portal = {
         enable = true;
         config.common = {
-            "org.freedesktop.impl.portal.ScreenCast" = [ "hyprland" ];
-            "org.freedesktop.impl.portal.ScreenShot" = [ "hyprland" ];
-            "org.freedesktop.impl.portal.FileChooser" = [ "termfilechooser" ;]
+            "org.freedesktop.impl.portal.ScreenCast" = ["hyprland"];
+            "org.freedesktop.impl.portal.ScreenShot" = ["hyprland"];
+            "org.freedesktop.impl.portal.FileChooser" = ["termfilechooser"];
             default = [
                 "termfilechooser"
                 "hyprland"
