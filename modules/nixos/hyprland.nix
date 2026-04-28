@@ -13,6 +13,7 @@
         ELECTRON_OZONE_PLATFORM_HINT = "auto";
         LIBVA_DRIVER_NAME = "iHD";
         WLR_DRM_NO_MODIFIERS = "1";
+        QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
     };
     
     environment.systemPackages = with pkgs; [
