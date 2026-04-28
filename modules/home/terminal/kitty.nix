@@ -1,12 +1,11 @@
 { pkgs, lib, config, fontName, fontSize, ... } : let
-    kittyLauncher = pkgs.writeShellScript "kitty-launcher" (builtins.readFile ./scripts/kitty-launcher.sh);
-    kittyControl = pkgs.writeShellScript "kitty-control" (builtins.readFile ./scripts/kitty-control.sh);
     colors = config.stylix.base16Scheme;
 in {
     programs.kitty = {
         enable = true;
-        enableGitIntegration = true;
         settings = lib.mkForce {
+            term = "xterm-256color";
+
             background_opacity = "0.6";
             color0 = "#${colors.base00}";
             color1 = "#${colors.base04}";
@@ -46,18 +45,6 @@ in {
             
             font_family = fontName;
             font_size = fontSize;
-            
-        };
-    };
-  
-    home.file = {
-        ".local/bin/kitty-launcher" = {
-            source = kittyLauncher;
-            executable = true;
-        };
-        ".local/bin/kitty-control" = {
-            source = kittyControl;
-            executable = true;
         };
     };
 }

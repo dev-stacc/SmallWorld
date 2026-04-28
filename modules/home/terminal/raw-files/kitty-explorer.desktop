@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Kitty Explorer
+GenericName=File Manager
+Exec=/home/anastasia/.local/bin/kitty-explorer
+Icon=system-file-manager
+Type=Application
+Categories=System;FileManager;
+Keywords=files;explorer;terminal;yazi;

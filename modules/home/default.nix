@@ -15,7 +15,7 @@
             inputs.nixvim.homeModules.nixvim
             inputs.nixcord.homeModules.nixcord
             ./hyprland/default.nix
-            ./kitty/default.nix
+            ./terminal/default.nix
             ./wayland/default.nix
             ./programs/default.nix
             ./qutebrowser/default.nix

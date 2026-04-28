@@ -19,19 +19,23 @@
         libnotify
         hyprshot
         brightnessctl
+        xdg-desktop-portal-termfilechooser
     ];
-    
+
     xdg.portal = {
         enable = true;
         config.common = {
             "org.freedesktop.impl.portal.ScreenCast" = [ "hyprland" ];
             "org.freedesktop.impl.portal.ScreenShot" = [ "hyprland" ];
+            "org.freedesktop.impl.portal.FileChooser" = [ "termfilechooser" ;]
             default = [
+                "termfilechooser"
                 "hyprland"
                 "gtk"
             ];
         };
         extraPortals = with pkgs; [
+            xdg-desktop-portal-termfilechooser
             xdg-desktop-portal-hyprland
             xdg-desktop-portal-gtk
         ];
