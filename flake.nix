@@ -38,9 +38,11 @@
         nixcord,
         ...
     } @ inputs : {
-        nixosConfigurations.Arcturus = nixpkgs.lib.nixosSystem {
-            specialArgs = { inherit inputs; };
-            modules = [ ./modules/default.nix ];
+        nixosConfigurations = {
+            Arcturus = nixpkgs.lib.nixosSystem {
+                specialArgs = { inherit inputs; };
+                modules = [ ./hosts/arcturus/default.nix ];
+            };
         };
     };
 }

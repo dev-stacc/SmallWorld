@@ -7,5 +7,10 @@
         useGlobalPkgs = true;
         useUserPackages = true;
         backupFileExtension = "backup";
+        extraSpecialArgs = {
+            inherit inputs;
+            fontName = config.stylix.fonts.monospace.name;
+            fontSize = config.stylix.fonts.sizes.terminal;
+        };
     }; 
 }

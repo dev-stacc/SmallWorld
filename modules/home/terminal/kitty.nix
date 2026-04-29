@@ -3,6 +3,8 @@
 in {
     programs.kitty = {
         enable = true;
+        package = pkgs.kitty;
+
         settings = lib.mkForce {
             term = "xterm-256color";
 

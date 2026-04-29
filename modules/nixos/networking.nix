@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... } : {
     networking = {
-        hostName = "Arcturus"; 
         wireless.iwd = {
             enable = true;
             settings = {
