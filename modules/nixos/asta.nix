@@ -15,9 +15,6 @@
 
     hardware.graphics = {
         enable = true;
-        extraPackages = with pkgs; [
-            libva-mesa-driver
-        ];
     };
 
     services.xserver.videoDrivers = ["radeon"];
