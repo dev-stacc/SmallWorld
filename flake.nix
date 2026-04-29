@@ -27,6 +27,14 @@
             url = "github:FlameFlag/nixcord";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        colmena = {
+            url = "github:zhaofengli/colmena";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+        sops-nix = {
+            url = "github:Mic92/sops-nix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
     
     outputs = {
@@ -36,6 +44,8 @@
         stylix,
         claude-code,
         nixcord,
+        colmena,
+        sops-nix,
         ...
     } @ inputs : {
         nixosConfigurations = {
@@ -43,13 +53,26 @@
                 specialArgs = { inherit inputs; };
                 modules = [ ./hosts/arcturus/default.nix ];
             };
-            Amateus = nixpkgs.lib.nixosSystem {
+        };
+
+        colmena = {
+            meta = {
+                nixpkgs = import nixpkgs { system = "x86_64-linux"; };
                 specialArgs = { inherit inputs; };
-                modules = [ ./hosts/amateus/default.nix ];
             };
-            Asta = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs; };
-                modules = [ ./hosts/asta/default.nix ];
+            Asta = { ... } : {
+                imports = [
+                    ./hosts/asta/default.nix 
+                    sops-nix.nixosModules.sops
+                ];
+                deployment.targetHost = "asta";
+            };
+            Amateus = { ... } : {
+                imports = [
+                    ./hosts/amateus/default.nix 
+                    sops-nix.nixosModules.sops
+                ];
+                deployment.targetHost = "amateus";
             };
         };
     };
