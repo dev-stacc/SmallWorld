@@ -1,4 +1,4 @@
-{ config, lib, pkga, ... } : {
+{ config, lib, pkgs, ... } : {
     imports = [
         ./fzf.nix
         ./git.nix

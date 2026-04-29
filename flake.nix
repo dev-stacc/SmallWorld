@@ -1,5 +1,5 @@
 {
-    description = "Arcturus config";
+    description = "Small World in a universe full of giants";
     
     inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -42,6 +42,14 @@
             Arcturus = nixpkgs.lib.nixosSystem {
                 specialArgs = { inherit inputs; };
                 modules = [ ./hosts/arcturus/default.nix ];
+            };
+            Amateus = nixpkgs.lib.nixosSystem {
+                specialArgs = { inherit inputs; };
+                modules = [ ./hosts/amateus/default.nix ];
+            };
+            Asta = nixpkgs.lib.nixosSystem {
+                specialArgs = { inherit inputs; };
+                modules = [ ./hosts/asta/default.nix ];
             };
         };
     };

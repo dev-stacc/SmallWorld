@@ -4,7 +4,6 @@
         ./bluetooth.nix
         ./sound.nix
         ./hyprland.nix
-        ./stylix.nix
         ./overlays.nix
         ./unfreePredicates.nix
     ];

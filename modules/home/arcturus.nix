@@ -6,7 +6,6 @@
         ./hyprland/default.nix
         ./terminal/default.nix
         ./waybar/default.nix
-        ./programs/default.nix
         ./qutebrowser/default.nix
         ./nixcord/default.nix
         ./nixvim/default.nix
