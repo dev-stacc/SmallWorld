@@ -1,4 +1,8 @@
 { config, lib, pkgs, ... } : {
+    environment.systemPackages = [
+        pkgs.ethtool
+    ];    
+
     networking = {
         wireless = {
             iwd = {
@@ -32,6 +36,15 @@
                 PermitRootLogin = "no";
             };
         };
+        networkd-dispatcher = {
+            enable = true;
+            rules."50-tailscale-optimizations" = {
+                onState = [ "routable" ];
+                script = ''
+                    ${pkgs.ethtool}/bin/ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off
+                '';
+              };
+          };
     };
 
     security.sudo.extraRules = [{
@@ -41,4 +54,7 @@
             options = ["NOPASSWD"];
         }];
     }];
+
+    systemd.network.wait-online.enable = false; 
+    boot.initrd.systemd.network.wait-online.enable = false;
 }
