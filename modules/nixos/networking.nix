@@ -1,19 +1,23 @@
 { config, lib, pkgs, ... } : {
     networking = {
-        wireless.iwd = {
-            enable = true;
-            settings = {
-                Network = {
-                    EnableIPv6 = true;
-                };
-                Settings = {
-                    AutoConnect = true;
+        wireless = {
+            iwd = {
+                enable = true;
+                settings = {
+                    Network = {
+                        EnableIPv6 = true;
+                    };
+                    Settings = {
+                        AutoConnect = true;
+                    };
                 };
             };
         };
+
         firewall = {
             enable = true;
             trustedInterfaces = ["tailscale0"];
+            allowedUDPPorts = [config.services.tailscale.port];
         };
     };
 
@@ -21,8 +25,11 @@
         tailscale.enable = true;
         openssh = {
             enable = true;
-            settings.PasswordAuthentication = false;
-            settings.PermitRootLogin = "no";
+            settings = {
+                PasswordAuthentication = false;
+                PubkeyAuthentication = true;
+                PermitRootLogin = "no";
+            };
         };
     };
 

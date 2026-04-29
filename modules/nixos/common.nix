@@ -4,5 +4,6 @@
         ./home-manager.nix
         ./networking.nix
         ./packages.nix
+        ./stylix.nix
     ];
 }
