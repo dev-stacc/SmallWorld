@@ -1,10 +1,10 @@
 keys:
   - &arcturus age1sl4vva0g5zsk5mp9dqqwh34t7vtjd5m9dfqdpwl9ete638939q3sckw036
-  - &asta age1nhhqcdkuet9lkalpdc3883d5sh2w2endasrtmwa0k38mkvq4wulszfffp7
-  - &amateus age1nhhqcdkuet9lkalpdc3883d5sh2w2endasrtmwa0k38mkvq4wulszfffp7
+  - &asta age1gqdkg7fwguwtyp6glxeln6chmusjye4k8yhe6kq9g7gch4lt45dqx5xtvx
+  - &amateus age1l7adltmqwfdk663nazugqr3r65qknfc3q7jja6y2zv0mnekmg3hq2uekvy
 
 creation_rules:
-  - path_regex: secret/secets.yaml
+  - path_regex: secrets/secrets.yaml
     key_groups:
       - age:
         - *arcturus
