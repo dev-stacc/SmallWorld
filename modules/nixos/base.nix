@@ -35,10 +35,12 @@
         nix-direnv.enable = true;
     };
 
-    environment.systemPackages = [
-        pkgs.colmena
-        pkgs.kubectl
-        pkgs.sops
+    environment.systemPackages = with pkgs; [
+        colmena
+        kubectl
+        sops
+        age
+        kubernetes-helm
     ];
 
     nix.settings.trusted-users = [
