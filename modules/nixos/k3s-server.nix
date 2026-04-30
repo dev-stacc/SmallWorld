@@ -22,4 +22,11 @@
         allowedTCPPorts = [ 6443 10250 ];
         allowedUDPPorts = [ 8472 ];
     };
+
+    environment = {
+        variables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
+        systemPackages = [
+            pkgs.kubectl
+        ];
+    };
 }
