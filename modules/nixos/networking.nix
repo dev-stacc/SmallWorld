@@ -1,8 +1,7 @@
-{ config, lib, pkgs, ... } : {
+{ config, pkgs, inputs, ... }: {
     environment.systemPackages = [
         pkgs.ethtool
     ];    
-
     networking = {
         wireless = {
             iwd = {
@@ -18,16 +17,17 @@
                 };
             };
         };
-
         firewall = {
             enable = true;
-            trustedInterfaces = ["tailscale0"];
-            allowedUDPPorts = [config.services.tailscale.port];
+            trustedInterfaces = [ "tailscale0" ];
+            allowedUDPPorts = [ config.services.tailscale.port ];
         };
     };
-
     services = {
-        tailscale.enable = true;
+        tailscale = {
+            enable = true;
+            authKeyFile = config.sops.secrets.tailscale-authkey.path;
+        };
         openssh = {
             enable = true;
             settings = {
@@ -43,37 +43,19 @@
                 script = ''
                     ${pkgs.ethtool}/bin/ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off
                 '';
-              };
-          };
+            };
+        };
     };
-
-    sops.secrets.tailscale-authKey = {
-        sopsFile = ../../secrets/secrets.yaml;
+    sops.secrets.tailscale-authkey = {
+        sopsFile = "${inputs.self}/secrets/secrets.yaml";
     };
-
-    systemd.services.tailscale-autoconnect = {
-        after = [ "tailscaled.service" ];
-        wants = [ "tailscaled.service" ];
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig.Type = "oneshot";
-        script = ''
-            if ${pkgs.tailscale}/bin/tailscale status --json | ${pkgs.jq}/bin/jq -e '.BackendState == "Running"' > /dev/null; then
-                exit 0
-            fi
-            ${pkgs.tailscale}/bin/tailscale up \
-                --authkey=$(cat ${config.sops.secrets.tailscale-authkey.path}) \
-                --accept-routes
-        '';
-    };
-
     security.sudo.extraRules = [{
-        users = ["anastasia"];
+        users = [ "anastasia" ];
         commands = [{
             command = "${pkgs.tailscale}/bin/tailscale";
-            options = ["NOPASSWD"];
+            options = [ "NOPASSWD" ];
         }];
     }];
-
     systemd.network.wait-online.enable = false; 
     boot.initrd.systemd.network.wait-online.enable = false;
 }

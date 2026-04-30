@@ -1,5 +1,6 @@
 { config, pkgs, inputs, ... } : {
     imports = [
+        inputs.sops-nix.nixosModules.sops
         ./common.nix
         ./bluetooth.nix
         ./sound.nix
@@ -7,6 +8,8 @@
         ./overlays.nix
         ./unfreePredicates.nix
     ];
+
+    sops.age.keyFile = "/home/anastasia/.sops/keys.txt";
 
     networking.hostName = "Arcturus";
 

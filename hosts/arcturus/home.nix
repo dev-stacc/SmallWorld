@@ -6,6 +6,9 @@
         home.username = "anastasia";
         home.homeDirectory = "/home/anastasia";
         home.stateVersion = "25.11";
+        home.sessionVariables = {
+            SOPS_AGE_KEY_FILE = "/home/anastasia/.sops/keys.txt";
+        };
 
         programs.ssh = {
             enable = true;
@@ -18,7 +21,5 @@
                 };
             };
         };
-
-        sops.age.keyFile = "~/.sops/keys.txt";
     };
 }
