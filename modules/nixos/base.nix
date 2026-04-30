@@ -26,4 +26,10 @@
         enable = true;
         nix-direnv.enable = true;
     };
+
+    environment.systemPackages = [
+        pkgs.colmena
+        pkgs.kubectl
+        pkgs.sops
+    ];
 }

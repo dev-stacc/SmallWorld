@@ -10,7 +10,7 @@
         enable = true;
         role = "agent";
         tokenFile = config.sops.secrets.k3s-token.path;
-        serverAddr = "https://asta:6443"
+        serverAddr = "https://asta:6443";
     };
 
     boot = {
