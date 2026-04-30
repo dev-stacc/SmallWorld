@@ -68,6 +68,7 @@
                 deployment= {
                     targetHost = "asta";
                     targetUser = "anastasia";
+                    keys = {};
                 };
             };
             Amateus = { ... } : {
@@ -78,6 +79,7 @@
                 deployment = {
                     targetHost = "amateus";
                     targetUser = "anastasia";
+                    keys = {};
                 };
             };
         };
