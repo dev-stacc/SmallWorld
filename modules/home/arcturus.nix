@@ -12,7 +12,7 @@
         ./fonts.nix
         ./services/hyprpaper.nix
         ./services/mako.nix
-        ./bash.nix
+        ./k3s/default.nix
     ];
     
     home.packages = with pkgs; [
