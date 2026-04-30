@@ -35,6 +35,10 @@
             url = "github:Mic92/sops-nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        kubenix = {
+            url = "github:hall/kubenix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
     
     outputs = {
@@ -46,6 +50,7 @@
         nixcord,
         colmena,
         sops-nix,
+        kubenix,
         ...
     } @ inputs : {
         nixosConfigurations = {
@@ -86,6 +91,17 @@
                 deployment = {
                     targetHost = "amateus";
                     targetUser = "anastasia";
+                };
+            };
+        };
+
+        kubenix = {
+            tailscale-operator = kubenix.lib.evalModules.x86_64 {
+                module = { kubenix, ... } : {
+                    imports = [ kubenix.modules.k8s ];
+                    kubernees.ressources = {
+                        namespace.tailscale = {};
+                    };
                 };
             };
         };
