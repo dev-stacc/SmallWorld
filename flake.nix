@@ -65,14 +65,22 @@
                     ./hosts/asta/default.nix 
                     sops-nix.nixosModules.sops
                 ];
-                deployment.targetHost = "asta";
+                deployment= {
+                    targetHost = "asta";
+                    targetUser = "anastasia";
+                    sudo = true;
+                };
             };
             Amateus = { ... } : {
                 imports = [
                     ./hosts/amateus/default.nix 
                     sops-nix.nixosModules.sops
                 ];
-                deployment.targetHost = "amateus";
+                deployment = {
+                    targetHost = "amateus";
+                    targetUser = "anastasia";
+                    sudo = true;
+                };
             };
         };
     };
