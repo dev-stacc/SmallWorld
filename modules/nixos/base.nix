@@ -32,4 +32,9 @@
         pkgs.kubectl
         pkgs.sops
     ];
+
+    nix.settings.trusted-users = [
+        "root"
+        "anastasia"
+    ];
 }
