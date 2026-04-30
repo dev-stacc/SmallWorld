@@ -68,7 +68,6 @@
                 deployment= {
                     targetHost = "asta";
                     targetUser = "anastasia";
-                    sudo = true;
                 };
             };
             Amateus = { ... } : {
@@ -79,7 +78,6 @@
                 deployment = {
                     targetHost = "amateus";
                     targetUser = "anastasia";
-                    sudo = true;
                 };
             };
         };
