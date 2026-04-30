@@ -18,5 +18,7 @@
                 };
             };
         };
+
+        sops.age.keyFile = "~/.sops/keys.txt";
     };
 }
