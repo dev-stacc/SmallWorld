@@ -53,10 +53,14 @@
                 specialArgs = { inherit inputs; };
                 modules = [ ./hosts/arcturus/default.nix ];
             };
-	    Amateus = nixpkgs.lib.nixosSystem {
-	        specialArgs = { inherit inputs; };
-		modules = [ ./hosts/amateus/default.nix ];
-	    };
+            Amateus = nixpkgs.lib.nixosSystem {
+                specialArgs = { inherit inputs; };
+                modules = [ ./hosts/amateus/default.nix ];
+	          };
+            Asta = nixpkgs.lib.nixosSystem {
+                specialArgs = { inherit inputs; };
+                modules = [ ./hosts/asta/default.nix ];
+	          };
         };
 
         colmena = {
