@@ -68,7 +68,6 @@
                 deployment= {
                     targetHost = "asta";
                     targetUser = "anastasia";
-                    buildOnTarget = true;
                 };
             };
             Amateus = { ... } : {
@@ -79,7 +78,6 @@
                 deployment = {
                     targetHost = "amateus";
                     targetUser = "anastasia";
-                    buildOnTarget = true;
                 };
             };
         };
