@@ -12,7 +12,6 @@
 
         programs.ssh = {
             enable = true;
-            startAgent = true;
             extraConfig = "AddKeysToAgent yes";
             matchBlocks = {
                 "arcturus" = {
@@ -20,6 +19,13 @@
                     user = "anastasia";
                     identityFile = "~/.ssh/id_ed25519";
                 };
+            };
+        };
+
+        programs.bash = {
+            enable = true;
+            shellAliases = {
+                smallworld = "eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519";
             };
         };
     };
