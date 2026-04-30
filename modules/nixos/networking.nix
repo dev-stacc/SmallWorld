@@ -47,6 +47,25 @@
           };
     };
 
+    sops.secrets.tailscale-authKey = {
+        sopsFile = ../../secrets/secrets.yaml;
+    };
+
+    systemd.services.tailscale-autoconnect = {
+        after = [ "tailscaled.service" ];
+        wants = [ "tailscaled.service" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig.Type = "oneshot";
+        script = ''
+            if ${pkgs.tailscale}/bin/tailscale status --json | ${pkgs.jq}/bin/jq -e '.BackendState == "Running"' > /dev/null; then
+                exit 0
+            fi
+            ${pkgs.tailscale}/bin/tailscale up \
+                --authkey=$(cat ${config.sops.secrets.tailscale-authkey.path}) \
+                --accept-routes
+        '';
+    };
+
     security.sudo.extraRules = [{
         users = ["anastasia"];
         commands = [{
