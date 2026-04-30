@@ -68,7 +68,7 @@
                 deployment= {
                     targetHost = "asta";
                     targetUser = "anastasia";
-                    sshOptions = [ "-i" "/home/anastasia/.ssh/id_ed25519" ];
+                    buildOnTarget = true;
                 };
             };
             Amateus = { ... } : {
@@ -79,7 +79,7 @@
                 deployment = {
                     targetHost = "amateus";
                     targetUser = "anastasia";
-                    sshOptions = [ "-i" "/home/anastasia/.ssh/id_ed25519" ];
+                    buildOnTarget = true;
                 };
             };
         };
