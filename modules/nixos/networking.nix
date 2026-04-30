@@ -54,10 +54,16 @@
     };
     security.sudo.extraRules = [{
         users = [ "anastasia" ];
-        commands = [{
-            command = "${pkgs.tailscale}/bin/tailscale";
-            options = [ "NOPASSWD" ];
-        }];
+        commands = [
+            {
+                command = "${pkgs.tailscale}/bin/tailscale";
+                options = [ "NOPASSWD" ];
+            }
+            {
+                command = "/run/current-system/sw/bin/nixos-rebuild";
+                options = [ "NOPASSWD" ];
+            }
+        ];
     }];
     systemd.network.wait-online.enable = false; 
     boot.initrd.systemd.network.wait-online.enable = false;
