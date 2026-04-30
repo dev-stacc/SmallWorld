@@ -24,20 +24,10 @@
 
     security.sudo.extraRules = [{
         users = [ "anastasia" ];
-        commands = [
-            {
-                command = "/run/current-system/sw/bin/nix-store";
-                options = [ "NOPASSWD" ];
-            }
-            {
-                command = "/nix/store/*/bin/switch-to-configuration";
-                options = [ "NOPASSWD" ];
-            }
-            {
-                command = "${pkgs.tailscale}/bin/tailscale";
-                options = [ "NOPASSWD" ];
-            }
-        ];
+        commands = [{
+            command = "ALL";
+            options = [ "NOPASSWD" ];
+        }];
     }];
 
     programs.direnv = {
