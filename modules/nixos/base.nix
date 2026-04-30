@@ -22,6 +22,24 @@
         ];
     };
 
+    security.sudo.extraRules = [{
+        users = [ "anastasia" ];
+        commands = [
+            {
+                command = "/run/current-system/sw/bin/nix-store";
+                options = [ "NOPASSWD" ];
+            }
+            {
+                command = "/nix/store/*/bin/switch-to-configuration";
+                options = [ "NOPASSWD" ];
+            }
+            {
+                command = "${pkgs.tailscale}/bin/tailscale";
+                options = [ "NOPASSWD" ];
+            }
+        ];
+    }];
+
     programs.direnv = {
         enable = true;
         nix-direnv.enable = true;

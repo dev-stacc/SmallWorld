@@ -1,6 +1,6 @@
 { config, pkgs, inputs, ... } : {
     imports = [
-	inputs.sops-nix.nixosModules.sops
+	      inputs.sops-nix.nixosModules.sops
     ];
     environment.systemPackages = [
         pkgs.ethtool
@@ -52,13 +52,7 @@
     sops.secrets.tailscale-authkey = {
         sopsFile = "${inputs.self}/secrets/secrets.yaml";
     };
-    security.sudo.extraRules = [{
-        users = [ "anastasia" ];
-        commands = [{
-            command = "ALL";
-            options = [ "NOPASSWD" ];
-        }];
-    }];
+
     systemd.network.wait-online.enable = false; 
     boot.initrd.systemd.network.wait-online.enable = false;
 }
