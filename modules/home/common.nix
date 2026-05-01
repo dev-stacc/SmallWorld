@@ -1,5 +1,6 @@
-{ ... } : {
+{ inputs, ... } : {
     imports = [
+        inputs.nixvim.homeModules.nixvim
         ./programs/default.nix
         ./nixvim/default.nix
     ];
