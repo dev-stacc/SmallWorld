@@ -2,6 +2,7 @@
     imports = [
         ./common.nix
         ./k3s-server.nix
+        ./flux.nix
     ];
 
     networking.hostName = "Asta";

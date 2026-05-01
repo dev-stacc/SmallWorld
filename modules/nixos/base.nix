@@ -41,6 +41,7 @@
         sops
         age
         kubernetes-helm
+        fluxcd
     ];
 
     nix.settings.trusted-users = [
