@@ -13,8 +13,8 @@
         secrets.operator-oauth = {
             metadata.namespace = "tailscale";
             stringData = {
-                client_id.$patch = "placeholder";
-                client_secret.$patch = "placeholder";
+                client_id = "placeholder";
+                client_secret = "placeholders";
             };
         };
     };
