@@ -6,10 +6,6 @@
     kubernetes.resources = {
         namespaces.tailscale = {};
 
-        serviceAccounts.tailscale-operator = {
-            metadata.namespace = "tailscale";
-        };
-
         secrets.operator-oauth = {
             metadata.namespace = "tailscale";
             stringData = {

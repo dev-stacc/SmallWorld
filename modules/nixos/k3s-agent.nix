@@ -11,6 +11,10 @@
         role = "agent";
         tokenFile = config.sops.secrets.k3s-token.path;
         serverAddr = "https://asta:6443";
+        extraFlags = toString [
+            "--node-ip=100.70.98.107"
+            "--flannel-iface=tailscale0"
+        ];
     };
 
     boot = {

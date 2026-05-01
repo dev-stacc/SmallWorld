@@ -10,7 +10,14 @@
         enable = true;
         role = "server";
         tokenFile = config.sops.secrets.k3s-token.path;
-        extraFlags = "--disable traefik";
+        extraFlags = toString [
+            "--disable traefik"
+            "--node-ip=100.88.255.118"
+            "--advertise-address=100.88.255.118"
+            "--tls-san=asta"
+            "--tls-san=<asta-tailscale-ip>"
+            "--flannel-iface=tailscale0"
+        ];
     };
 
     boot = {
