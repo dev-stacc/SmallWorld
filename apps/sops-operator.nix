@@ -3,7 +3,7 @@
         kubenix.modules.k8s
     ];
 
-    kubernetes.ressources = {
+    kubernetes.resources = {
         namespaces.sops = {};
     };
 }
