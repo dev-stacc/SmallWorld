@@ -96,13 +96,11 @@
         };
 
         kubenix = {
-            tailscale-operator = kubenix.lib.evalModules.x86_64 {
-                module = { kubenix, ... } : {
-                    imports = [ kubenix.modules.k8s ];
-                    kubernees.ressources = {
-                        namespace.tailscale = {};
-                    };
-                };
+            tailscale-operator = kubenix.evalModules.x86_64-linux {
+                module = "${self}/apps/tailscale-operator.nix";
+            };
+            sops-operator = kubenix.evalModules.x86_64-linux {
+                module = "${self}/apps/sops-operator.nix";
             };
         };
     };

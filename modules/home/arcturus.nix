@@ -8,7 +8,6 @@
         ./waybar/default.nix
         ./qutebrowser/default.nix
         ./nixcord/default.nix
-        ./nixvim/default.nix
         ./fonts.nix
         ./services/hyprpaper.nix
         ./services/mako.nix
