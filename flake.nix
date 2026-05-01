@@ -94,14 +94,5 @@
                 };
             };
         };
-
-        kubenix = {
-            tailscale-operator = kubenix.evalModules.x86_64-linux {
-                module = ./apps/tailscale-operator.nix;
-            };
-            sops-operator = kubenix.evalModules.x86_64-linux {
-                module = ./apps/sops-operator.nix;
-            };
-        };
     };
 }
