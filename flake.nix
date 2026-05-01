@@ -35,10 +35,6 @@
             url = "github:Mic92/sops-nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        kubenix = {
-            url = "github:hall/kubenix";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
     };
     
     outputs = {
@@ -50,7 +46,6 @@
         nixcord,
         colmena,
         sops-nix,
-        kubenix,
         ...
     } @ inputs : {
         nixosConfigurations = {
