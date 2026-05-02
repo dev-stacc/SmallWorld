@@ -35,5 +35,8 @@
         systemPackages = [
             pkgs.kubectl
         ];
+        etc."rancher/k3s/k3s.yaml" = {
+            mode = "0644";
+        };
     };
 }
