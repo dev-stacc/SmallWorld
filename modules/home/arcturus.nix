@@ -1,6 +1,5 @@
 { pkgs, config, lib, inputs, ... } : {
     imports = [
-        inputs.nixvim.homeModules.nixvim
         inputs.nixcord.homeModules.nixcord
         ./common.nix
         ./hyprland/default.nix
