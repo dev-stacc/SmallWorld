@@ -35,8 +35,16 @@
         systemPackages = [
             pkgs.kubectl
         ];
-        etc."rancher/k3s/k3s.yaml" = {
-            mode = "0644";
-        };
     };
+
+    systemd.services.k3s-kubeconfig-permissions = {
+        description = "Fix k3s kubeconfig permissions";
+        after = [ "k3s.service" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${pkgs.coreutils}/bin/chmod 644 /etc/rancher/k3s/k3s.yaml";
+        };
+};
 }
