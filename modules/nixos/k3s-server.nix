@@ -46,5 +46,5 @@
             RemainAfterExit = true;
             ExecStart = "${pkgs.coreutils}/bin/chmod 644 /etc/rancher/k3s/k3s.yaml";
         };
-};
+    };
 }
