@@ -14,7 +14,7 @@ spec:
         app: jellyfin
     spec:
       nodeSelector:
-        kubernetes.io/hostname: Asta
+        kubernetes.io/hostname: asta
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:latest
