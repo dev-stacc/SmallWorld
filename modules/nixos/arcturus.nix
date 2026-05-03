@@ -6,6 +6,7 @@
         ./sound.nix
         ./hyprland.nix
         ./overlays.nix
+        ./steam.nix
         ./unfreePredicates.nix
     ];
 
