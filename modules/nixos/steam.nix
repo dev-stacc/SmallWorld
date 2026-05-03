@@ -1,5 +1,6 @@
-{ config, lib, pkgs, ... } : {
+{ config, pkgs, ... } : {
     programs.steam = {
         enable = true;
+        extraCompatPackages = [ pkgs.proton-ge-custom ];
     };
 }

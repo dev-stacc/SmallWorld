@@ -11,6 +11,7 @@
         ./services/hyprpaper.nix
         ./services/mako.nix
         ./k3s/default.nix
+        ./programs/steam.nix
     ];
     
     home.packages = with pkgs; [
