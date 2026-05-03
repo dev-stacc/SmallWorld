@@ -31,7 +31,7 @@ spec:
             - name: data
               mountPath: /data
             - name: music
-              value: /music
+              mountPath: /music
           resources:
             requests:
               memory: "128Mi"
