@@ -11,3 +11,7 @@ spec:
   path: ./k8s/apps
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
