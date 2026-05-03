@@ -4,4 +4,4 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - grafana-release.yaml
+  - grafana-service.yaml
