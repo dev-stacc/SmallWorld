@@ -4,3 +4,4 @@ resources:
   - tailscale/
   - jellyfin/
   - monitoring/
+  - navidrome/
