@@ -49,7 +49,6 @@ convert_cursor nesw-resize  "11 - Diagonal Resize 1.cur"
 convert_cursor nwse-resize  "12 - Diagonal Resize 2.cur"
 convert_cursor all-scroll   "13 - Move.cur"
 convert_cursor alias        "14 - Alternate Select.cur"
-convert_cursor pointer      "15 - Link Select.cur"
 
 echo "==> Creating symlinks..."
 cd "$THEME_DIR/cursors"
@@ -60,13 +59,14 @@ lns default     left_ptr
 lns default     top_left_arrow
 lns text        xterm
 lns text        ibeam
-lns pointer     hand
-lns pointer     hand1
-lns pointer     hand2
-lns pointer     pointing_hand
-lns pointer     openhand
-lns pointer     grab
-lns pointer     closedhand
+lns alias       pointer
+lns alias       hand
+lns alias       hand1
+lns alias       hand2
+lns alias       pointing_hand
+lns alias       openhand
+lns alias       grab
+lns alias       closedhand
 lns wait        watch
 lns wait        clock
 lns progress    half-busy

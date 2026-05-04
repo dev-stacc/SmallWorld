@@ -1,5 +1,4 @@
-#got the cursors from elfantasmaponi on deviantart
-#https://www.deviantart.com/elfantasmaponi/gallery
+# got the cursors here https://www.rw-designer.com/cursor-set/cyberpunk-original
 { pkgs, ... }:
 let
   cyberpunk-cursors = pkgs.runCommand "cyberpunk2077-cursors" {} ''
