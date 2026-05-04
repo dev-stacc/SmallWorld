@@ -2,6 +2,7 @@
     imports = [
         inputs.nixcord.homeModules.nixcord
         ./common.nix
+        ./cursors/default.nix
         ./hyprland/default.nix
         ./terminal/default.nix
         ./waybar/default.nix
