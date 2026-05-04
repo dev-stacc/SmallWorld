@@ -6,7 +6,13 @@ in {
         vesktop.enable = false;
         discord = {
             enable = true;
-            package = pkgs.discord;
+            package = inputs.nixcord.packages.${pkgs.system}.discord.overrideAttrs (_: {
+                version = "0.0.134";
+                src = pkgs.fetchurl {
+                    url = "https://stable.dl2.discordapp.net/apps/linux/0.0.134/discord-0.0.134.tar.gz";
+                    hash = "sha256-N4gdcj8LYiXxvkbZhZyiWr375vaXt6JnwcoqLOKMsGg=";
+                };
+            });
         };
 
         config = {
