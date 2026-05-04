@@ -53,6 +53,7 @@ in {
                 modules-left = [
                     "group/cpu-usage"
                     "group/cpu-temps"
+                    "memory"
                 ];
                 
                 modules-center = [
@@ -92,6 +93,7 @@ in {
                 
                 "custom/cores" = {
                     exec = "${cpuBarsScript}";
+                    format = "{}";
                     interval = 1;
                     tooltip = false;
                 };
@@ -105,14 +107,14 @@ in {
                 
                 "custom/fan" = {
                     exec = "${fanScript}";
-                    format = "{} 󰈐 ";
+                    format = "{} 󰵃 ";
                     interval = 3;
                     tooltip = false;
                 };
 
                 "memory" = {
                     interval = 30;
-                    format = "{used}G/{total}G - {avail}G";
+                    format = "{used}/{total}  ";
                 };
                 
                 battery = {
