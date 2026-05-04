@@ -115,6 +115,7 @@ in {
                 "memory" = {
                     interval = 30;
                     format = "{used}/{total}  ";
+                    tooltip = false;
                 };
 
                 battery = {
