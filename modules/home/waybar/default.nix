@@ -109,6 +109,11 @@ in {
                     interval = 3;
                     tooltip = false;
                 };
+
+                "memory" = {
+                    interval = 30;
+                    format = "{used}G/{total}G - {avail}G";
+                };
                 
                 battery = {
                     format = "{icon} {capacity}%";
