@@ -12,6 +12,7 @@
     programs.yazi = {
         enable = true;
         enableBashIntegration = true;
+        shellWrapperName = "y";
         package = pkgs.yazi;
 
         settings = {
