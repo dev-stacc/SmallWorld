@@ -10,7 +10,7 @@ in {
   home.pointerCursor = {
     package = cyberpunk-cursors;
     name = "Cyberpunk2077";
-    size = 32;
+    size = 12;
     gtk.enable = true;
     x11.enable = true;
   };
