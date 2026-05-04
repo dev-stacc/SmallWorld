@@ -116,45 +116,45 @@ in {
                     interval = 30;
                     format = "{used}/{total}  ";
                 };
-                
+
                 battery = {
-                    format = "{icon} {capacity}%";
+                    format = "{capacity}% {icon}";
                     format-icons = [
                         "󰁺" "󰁻" "󰁼" "󰁽" "󰁾"
                         "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"
                     ];
                 };
-                
+
                 "wireplumber" = {
-                    format = "{icon}{volume}";
+                    format = "{volume} {icon}";
                     format-muted = "󰝟 muted";
                     format-icons = ["󰕿 " "󰖀 " "󰕾 " " "];
                     tooltip = false;
                 };
-                
+
                 "custom/mic" = { 
                     exec = "${micMuteScript}";
                     interval = 1;
                     tooltip = false;
                 };
-                
+
                 backlight = {
-                    format = "{icon} {percent}";
+                    format = "{percent} {icon}";
                     format-icons = ["󱩎 " "󱩏 " "󱩐 " "󱩐 " "󱩒 " "󱩓 " "󱩔 " "󱩕 " "󱩖 "];
                     tooltip = false;
                 };
-                
+
                 "clock" = {
-                    format = "󰃭 {0:%d/%m/%Y}  {0:%H:%M}";
+                    format = "{0:%d/%m/%Y} 󰃭    {0:%H:%M}  ";
                     tooltip = false;
                 };
-                
+
                 "custom/tailscale" = {
                     "exec" = "tailscale status >/dev/null 2>&1 && echo ' 󰒘 '|| echo ' 󰒙 '";
                     "interval" = 3;
                     "tooltip" = false;
                 };
-                
+
                 "network" = {
                     "format-wifi" = "{bandwidthDownBits} {bandwidthUpBits}";
                     "format-ethernet" = "{bandwidthDownBits} {bandwidthUpBits}";
@@ -166,7 +166,7 @@ in {
                 "bluetooth" = {
                     "format" = "{icon}";
                     "format-on" = " ";
-                    "format-connected" = " {device_alias}";
+                    "format-connected" = "{device_alias}  ";
                     "format-disabled" = "󰂯";
                     "format-off" = "󰂯";
                     "tooltip" = false;
