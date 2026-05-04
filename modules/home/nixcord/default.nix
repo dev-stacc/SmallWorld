@@ -4,7 +4,10 @@ in {
     programs.nixcord = {
         enable = true;
         vesktop.enable = false;
-        discord.enable = true;
+        discord = {
+            enable = true;
+            package = pkgs.discord;
+        };
 
         config = {
             useQuickCss = true;
