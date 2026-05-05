@@ -4,7 +4,7 @@ keys:
   - &amateus age1l7adltmqwfdk663nazugqr3r65qknfc3q7jja6y2zv0mnekmg3hq2uekvy
 
 creation_rules:
-  - path_regex: secrets/secrets.yaml
+  - path_regex: secrets/*
     key_groups:
       - age:
         - *arcturus
