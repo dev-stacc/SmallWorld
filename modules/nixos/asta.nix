@@ -4,7 +4,7 @@
         ./k3s-server.nix
         ./flux.nix
         ./media.nix
-        ./vaut.nix
+        ./vault.nix
     ];
 
     networking.hostName = "Asta";
