@@ -5,5 +5,6 @@
         ./networking.nix
         ./packages.nix
         ./stylix.nix
+        ./unfreePredicates.nix
     ];
 }

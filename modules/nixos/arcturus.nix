@@ -7,7 +7,6 @@
         ./hyprland.nix
         ./overlays.nix
         ./steam.nix
-        ./unfreePredicates.nix
     ];
 
     sops.age.keyFile = "/home/anastasia/.sops/keys.txt";
