@@ -1,6 +1,6 @@
-{ config, pkgs, inputs, ... } : {
-    nixpkgs.config.allowUnfreePredicate = pkg : builtins.elem
-        (pkgs.lib.getName pkg) [
+{ config, lib, pkgs, inputs, ... } : {
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem
+        (lib.getName pkg) [
             "claude-code"
             "discord"
             "steam"
