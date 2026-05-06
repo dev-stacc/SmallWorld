@@ -4,5 +4,5 @@ metadata:
   name: external-secrets
   namespace: flux-system
 spec:
-  internal: 24h
+  interval: 24h
   url: https://charts.external-secrets.io
