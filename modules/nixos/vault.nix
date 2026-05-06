@@ -23,28 +23,30 @@
             Restart = "on-failure";
             RestartSec = "30s";
             ExecStart = pkgs.writeShellScript "vault-unseal" ''
-                export VAULT_ADDR="http://vault.vault.svc.cluster.local:8200"
                 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-                until ${pkgs.kubectl}/bin/kubectl get pod vault-0 -n vault &>/dev/null; do
-                  echo "Waiting for vault pod..."
-                  sleep 10
+                until VAULT_IP=$(${pkgs.kubectl}/bin/kubectl get svc vault -n vault \
+                    -o jsonpath='{.spec.clusterIP}' 2>/dev/null); do
+                    echo "Waiting for vault service..."
+                    sleep 10
                 done
 
+                export VAULT_ADDR="http://$VAULT_IP:8200"
+
                 until ${pkgs.vault}/bin/vault status &>/dev/null; do
-                  echo "Waiting for vault to be reachable..."
-                  sleep 5
+                    echo "Waiting for vault to be reachable..."
+                    sleep 5
                 done
 
                 SEALED=$(${pkgs.vault}/bin/vault status -format=json | ${pkgs.jq}/bin/jq -r '.sealed')
 
                 if [ "$SEALED" = "true" ]; then
-                  echo "Vault is sealed, unsealing..."
-                  ${pkgs.vault}/bin/vault operator unseal $(cat ${config.sops.secrets.vault-unseal-key-1.path})
-                  ${pkgs.vault}/bin/vault operator unseal $(cat ${config.sops.secrets.vault-unseal-key-2.path})
-                  echo "Vault unsealed"
+                    echo "Vault is sealed, unsealing..."
+                    ${pkgs.vault}/bin/vault operator unseal $(cat ${config.sops.secrets.vault-unseal-key-1.path})
+                    ${pkgs.vault}/bin/vault operator unseal $(cat ${config.sops.secrets.vault-unseal-key-2.path})
+                    echo "Vault unsealed"
                 else
-                  echo "Vault already unsealed"
+                    echo "Vault already unsealed"
                 fi
             '';
             Environment = [
