@@ -34,16 +34,10 @@ spec:
     postgresql:
       enabled: true
       auth:
-        password:
-          valueFrom:
-            secretKeyRef:
-              name: authentik-secrets
-              key: postgresql-password
-        postgresPassword:
-          valueFrom:
-            secretKeyRef:
-              name: authentik-secrets
-              key: postgresql-postgres-password
+        existingSecret: authentik-secrets
+        secretKeys:
+          adminPasswordKey: postgresql-postgres-password
+          userPasswordKey: postgresql-password
       primary:
         nodeSelector:
           kubernetes.io/hostname: asta
@@ -51,7 +45,11 @@ spec:
           enabled: true
           storageClass: local-path
           size: 8Gi
-    redis:
+  redis:
+    enabled: true
+    master:
+      persistence:
+        enabled: false    redis:
       enabled: true
       master:
         persistence:
