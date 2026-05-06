@@ -3,6 +3,8 @@ kind: Kustomization
 metadata:
   name: apps
   namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/skip-dry-run: "true"
 spec:
   interval: 10m
   sourceRef:
