@@ -20,17 +20,9 @@ spec:
         namespace: flux-system
   values:
     authentik:
-      secret_key:
-        valueFrom:
-          secretKeyRef:
-            name: authentik-secrets
-            key: secret-key
+      secret_key: "${AUTHENTIK_SECRET_KEY}"
       postgresql:
-        password:
-          valueFrom:
-            secretKeyRef:
-              name: authentik-secrets
-              key: postgresql-password
+        password: "${AUTHENTIK_POSTGRESQL_PASSWORD}"
     postgresql:
       enabled: true
       auth:
