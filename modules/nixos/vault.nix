@@ -17,7 +17,6 @@
             "sops-nix.service"
         ];
         wants = [ "network-online.target" ];
-        wantedBy = [ "multi-user.target" ];
         serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = false;
@@ -51,6 +50,16 @@
             Environment = [
                 "KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
             ];
+        };
+    };
+
+    systemd.timers.vault-unseal = {
+        description = "Ru vault-unseal periodically";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+            OnBootSec = "2min";
+            OnUnitInactiveSec = "5min";
+            Unit = "vault-unseal.service";
         };
     };
 }
