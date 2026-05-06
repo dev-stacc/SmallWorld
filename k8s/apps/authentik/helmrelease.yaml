@@ -45,8 +45,8 @@ spec:
           enabled: true
           storageClass: local-path
           size: 8Gi
-  redis:
-    enabled: true
-    master:
-      persistence:
-        enabled: false
+    redis:
+      enabled: true
+      master:
+        persistence:
+          enabled: false
