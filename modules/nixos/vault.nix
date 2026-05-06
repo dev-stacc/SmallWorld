@@ -28,11 +28,10 @@
             Restart = "on-failure";
             RestartSec = "30s";
             ExecStart = pkgs.writeShellScript "vault-unseal" ''
-
             export VAULT_ADDR="http://10.43.163.159:8200"
             export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-            until ${pkgs.vault}/bin/vault status &>/dev/null; do
+            until ${pkgs.curl}/bin/curl -s http://10.43.163.159:8200/v1/sys/health &>/dev/null; do
                 echo "Waiting for vault to be reachable..."
                 sleep 5
             done
