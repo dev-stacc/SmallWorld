@@ -7,3 +7,4 @@ resources:
   - navidrome/
   - vault/
   - external-secrets/
+  - authentik
