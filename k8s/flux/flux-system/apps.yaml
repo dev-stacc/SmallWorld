@@ -31,11 +31,8 @@ spec:
   path: ./k8s/apps-config
   prune: true
   wait: true
-  force: true
   decryption:
     provider: sops
     secretRef:
       name: sops-age
-  commonMetadata:
-    annotations:
-      kustomize.toolkit.fluxcd.io/force: "true"
+  force: true
