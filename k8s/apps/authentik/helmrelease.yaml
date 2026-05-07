@@ -23,6 +23,10 @@ spec:
       secret_key: "${AUTHENTIK_SECRET_KEY}"
       postgresql:
         password: "${AUTHENTIK_POSTGRESQL_PASSWORD}"
+    global:
+      envFrom:
+        - secretRef:
+            name: authentik-secrets
     postgresql:
       enabled: true
       auth:
