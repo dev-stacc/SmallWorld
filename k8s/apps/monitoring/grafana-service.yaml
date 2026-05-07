@@ -3,10 +3,14 @@ kind: Service
 metadata:
   name: grafana-tailscale
   namespace: monitoring
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "grafana"
 spec:
   selector:
     app.kubernetes.io/name: grafana
   ports:
     - port: 80
       targetPort: 3000
-  type: ClusterIP 
+  type: LoadBalancer
+  loadBalancerClass: tailscale
