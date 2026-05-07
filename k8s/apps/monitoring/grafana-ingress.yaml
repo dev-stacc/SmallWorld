@@ -10,13 +10,13 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: grafana
+    - host: grafana.tail789.ts.net
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: grafana-tailscale
+                name: kube-prometheus-stack-grafana
                 port:
                   number: 80
