@@ -27,6 +27,11 @@ spec:
       envFrom:
         - secretRef:
             name: authentik-secrets
+        - secretRef:
+            name: authentik-blueprint-grafana-env
+    blueprints:
+      configMaps:
+        - authentik-blueprint-grafana
     postgresql:
       enabled: true
       auth:
