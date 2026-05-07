@@ -6,5 +6,6 @@ resources:
   - externalsecret.yaml
   - externalsecret-blueprint-grafana-env.yaml
   - blueprint-grafana.yaml
+  - blueprint-media.yaml
   - helmrelease.yaml
   - service.yaml

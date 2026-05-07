@@ -32,6 +32,7 @@ spec:
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
+        - authentik-blueprint-media
     postgresql:
       enabled: true
       auth:
