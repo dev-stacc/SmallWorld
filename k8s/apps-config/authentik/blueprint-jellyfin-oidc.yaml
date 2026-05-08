@@ -20,7 +20,7 @@ data:
           client_secret: !Env JELLYFIN_OIDC_CLIENT_SECRET
           redirect_uris:
             - matching_mode: strict
-              url: http://jellyfin.tail789d60.ts.net/sso/OID/redirect/Authentik
+              url: http://jellyfin.tail789d60.ts.net/sso/OID/r/Authentik
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
           signing_key: !Find [authentik_crypto.certificatekeypair, [managed, goauthentik.io/crypto/default-certificate]]
