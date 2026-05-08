@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-proxy-config
+  namespace: authentik
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+    events { worker_connections 1024; }
+    http {
+      map $http_x_original_url $forwarded_host {
+        ~^https?://([^/:]+) $1;
+        default "";
+      }
+      server {
+        listen 80;
+        location /outpost.goauthentik.io/ {
+          proxy_pass http://authentik-server.authentik.svc.cluster.local:9000;
+          proxy_set_header Host authentik-server.authentik.svc.cluster.local;
+          proxy_set_header X-Forwarded-Host $forwarded_host;
+          proxy_pass_request_headers on;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-proxy
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-proxy
+  template:
+    metadata:
+      labels:
+        app: auth-proxy
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
+      volumes:
+        - name: config
+          configMap:
+            name: auth-proxy-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-proxy
+  namespace: authentik
+spec:
+  selector:
+    app: auth-proxy
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP

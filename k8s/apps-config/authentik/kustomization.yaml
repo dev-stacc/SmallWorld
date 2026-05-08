@@ -11,3 +11,4 @@ resources:
   - blueprint-outpost.yaml
   - helmrelease.yaml
   - service.yaml
+  - auth-proxy.yaml
