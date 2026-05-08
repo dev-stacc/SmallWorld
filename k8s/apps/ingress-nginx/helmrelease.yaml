@@ -16,6 +16,10 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: true
+      admissionWebhooks:
+        enabled: false
+      extraArgs:
+        enable-annotation-validation: "false"
       service:
         type: LoadBalancer
         loadBalancerClass: tailscale
