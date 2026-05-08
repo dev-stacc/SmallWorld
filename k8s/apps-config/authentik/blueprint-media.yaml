@@ -51,20 +51,3 @@ data:
           slug: navidrome
           provider: !KeyOf navidrome-provider
 
-      - model: authentik_outposts.outpost
-        state: present
-        identifiers:
-          managed: goauthentik.io/outposts/embedded
-        attrs:
-          name: authentik Embedded Outpost
-          type: proxy
-          providers:
-            - !KeyOf jellyfin-provider
-            - !KeyOf navidrome-provider
-          config:
-            authentik_host: http://authentik.tail789d60.ts.net:9000
-            authentik_host_insecure: false
-            log_level: info
-            kubernetes_replicas: 1
-            kubernetes_namespace: authentik
-            kubernetes_service_type: ClusterIP

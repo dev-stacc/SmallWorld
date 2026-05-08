@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authentik-blueprint-outpost
+  namespace: authentik
+data:
+  outpost.yaml: |
+    version: 1
+    metadata:
+      name: Embedded Outpost (all proxy providers)
+    entries:
+      - model: authentik_outposts.outpost
+        state: present
+        identifiers:
+          managed: goauthentik.io/outposts/embedded
+        attrs:
+          name: authentik Embedded Outpost
+          type: proxy
+          providers:
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Jellyfin Provider]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Navidrome Provider]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Uptime Kuma Provider]]
+          config:
+            authentik_host: http://authentik.tail789d60.ts.net:9000
+            authentik_host_insecure: false
+            log_level: info
+            kubernetes_replicas: 1
+            kubernetes_namespace: authentik
+            kubernetes_service_type: ClusterIP

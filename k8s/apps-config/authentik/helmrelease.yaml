@@ -33,6 +33,8 @@ spec:
       configMaps:
         - authentik-blueprint-grafana
         - authentik-blueprint-media
+        - authentik-blueprint-monitoring
+        - authentik-blueprint-outpost
     postgresql:
       enabled: true
       auth:

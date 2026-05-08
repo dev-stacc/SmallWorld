@@ -7,3 +7,6 @@ resources:
   - grafana-service.yaml
   - grafana-secret.yaml
   - grafana-ingress.yaml
+  - grafana-helmrepository.yaml
+  - loki-helmrelease.yaml
+  - tempo-helmrelease.yaml
