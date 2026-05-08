@@ -27,6 +27,10 @@ spec:
               value: /data
             - name: ND_LOGLEVEL
               value: info
+            - name: ND_REVERSEPROXYUSERHEADER
+              value: X-Authentik-Username
+            - name: ND_REVERSEPROXYWHITELIST
+              value: 10.42.0.0/16
           volumeMounts:
             - name: data
               mountPath: /data

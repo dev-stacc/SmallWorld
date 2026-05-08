@@ -15,6 +15,35 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: asta
+      initContainers:
+        - name: install-sso-plugin
+          image: alpine:3.19
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              PLUGIN_DIR=/config/plugins
+              if ls "$PLUGIN_DIR"/SSO-Auth_* 2>/dev/null | grep -q .; then
+                echo "SSO-Auth already installed, skipping"
+                exit 0
+              fi
+              apk add --no-cache curl jq unzip ca-certificates
+              MANIFEST=$(curl -fsSL https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json)
+              INFO=$(echo "$MANIFEST" | jq -r '.[0].versions[] | select(.targetAbi | startswith("10.11")) | [.sourceUrl,.version] | @tsv' | head -1)
+              if [ -z "$INFO" ]; then
+                INFO=$(echo "$MANIFEST" | jq -r '[.[0].versions[0].sourceUrl, .[0].versions[0].version] | @tsv')
+              fi
+              SOURCE_URL=$(echo "$INFO" | cut -f1)
+              PLUGIN_VERSION=$(echo "$INFO" | cut -f2)
+              echo "Downloading SSO-Auth $PLUGIN_VERSION from $SOURCE_URL"
+              curl -fsSL -o /tmp/sso.zip "$SOURCE_URL"
+              mkdir -p "$PLUGIN_DIR/SSO-Auth_${PLUGIN_VERSION}"
+              unzip -o /tmp/sso.zip -d "$PLUGIN_DIR/SSO-Auth_${PLUGIN_VERSION}"
+              echo "SSO-Auth installed"
+          volumeMounts:
+            - name: config
+              mountPath: /config
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:latest

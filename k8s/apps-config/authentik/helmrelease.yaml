@@ -29,12 +29,15 @@ spec:
             name: authentik-secrets
         - secretRef:
             name: authentik-blueprint-grafana-env
+        - secretRef:
+            name: authentik-blueprint-jellyfin-env
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
         - authentik-blueprint-media
         - authentik-blueprint-monitoring
         - authentik-blueprint-outpost
+        - authentik-blueprint-jellyfin-oidc
     postgresql:
       enabled: true
       auth:

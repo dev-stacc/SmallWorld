@@ -12,3 +12,5 @@ resources:
   - helmrelease.yaml
   - service.yaml
   - auth-proxy.yaml
+  - blueprint-jellyfin-oidc.yaml
+  - externalsecret-blueprint-jellyfin-env.yaml
