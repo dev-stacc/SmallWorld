@@ -18,7 +18,7 @@ data:
       server {
         listen 80;
         location /outpost.goauthentik.io/ {
-          proxy_pass http://authentik-server.authentik.svc.cluster.local:9000;
+          proxy_pass http://authentik-server.authentik.svc.cluster.local:80;
           proxy_set_header Host authentik-server.authentik.svc.cluster.local;
           proxy_set_header X-Forwarded-Host $forwarded_host;
           proxy_pass_request_headers on;
