@@ -5,7 +5,7 @@ metadata:
   namespace: jellyfin
   annotations:
     nginx.ingress.kubernetes.io/auth-url: "http://auth-proxy.authentik.svc.cluster.local/outpost.goauthentik.io/auth/nginx"
-    nginx.ingress.kubernetes.io/auth-signin: "http://authentik.tail789d60.ts.net:9000/outpost.goauthentik.io/start?rd=$scheme://$http_host$request_uri"
+    nginx.ingress.kubernetes.io/auth-signin: "http://$http_host/outpost.goauthentik.io/start?rd=$scheme://$http_host$request_uri"
     nginx.ingress.kubernetes.io/auth-response-headers: "Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid"
 spec:
   ingressClassName: nginx
@@ -13,6 +13,13 @@ spec:
     - host: jellyfin.tail789d60.ts.net
       http:
         paths:
+          - path: /outpost.goauthentik.io/
+            pathType: Prefix
+            backend:
+              service:
+                name: authentik-outpost
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
