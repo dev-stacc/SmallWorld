@@ -3,14 +3,10 @@ kind: Service
 metadata:
   name: navidrome
   namespace: navidrome
-  annotations:
-    tailscale.com/expose: "true"
-    tailscale.com/hostname: "navidrome"
 spec:
   selector:
     app: navidrome
   ports:
     - port: 4533
       targetPort: 4533
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

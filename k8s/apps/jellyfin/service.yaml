@@ -3,14 +3,10 @@ kind: Service
 metadata:
   name: jellyfin
   namespace: jellyfin
-  annotations:
-    tailscale.com/expose: "true"
-    tailscale.com/hostname: "jellyfin"
 spec:
   selector:
     app: jellyfin
   ports:
     - port: 8096
       targetPort: 8096
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

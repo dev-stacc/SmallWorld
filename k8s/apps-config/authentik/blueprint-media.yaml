@@ -17,7 +17,7 @@ data:
         attrs:
           name: Jellyfin Provider
           mode: forward_domain
-          external_host: http://authentik.tail789d60.ts.net:9000
+          external_host: http://jellyfin.tail789d60.ts.net
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
 
@@ -38,7 +38,7 @@ data:
         attrs:
           name: Navidrome Provider
           mode: forward_domain
-          external_host: http://authentik.tail789d60.ts.net:9000
+          external_host: http://navidrome.tail789d60.ts.net
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
 
