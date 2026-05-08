@@ -15,8 +15,7 @@ spec:
         namespace: flux-system
   values:
     controller:
-      config:
-        allow-snippet-annotations: "true"
+      allowSnippetAnnotations: true
       service:
         type: LoadBalancer
         loadBalancerClass: tailscale
