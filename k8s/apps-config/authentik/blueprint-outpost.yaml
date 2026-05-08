@@ -19,7 +19,6 @@ data:
           providers:
             - !Find [authentik_providers_proxy.proxyprovider, [name, Jellyfin Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Navidrome Provider]]
-            - !Find [authentik_providers_proxy.proxyprovider, [name, Uptime Kuma Provider]]
           config:
             authentik_host: http://authentik.tail789d60.ts.net:9000
             authentik_host_insecure: false
