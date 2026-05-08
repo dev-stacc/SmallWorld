@@ -15,7 +15,7 @@ data:
           name: Uptime Kuma Provider
         attrs:
           name: Uptime Kuma Provider
-          mode: forward_domain
+          mode: forward_single
           external_host: http://uptime.tail789d60.ts.net
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
