@@ -19,6 +19,7 @@
             "video"
             "input"
             "audio"
+            "cdrom"
         ];
     };
 
@@ -34,15 +35,6 @@
         enable = true;
         nix-direnv.enable = true;
     };
-
-    environment.systemPackages = with pkgs; [
-        colmena
-        kubectl
-        sops
-        age
-        kubernetes-helm
-        fluxcd
-    ];
 
     nix.settings.trusted-users = [
         "root"

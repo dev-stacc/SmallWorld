@@ -24,4 +24,8 @@
             intel-media-driver
         ];
     };
+
+    environment.systemPackages = with pkgs; [
+        tor-browser
+    ];
 }
