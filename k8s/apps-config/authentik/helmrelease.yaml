@@ -38,6 +38,7 @@ spec:
         - authentik-blueprint-monitoring
         - authentik-blueprint-outpost
         - authentik-blueprint-jellyfin-oidc
+        - authentik-blueprint-sewing-assistant
     postgresql:
       enabled: true
       auth:
