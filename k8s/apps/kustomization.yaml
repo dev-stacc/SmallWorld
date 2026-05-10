@@ -9,3 +9,4 @@ resources:
   - vault/
   - external-secrets/
   - ingress-nginx/
+  - sewing-assistant/

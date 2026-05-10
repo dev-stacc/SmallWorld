@@ -14,3 +14,4 @@ resources:
   - auth-proxy.yaml
   - blueprint-jellyfin-oidc.yaml
   - externalsecret-blueprint-jellyfin-env.yaml
+  - blueprint-sewing-assistant.yaml

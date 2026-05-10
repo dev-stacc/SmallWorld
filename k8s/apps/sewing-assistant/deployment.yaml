@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sewing-assistant
+  namespace: sewing-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sewing-assistant
+  template:
+    metadata:
+      labels:
+        app: sewing-assistant
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: asta
+      containers:
+        - name: sewing-assistant
+          image: ghcr.io/stacattacc/sewingassistant:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sewing-assistant-secrets
+                  key: ANTHROPIC_API_KEY
+            - name: DATABASE_URL
+              value: sqlite:////data/sewing_assistant.db
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: sewing-assistant-data
