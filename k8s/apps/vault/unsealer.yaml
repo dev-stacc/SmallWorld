@@ -34,13 +34,16 @@ spec:
             - -c
             - |
               while true; do
-                vault status > /dev/null 2>&1
-                if [ $? -eq 2 ]; then
+                VAULT_CLIENT_TIMEOUT=5 vault status > /dev/null 2>&1
+                STATUS=$?
+                if [ $STATUS -eq 2 ]; then
                   echo "Vault sealed, unsealing..."
                   vault operator unseal "$UNSEAL_KEY_1"
                   vault operator unseal "$UNSEAL_KEY_2"
+                elif [ $STATUS -eq 1 ]; then
+                  echo "Vault unreachable, will retry..."
                 fi
-                sleep 30
+                sleep 10
               done
           resources:
             requests:
