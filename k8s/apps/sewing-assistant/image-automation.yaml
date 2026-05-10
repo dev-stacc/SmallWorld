@@ -41,7 +41,7 @@ spec:
       author:
         email: fluxcdbot@users.noreply.github.com
         name: fluxcd
-      messageTemplate: "chore: update sewing-assistant image to {{range .Updated.Images}}{{.}}{{end}}"
+      messageTemplate: "chore: update sewing-assistant image to {{range .Changed.Changes}}{{.NewValue}}{{end}}"
     push:
       branch: main
   update:
