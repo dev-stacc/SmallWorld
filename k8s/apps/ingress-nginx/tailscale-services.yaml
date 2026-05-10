@@ -48,3 +48,20 @@ spec:
       targetPort: 80
   type: LoadBalancer
   loadBalancerClass: tailscale
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-sewing
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: "sewing"
+spec:
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/component: controller
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
+  loadBalancerClass: tailscale
