@@ -1,0 +1,49 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: sewing-assistant
+  namespace: flux-system
+spec:
+  image: ghcr.io/stacattacc/sewingassistant
+  interval: 1m
+
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: sewing-assistant
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: sewing-assistant
+  policy:
+    semver:
+      range: ">=0.0.1"
+  filterTags:
+    pattern: "^[a-f0-9]{40}$"
+
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: sewing-assistant
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcd
+      messageTemplate: "chore: update sewing-assistant image to {{range .Updated.Images}}{{.}}{{end}}"
+    push:
+      branch: main
+  update:
+    path: ./k8s/apps/sewing-assistant
+    strategy: Setters
