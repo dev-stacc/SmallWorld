@@ -17,7 +17,7 @@ spec:
         kubernetes.io/hostname: asta
       containers:
         - name: sewing-assistant
-          image: ghcr.io/stacattacc/sewingassistant:20260512032900-16b17c54cbf092a07ff13dea75e3c0a7bf08b47d # {"$imagepolicy": "flux-system:sewing-assistant"}
+          image: ghcr.io/stacattacc/sewingassistant:20260512040606-3c752959518a1a82dc7cf262b828f2cc762f0987 # {"$imagepolicy": "flux-system:sewing-assistant"}
           ports:
             - containerPort: 8000
           env:
