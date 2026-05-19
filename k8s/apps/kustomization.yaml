@@ -10,3 +10,4 @@ resources:
   - external-secrets/
   - ingress-nginx/
   - sewing-assistant/
+  - marketing-tool/

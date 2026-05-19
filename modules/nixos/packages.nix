@@ -9,5 +9,6 @@
         age
         kubernetes-helm
         fluxcd
+        vault
     ];
 }

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketing-tool
+  namespace: marketing-tool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: marketing-tool
+  template:
+    metadata:
+      labels:
+        app: marketing-tool
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: asta
+      containers:
+        - name: marketing-tool
+          image: ghcr.io/stacattacc/marketing-tool:latest # {"$imagepolicy": "flux-system:marketing-tool"}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: BETTER_AUTH_URL
+              value: http://marketing.tail789d60.ts.net
+            - name: BETTER_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: marketing-tool-secrets
+                  key: BETTER_AUTH_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: marketing-tool-secrets
+                  key: DATABASE_URL
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: marketing-tool-secrets
+                  key: ANTHROPIC_API_KEY
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
