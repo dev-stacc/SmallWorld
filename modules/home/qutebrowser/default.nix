@@ -3,6 +3,7 @@
     window = import ./window/default.nix { inherit config lib pkgs; };
     completion = import ./completion.nix { inherit config lib pkgs; };
     content = import ./content/default.nix { inherit config lib pkgs fontName fontSize; };
+    fonts = import ./fonts.nix { inherit fontName fontSize; };
     fileselect = import ./fileselect.nix { };
     css = (import ./content/generate-css.nix { inherit config lib pkgs fontName fontSize; }).cssPath;
 in {
@@ -14,6 +15,7 @@ in {
             completion
             content
             fileselect
+            fonts
         ];
         
         aliases = {

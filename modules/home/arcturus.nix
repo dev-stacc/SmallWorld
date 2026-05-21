@@ -15,7 +15,8 @@
     ];
     
     home.packages = with pkgs; [
-        departure-mono
+        major-mono-display
+
         nerd-fonts.jetbrains-mono
         hyprpaper
         claude-code

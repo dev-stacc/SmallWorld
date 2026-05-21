@@ -31,16 +31,16 @@
 
         fonts = {
             monospace = {
-                package = pkgs.departure-mono;
-                name = "Departure Mono";
+                package = pkgs.major-mono-display;
+                name = "Major Mono Display";
             };
             sansSerif = {
-                package = pkgs.departure-mono;
-                name = "Departure Mono";
+                package = pkgs.major-mono-display;
+                name = "Major Mono Display";
             };
             serif = {
-                package = pkgs.departure-mono;
-                name = "Departure Mono";
+                package = pkgs.major-mono-display;
+                name = "Major Mono Display";
             };
             sizes = {
                 terminal = 11;
