@@ -21,5 +21,6 @@
         claude-code
         ungoogled-chromium
         tdf
+        libreoffice
     ];
 }

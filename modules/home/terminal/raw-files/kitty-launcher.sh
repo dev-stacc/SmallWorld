@@ -18,6 +18,6 @@ SELECTION=$(printf '%s\n' "$APPS" | fzf --height=40% --border=none --prompt='  L
 
 if [ -n "$SELECTION" ]; then
     COMMAND=$(printf '%s' "$SELECTION" | cut -f2-)
-    hyprctl dispatch exec $COMMAND
+    hyprctl dispatch exec "$COMMAND"
     exit 0
 fi
