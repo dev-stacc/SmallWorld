@@ -1,15 +1,8 @@
-:root * {
-    outline: 0 !important;
-    border-color: var(--base02) !important;
-    border-radius: 0;
+:root, :root *, :root *::before, :root *::after {
+    background: none !important;
+    background-color: transparent !important;
     background-image: none !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
     background-blend-mode: normal !important;
-    font-family: "Syncopate", monospace !important;
-    font-size: 17px !important;
-    font-weight: normal !important;
-    color: var(--base02);
 }
 
 :root a,
