@@ -100,7 +100,7 @@ in {
                 
                 temperature = {
                     exec = "${cpuTempsScript}";
-                    format = "{}°C";
+                    format = "{}°c";
                     interval = 2;
                     tooltip = false;
                 };
