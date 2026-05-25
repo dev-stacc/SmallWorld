@@ -6,6 +6,7 @@
     fonts = import ./fonts.nix { inherit fontName fontSize; };
     fileselect = import ./fileselect.nix { };
     css = (import ./content/generate-css.nix { inherit config lib pkgs fontName fontSize; }).cssPath;
+    url = import ./url.nix { inherit config lib pkgs; };
 in {
     programs.qutebrowser = {
         enable = true;
@@ -16,6 +17,7 @@ in {
             content
             fileselect
             fonts
+            url
         ];
         
         aliases = {
