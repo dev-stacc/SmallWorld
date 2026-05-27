@@ -6,7 +6,7 @@ in {
         vesktop.enable = false;
         discord = {
             enable = true;
-            package = inputs.nixcord.packages.${pkgs.system}.discord.overrideAttrs (_: {
+            package = inputs.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.discord.overrideAttrs (_: {
                 version = "0.0.134";
                 src = pkgs.fetchurl {
                     url = "https://stable.dl2.discordapp.net/apps/linux/0.0.134/discord-0.0.134.tar.gz";

@@ -12,8 +12,11 @@
 
         programs.ssh = {
             enable = true;
-            extraConfig = "AddKeysToAgent yes";
+            enableDefaultConfig = false;
             matchBlocks = {
+                "*" = {
+                    extraOptions.AddKeysToAgent = "yes";
+                };
                 "arcturus" = {
                     hostname = "100.70.3.61";
                     user = "anastasia";
