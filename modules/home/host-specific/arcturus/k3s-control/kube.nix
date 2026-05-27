@@ -1,3 +1,3 @@
 { ... } : {
-    home.file.".kube/config".source = ../../../k3s.yaml;
+    home.file.".kube/config".source = ../../../../../k3s.yaml;
 }
