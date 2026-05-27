@@ -7,6 +7,7 @@
         poppler
         fd
         ripgrep
+        tdf
     ];
 
     programs.yazi = {

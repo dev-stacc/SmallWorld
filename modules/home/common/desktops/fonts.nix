@@ -1,4 +1,9 @@
 { config, pkgs, fontName, fontSize, ... } : {    
+    home.packages = with pkgs; [
+        major-mono-display
+        nerd-fonts.jetbrains-mono
+    ];
+
     fonts.fontconfig = {
         enable = true;
         
