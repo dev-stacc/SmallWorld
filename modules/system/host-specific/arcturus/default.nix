@@ -2,11 +2,8 @@
     imports = [
         inputs.sops-nix.nixosModules.sops
         ../../common/all/default.nix
-        ../../common/desktops/bluetooth.nix
-        ../../common/desktops/sound.nix
-        ../../common/desktops/hyprland.nix
+        ../../common/desktops/default.nix
         ./overlays.nix
-        ../../common/desktops/steam.nix
     ];
 
     sops.age.keyFile = "/home/anastasia/.sops/keys.txt";
