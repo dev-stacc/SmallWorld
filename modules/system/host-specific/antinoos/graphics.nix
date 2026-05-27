@@ -1,6 +1,6 @@
 { config, pkgs, ... } : {
     boot.initrd.kernelModules = [ "amdgpu" ];
-    services.xserver.videoDrivers = [ "amdGpu" ];
+    services.xserver.videoDrivers = [ "amdgpu" ];
 
     hardware.graphics = {
         enable = true;

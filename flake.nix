@@ -61,9 +61,9 @@
                 specialArgs = { inherit inputs; };
                 modules = [ ./hosts/asta/default.nix ];
 	          };
-            Antonoos = nixpkgs.lib.nixosSystem {
+            Antinoos = nixpkgs.lib.nixosSystem {
                 specialArgs = { inherit inputs; };
-                modules = [ ./hosts/Antinoos/default.nix ];
+                modules = [ ./hosts/antinoos/default.nix ];
             };
         };
 
@@ -95,7 +95,7 @@
             Antinoos = { ... } : {
                 imports = [
                     ./hosts/antinoos/default.nix
-                    sops-nix.nixModules.sops
+                    sops-nix.nixosModules.sops
                 ];
                 deployment = {
                     targetHost = "antinoos";
