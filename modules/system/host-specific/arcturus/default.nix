@@ -1,12 +1,12 @@
 { config, pkgs, inputs, ... } : {
     imports = [
         inputs.sops-nix.nixosModules.sops
-        ./common/default.nix
-        ./bluetooth.nix
-        ./sound.nix
-        ./hyprland.nix
+        ../../common/all/default.nix
+        ../../common/desktops/bluetooth.nix
+        ../../common/desktops/sound.nix
+        ../../common/desktops/hyprland.nix
         ./overlays.nix
-        ./steam.nix
+        ../../common/desktops/steam.nix
     ];
 
     sops.age.keyFile = "/home/anastasia/.sops/keys.txt";

@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... } : {
     imports = [
-        ./common/all/default.nix
-        ./common/servers/k3s-server.nix
+        ../../common/all/default.nix
+        ../../common/servers/k3s-server.nix
         ./flux.nix
         ./media.nix
         ./vault.nix

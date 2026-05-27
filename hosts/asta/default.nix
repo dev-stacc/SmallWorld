@@ -2,6 +2,6 @@
     imports = [
         ./home.nix
         ./hardware-configuration.nix
-        ../../modules/nixos/asta.nix
+        ../../modules/system/host-specific/asta/default.nix
     ];
 }

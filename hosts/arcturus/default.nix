@@ -2,6 +2,6 @@
     imports = [
         ./home.nix
         ./hardware-configuration.nix
-        ../../modules/nixos/arcturus.nix
+        ../../modules/system/host-specific/arcturus/default.nix
     ];
 }
