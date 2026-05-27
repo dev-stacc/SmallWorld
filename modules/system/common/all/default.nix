@@ -6,7 +6,7 @@
         ./networking.nix
         ./packages.nix
         ./stylix.nix
-        ./unfreePredicates.nix
+        ./unfree-predicates.nix
         ./users.nix
     ];
 }
