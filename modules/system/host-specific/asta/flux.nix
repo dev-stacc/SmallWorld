@@ -1,16 +1,16 @@
 { config, pkgs, ... }: {
     sops.secrets.ts-operator-client-id = {
-        sopsFile = ../../secrets/secrets.yaml;
+        sopsFile = ../../../../secrets/secrets.yaml;
         owner = "root";
     };
 
     sops.secrets.ts-operator-client-secret = {
-        sopsFile = ../../secrets/secrets.yaml;
+        sopsFile = ../../../../secrets/secrets.yaml;
         owner = "root";
     };
 
     sops.secrets.github-token = {
-        sopsFile = ../../secrets/secrets.yaml;
+        sopsFile = ../../../../secrets/secrets.yaml;
         owner = "root";
     };
 
