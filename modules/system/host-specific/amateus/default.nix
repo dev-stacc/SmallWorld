@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... } : {
     imports = [
         ../../common/all/default.nix
-        ../../common/servers/k3s-agent.nix
+        ./k3s-agent.nix
     ];
 
     networking.hostName = "Amateus";
