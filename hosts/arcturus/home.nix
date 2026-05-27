@@ -1,7 +1,7 @@
 { ... } : {
     home-manager.users.anastasia = {
         imports = [
-            ../../modules/home/arcturus.nix
+            ../../modules/home/host-specific/arcturus/default.nix
         ];
         home.username = "anastasia";
         home.homeDirectory = "/home/anastasia";

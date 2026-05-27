@@ -1,7 +1,8 @@
 { inputs, ... } : {
     imports = [
         inputs.nixvim.homeModules.nixvim
-        ./programs/default.nix
+        ./fzf.nix
+        ./git.nix
         ./nixvim/default.nix
     ];
 

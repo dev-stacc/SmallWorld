@@ -1,5 +1,5 @@
 { pkgs, config, lib, inputs, ... } : {
     imports = [
-        ./common.nix
+        ../../common/all/default.nix
     ];
 }

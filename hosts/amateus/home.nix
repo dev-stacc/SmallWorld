@@ -1,7 +1,7 @@
 { ... } : {
     home-manager.users.anastasia = {
         imports = [
-            ../../modules/home/amateus.nix
+            ../../modules/home/host-specific/amateus/default.nix
         ];
         home.username = "anastasia";
         home.homeDirectory = "/home/anastasia";
