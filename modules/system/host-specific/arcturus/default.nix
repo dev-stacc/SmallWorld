@@ -3,6 +3,7 @@
         inputs.sops-nix.nixosModules.sops
         ../../common/all/default.nix
         ../../common/desktops/default.nix
+        ./graphics.nix
         ./overlays.nix
     ];
 
@@ -13,12 +14,5 @@
     boot = {
         loader.systemd-boot.enable = true;
         loader.efi.canTouchEfiVariables = true;
-    };
-
-    hardware.graphics = {
-        enable = true;
-        extraPackages = with pkgs; [
-            intel-media-driver
-        ];
     };
 }
