@@ -11,6 +11,7 @@
             "input"
             "audio"
             "cdrom"
+            "corectrl"
         ];
     };
 
