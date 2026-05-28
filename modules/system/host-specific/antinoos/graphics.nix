@@ -9,7 +9,7 @@
             rocmPackages.clr.icd
             libva
             libva-utils
-            vaapiVdpau
+            libva-Vdpau-driver
         ];
         extraPackages32 = with pkgs.driversi686Linux; [
             amdvlk
