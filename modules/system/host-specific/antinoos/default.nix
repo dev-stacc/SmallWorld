@@ -2,7 +2,7 @@
     imports = [
         ../../common/all/default.nix
         ../../common/desktops/default.nix
-#TEMPORARILY OUT, TAKE OUT WHEN READY ./graphics.nix
+        ./graphics.nix
         ./sunshine.nix
     ];
 

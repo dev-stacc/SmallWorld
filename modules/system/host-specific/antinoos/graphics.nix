@@ -6,14 +6,10 @@
         enable = true;
         enable32Bit = true;
         extraPackages = with pkgs; [
-            amdvlk
             rocmPackages.clr.icd
             libva
             libva-utils
-            vaapiVdpau
-        ];
-        extraPackages32 = with pkgs.driversi686Linux; [
-            amdvlk
+            libva-vdpau-driver
         ];
     };
 
