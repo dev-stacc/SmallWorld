@@ -10,9 +10,11 @@ creation_rules:
         - *arcturus
         - *asta
         - *amateus
+        - *antinoos
   - path_regex: k8s/.*
     key_groups:
       - age:
         - *arcturus
         - *asta
         - *amateus
+        - *antinoos
