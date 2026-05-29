@@ -3,4 +3,6 @@
         enable = true;
         ppfeaturemask = "0xffffffff";
     };
+
+    programs.corectrl.enable = true;
 }
