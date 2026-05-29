@@ -54,9 +54,8 @@
 
                 while true; do
                     TEMP=$(( $(cat "$HWMON/temp1_input") / 1000 ))
-                    if   [ "$TEMP" -lt 40 ]; then PWM=77
-                    elif [ "$TEMP" -lt 60 ]; then PWM=$(( 77  + (TEMP - 40) * 102 / 20 ))
-                    elif [ "$TEMP" -lt 80 ]; then PWM=$(( 179 + (TEMP - 60) * 76  / 20 ))
+                    if   [ "$TEMP" -lt 30 ]; then PWM=0
+                    elif [ "$TEMP" -lt 75 ]; then PWM=$(( (TEMP - 30) * 255 / 45 ))
                     else PWM=255
                     fi
                     echo "$PWM" > "$HWMON/pwm1"
