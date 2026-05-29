@@ -4,6 +4,7 @@
         ../../common/desktops/default.nix
         ./graphics.nix
         ./sunshine.nix
+        ./storage.nix
     ];
 
     networking.hostName = "Antinoos";
