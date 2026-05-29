@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... } : {
+{ ... } : {
     imports = [
         ../../common/all/default.nix
         ./k3s-server.nix

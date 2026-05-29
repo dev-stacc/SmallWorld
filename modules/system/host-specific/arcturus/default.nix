@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... } : {
+{ inputs, ... } : {
     imports = [
         inputs.sops-nix.nixosModules.sops
         ../../common/all/default.nix
