@@ -1,13 +1,15 @@
 { config, lib, pkgs, ... } : {
     imports = [
         ../../common/all/default.nix
-        ./k3s-agent.nix
+        .,/../common/servers/k3s-agent.nix
     ];
 
     networking.hostName = "Amateus";
 
-    boot.loader.grub.enable = true;
-    boot.loader.grub.device = "/dev/sda";
+    boot.loader.grub = {
+        enable = true;
+        device = "/dev/sda";
+    };
 
     swapDevices = [{
         device = "/swapfile";
