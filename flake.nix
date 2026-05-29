@@ -65,6 +65,10 @@
                 specialArgs = { inherit inputs; };
                 modules = [ ./hosts/antinoos/default.nix ];
             };
+            Aperture = nixpkgs.lib.nixosSystem {
+                specialArgs = { inherit inputs; };
+                modules = [ ./hosts/aperture/default.nix ];
+            };
         };
 
         colmena = {
@@ -99,6 +103,16 @@
                 ];
                 deployment = {
                     targetHost = "antinoos";
+                    targetUser = "anastasia";
+                };
+            };
+            Aperture = { ... } : {
+                imports = [
+                    ./hosts/aperture/default.nix
+                    sops-nix.nixosModules.sops
+                ];
+                deployment = {
+                    targetHost = "aperture";
                     targetUser = "anastasia";
                 };
             };
