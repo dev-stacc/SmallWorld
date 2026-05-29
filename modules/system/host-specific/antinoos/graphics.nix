@@ -11,9 +11,25 @@
             libva-utils
             libva-vdpau-driver
         ];
+        amdgpu.overdrive = { 
+            enable = true;
+            ppfeaturemask = "0xffffffff";
+        };
     };
 
+    programs.corectrl.enable = true;
+    
     environment.systemPackages = with pkgs; [
         radeontop
     ];
+
+    systemd.user.services.corectrl = {
+        description = "corectrl gpu settings";
+        wantedBy = [ "graphical-session.target" ];
+        partOf = [ "graphical-session.target" ];
+        serviceConfig = {
+            ExecStart = "${pkgs.corectrl}/bin/corectrl --minimize-systray";
+            Restart = "on-failiure";
+        };
+    };
 }
