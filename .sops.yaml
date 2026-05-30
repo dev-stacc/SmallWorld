@@ -3,6 +3,7 @@ keys:
   - &asta age1gqdkg7fwguwtyp6glxeln6chmusjye4k8yhe6kq9g7gch4lt45dqx5xtvx
   - &amateus age1l7adltmqwfdk663nazugqr3r65qknfc3q7jja6y2zv0mnekmg3hq2uekvy
   - &antinoos age1kufgdtz7h7r40nl6wa55zgvxfzuc5sc3mh2qzthvfvz5l778hvjq6gxdjt
+  - &aperture age132hqe27z8z6t79uzsaxh6yfn2vnshvc0n0dmad53fss67tvhxcrsxuk5sa
 creation_rules:
   - path_regex: secrets/.*
     key_groups:
@@ -11,6 +12,7 @@ creation_rules:
         - *asta
         - *amateus
         - *antinoos
+        - *aperture
   - path_regex: k8s/.*
     key_groups:
       - age:
@@ -18,3 +20,4 @@ creation_rules:
         - *asta
         - *amateus
         - *antinoos
+        - *aperture
