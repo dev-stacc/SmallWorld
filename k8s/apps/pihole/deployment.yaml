@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: asta
+      containers:
+        - name: pihole
+          image: pihole/pihole:latest
+          env:
+            - name: TZ
+              value: "UTC"
+            - name: WEBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pihole-secret
+                  key: webpassword
+            - name: FTLCONF_LOCAL_IPV4
+              value: "100.113.161.18"
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
+            - containerPort: 53
+              name: dns-udp
+              protocol: UDP
+          volumeMounts:
+            - name: data
+              mountPath: /etc/pihole
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: pihole-data

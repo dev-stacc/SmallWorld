@@ -11,3 +11,4 @@ resources:
   - ingress-nginx/
   - sewing-assistant/
   - marketing-tool/
+  - pihole/
