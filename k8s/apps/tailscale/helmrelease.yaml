@@ -18,4 +18,4 @@ spec:
       defaultTags:
         - "tag:k8s-operator"
     proxyConfig:
-      defaultRags: "tag-k8s"
+      defaultTags: "tag:k8s"

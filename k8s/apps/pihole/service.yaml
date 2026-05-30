@@ -27,7 +27,6 @@ metadata:
   namespace: pihole
   annotations:
     tailscale.com/hostname: "Bouncer"
-    tailscale.com/tailnet-ip: "100.113.161.18"
 spec:
   selector:
     app: pihole
