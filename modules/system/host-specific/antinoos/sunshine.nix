@@ -12,10 +12,12 @@
                 sunshine_name = "morning-star";
                 encoder = "vaapi";
                 adapter_name = "/dev/dri/renderD128";
-                min_log_level = "info";
+                min_log_level = "warning";
             };
         };
     };
 
     boot.kernelModules = [ "uinput" ];
+
+    users.users.anastasia.linger = true;
 }
