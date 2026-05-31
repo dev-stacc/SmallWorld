@@ -5,7 +5,7 @@
         '';
         sunshine = {
             enable = true;
-#            autoStart = true;
+            autoStart = true;
             capSysAdmin = true;
             openFirewall = true;
             settings = {
