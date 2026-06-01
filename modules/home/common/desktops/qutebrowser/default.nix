@@ -20,6 +20,10 @@ in {
             url
         ];
         
+        extraConfig = ''
+            c.url.searchengines = {"DEFAULT": "https://www.startpage.com/sp/search?query={}"}
+        '';
+
         aliases = {
             "darkmode" = "config-cycle colors.webpage.darkmode.enabled";
             "style-on" = "set content.user_stylesheets [${css}]";
