@@ -73,20 +73,31 @@ data:
         for d in data.get("deleted") or []:
             remove(d["value"])
 
-    auth()
-    sync(startup=True)
+    while True:
+        try:
+            auth()
+            sync(startup=True)
+            print("bouncer started", flush=True)
+            break
+        except Exception as e:
+            print(f"startup failed: {e}, retrying in 10s", flush=True)
+            time.sleep(10)
+
     while True:
         time.sleep(30)
         try:
             sync()
         except urllib.error.HTTPError as e:
             if e.code in (401, 403):
-                print("session expired, re-authenticating", flush=True)
-                auth()
+                print("re-authenticating", flush=True)
+                try:
+                    auth()
+                except Exception as ae:
+                    print(f"re-auth failed: {ae}", flush=True)
             else:
-                print(f"error: {e}", flush=True)
+                print(f"sync error: {e}", flush=True)
         except Exception as e:
-            print(f"error: {e}", flush=True)
+            print(f"sync error: {e}", flush=True)
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -113,8 +124,8 @@ spec:
             - name: BOUNCER_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: crowdsec-secret
-                  key: bouncer-api-key
+                  name: bouncer-secret
+                  key: api-key
             - name: PIHOLE_URL
               value: "http://pihole.pihole.svc.cluster.local"
             - name: PIHOLE_PASSWORD
