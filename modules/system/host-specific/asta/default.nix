@@ -5,6 +5,7 @@
         ./flux.nix
         ./media.nix
         ./vault.nix
+        ./suricata.nix
     ];
 
     networking.hostName = "Asta";

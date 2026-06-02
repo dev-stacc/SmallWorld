@@ -4,3 +4,4 @@ resources:
   - external-secrets/
   - authentik/
   - grafana/
+  - crowdsec/

@@ -13,3 +13,4 @@ resources:
   - marketing-tool/
   - pihole/
   - nfs-provisioner/
+  - crowdsec/
