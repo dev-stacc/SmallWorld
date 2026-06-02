@@ -16,3 +16,4 @@ resources:
   - externalsecret-blueprint-jellyfin-env.yaml
   - blueprint-sewing-assistant.yaml
   - blueprint-marketing-tool.yaml
+  - blueprint-pihole.yaml
