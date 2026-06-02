@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: orbital-sync
+  namespace: pihole
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: orbital-sync
+              image: mattwebbio/orbital-sync:1
+              env:
+                - name: PRIMARY_HOST_1_BASE_URL
+                  value: "http://100.113.161.17"
+                - name: PRIMARY_HOST_1_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pihole-secret
+                      key: webpassword
+                - name: REPLICA_HOST_1_BASE_URL
+                  value: "http://pihole.pihole.svc.cluster.local"
+                - name: REPLICA_HOST_1_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pihole-secret
+                      key: webpassword
