@@ -60,6 +60,7 @@ spec:
               cpu: "500m"
         - name: unbound
           image: klutchell/unbound:latest
+          command: ["unbound", "-d"]
           ports:
             - containerPort: 5335
               name: dns-unbound
