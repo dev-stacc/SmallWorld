@@ -14,16 +14,16 @@ spec:
             - name: orbital-sync
               image: mattwebbio/orbital-sync:1
               env:
-                - name: PRIMARY_HOST_1_BASE_URL
+                - name: PRIMARY_HOST_BASE_URL
                   value: "http://100.113.161.17"
-                - name: PRIMARY_HOST_1_PASSWORD
+                - name: PRIMARY_HOST_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: pihole-secret
                       key: webpassword
-                - name: REPLICA_HOST_1_BASE_URL
+                - name: SECONDARY_HOSTS_1_BASE_URL
                   value: "http://pihole.pihole.svc.cluster.local"
-                - name: REPLICA_HOST_1_PASSWORD
+                - name: SECONDARY_HOSTS_1_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: pihole-secret
@@ -45,16 +45,16 @@ spec:
             - name: orbital-sync
               image: mattwebbio/orbital-sync:1
               env:
-                - name: PRIMARY_HOST_1_BASE_URL
+                - name: PRIMARY_HOST_BASE_URL
                   value: "http://pihole.pihole.svc.cluster.local"
-                - name: PRIMARY_HOST_1_PASSWORD
+                - name: PRIMARY_HOST_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: pihole-secret
                       key: webpassword
-                - name: REPLICA_HOST_1_BASE_URL
+                - name: SECONDARY_HOSTS_1_BASE_URL
                   value: "http://100.113.161.17"
-                - name: REPLICA_HOST_1_PASSWORD
+                - name: SECONDARY_HOSTS_1_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: pihole-secret
