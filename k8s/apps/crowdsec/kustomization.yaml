@@ -5,4 +5,5 @@ resources:
   - helmrepository.yaml
   - storage.yaml
   - helmrelease.yaml
+  - externalsecret.yaml
   - bouncer.yaml
