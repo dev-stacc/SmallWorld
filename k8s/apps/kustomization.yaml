@@ -12,3 +12,4 @@ resources:
   - sewing-assistant/
   - marketing-tool/
   - pihole/
+  - nfs-provisioner/

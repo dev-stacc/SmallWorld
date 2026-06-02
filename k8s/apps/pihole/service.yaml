@@ -26,7 +26,7 @@ metadata:
   name: pihole-tailscale
   namespace: pihole
   annotations:
-    tailscale.com/hostname: "Bouncer"
+    tailscale.com/hostname: "Pihole"
 spec:
   selector:
     app: pihole
