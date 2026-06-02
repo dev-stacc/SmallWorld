@@ -37,18 +37,6 @@ spec:
         - namespace: ingress-nginx
           podName: ingress-nginx-controller-*
           program: nginx
-        - filePath: /var/log/suricata/eve.json
-          labels:
-            type: suricata
       env:
         - name: COLLECTIONS
-          value: "crowdsecurity/nginx crowdsecurity/suricata"
-      volumes:
-        - name: suricata-logs
-          hostPath:
-            path: /var/log/suricata
-            type: DirectoryOrCreate
-      volumeMounts:
-        - name: suricata-logs
-          mountPath: /var/log/suricata
-          readOnly: true
+          value: "crowdsecurity/nginx"
