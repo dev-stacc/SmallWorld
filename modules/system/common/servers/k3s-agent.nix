@@ -13,6 +13,8 @@
         serverAddr = "https://asta:6443";
     };
 
+    services.nfs.client.enable = true;
+
     boot = {
         kernel.sysctl."net.ipv4.ip_forward" = 1;
         kernelModules = [ "br-netfiller" "overlay" ];
