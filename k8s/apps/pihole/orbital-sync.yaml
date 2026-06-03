@@ -126,15 +126,15 @@ spec:
                 - name: PRIMARY_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: crowdsec-secret
-                      key: pihole-api-password
+                      name: pihole-api-secret
+                      key: password
                 - name: SECONDARY_URL
                   value: "http://pihole.pihole.svc.cluster.local"
                 - name: SECONDARY_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: crowdsec-secret
-                      key: pihole-api-password
+                      name: pihole-api-secret
+                      key: password
               volumeMounts:
                 - name: script
                   mountPath: /scripts
