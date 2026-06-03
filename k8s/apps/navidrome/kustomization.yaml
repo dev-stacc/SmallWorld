@@ -6,4 +6,5 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+  - ingress-api.yaml
   - authentik-svc.yaml
