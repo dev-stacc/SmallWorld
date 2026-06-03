@@ -38,7 +38,7 @@ spec:
                   name: pihole-secret
                   key: webpassword
             - name: FTLCONF_dns_upstreams
-              value: "8.8.8.8"
+              value: "127.0.0.1#5335"
           ports:
             - containerPort: 80
               name: http
