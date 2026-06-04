@@ -10,14 +10,14 @@
       }];
       outputs = [{
         "eve-log" = {
-          enabled = "yes";
+          enabled = true;
           filetype = "regular";
           filename = "eve.json";
           types = [
             { alert = {}; }
-            { http = { extended = "yes"; }; }
+            { http = { extended = true; }; }
             { dns = {}; }
-            { tls = { extended = "yes"; }; }
+            { tls = { extended = true; }; }
             { flow = {}; }
           ];
         };
