@@ -3,7 +3,8 @@
         ../../common/all/default.nix
     ];
 
-    home.packages = with pkgs; [
-        yt-dlp
+    home.packages = [
+        (pkgs.yt-dlp.override { jsRuntime = pkgs.nodejs; })
+        pkgs.ffmpeg
     ];
 }
