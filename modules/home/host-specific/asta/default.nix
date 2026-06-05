@@ -4,7 +4,7 @@
     ];
 
     home.packages = [
-        (pkgs.yt-dlp.override { jsRuntime = pkgs.nodejs; })
+        (pkgs.yt-dlp.override { javascriptSupport = false; })
         pkgs.ffmpeg
     ];
 }
