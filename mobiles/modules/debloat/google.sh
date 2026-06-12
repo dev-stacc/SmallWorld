@@ -1,21 +1,10 @@
 #!/usr/bin/env bash
 # modules/debloat/google.sh
-# Uninstall remaining Google packages: GMS stack, ads, telemetry, search,
-# personalization, health, overlays, etc.
-#
-# NOT touched (keep disabled, not uninstalled):
-#   com.google.android.webview                — needed by Discord/Instagram/Twitter
-#   com.google.android.providers.media.module — active media provider; AOSP fallback stays
-#   com.google.android.modulemetadata         — Project Mainline module registry
-#   com.google.android.overlay.modules.cellbroadcastreceiver  — pairs with KEEP emergency packages
-#   com.google.android.overlay.modules.cellbroadcastservice   — same
 
 run_google() {
   section "debloat/google — uninstalling Google stack"
   local PKGS=(
-    # GMS core
-    com.google.android.gms
-    com.google.android.gsf
+    # GMS core — gms + gsf retained for FCM, see nuclear.sh KEEP
     com.google.android.gms.location.history
     com.google.android.gms.supervision
 

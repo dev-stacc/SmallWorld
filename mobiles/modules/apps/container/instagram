@@ -1,3 +1,0 @@
-#!/data/data/com.termux/files/usr/bin/sh
-export RISH_APPLICATION_ID=com.termux
-rish am start --user 10 -n com.instagram.android/com.instagram.android.activity.MainTabActivity

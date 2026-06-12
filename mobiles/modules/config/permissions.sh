@@ -9,6 +9,10 @@ run_permissions() {
   adb shell pm disable-user --user 0 com.samsung.android.incallui 2>/dev/null || true
   adb shell pm disable-user --user 0 com.samsung.android.app.contacts 2>/dev/null || true
 
+  section "config/permissions — KISS as default home"
+  adb shell cmd role add-role-holder android.app.role.HOME fr.neamar.kiss 0 \
+    && ok "home role → fr.neamar.kiss"
+
   section "config/permissions — Fennec lockdown"
   for perm in \
     android.permission.ACCESS_FINE_LOCATION \

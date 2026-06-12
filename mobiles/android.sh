@@ -14,10 +14,11 @@ DEVICE="${1:-Algol}"
 MODULE="${2:-all}"
 
 if ! command -v adb &>/dev/null; then
-  exec nix-shell -p android-tools apkeep unzip --run "bash $0 $*"
+  exec nix-shell -p android-tools apkeep unzip jq curl --run "bash $0 $*"
 fi
 
 source "$ROOT/lib/adb.sh"
+source "$ROOT/lib/keep.sh"
 source "$ROOT/devices/$DEVICE/default.sh"
 
 adb_ok

@@ -5,7 +5,6 @@ run_fdroid() {
   section "apps/fdroid — fetching latest version codes"
   local KISS_VER HELI_VER MSG_VER CAM_VER GAL_VER FENNEC_VER
   local TERMUX_VER TERMUX_API_VER FM_VER CLK_VER CAL_VER CON_VER PHN_VER NP_VER
-  local NTFY_VER SHELTER_VER
 
   KISS_VER=$(fdroid_latest fr.neamar.kiss)
   HELI_VER=$(fdroid_latest helium314.keyboard)
@@ -21,8 +20,6 @@ run_fdroid() {
   CON_VER=$(fdroid_latest org.fossify.contacts)
   PHN_VER=$(fdroid_latest org.fossify.phone)
   NP_VER=$(fdroid_latest org.schabi.newpipe)
-  NTFY_VER=$(fdroid_latest io.heckel.ntfy)
-  SHELTER_VER=$(fdroid_latest net.typeblog.shelter)
 
   mkdir -p "$OUTDIR"
 
@@ -41,8 +38,6 @@ run_fdroid() {
   curl -L -o "$OUTDIR/fossify-contacts.apk"   "https://f-droid.org/repo/org.fossify.contacts_${CON_VER}.apk" &
   curl -L -o "$OUTDIR/fossify-phone.apk"      "https://f-droid.org/repo/org.fossify.phone_${PHN_VER}.apk" &
   curl -L -o "$OUTDIR/newpipe.apk"            "https://f-droid.org/repo/org.schabi.newpipe_${NP_VER}.apk" &
-  curl -L -o "$OUTDIR/ntfy.apk"               "https://f-droid.org/repo/io.heckel.ntfy_${NTFY_VER}.apk" &
-  curl -L -o "$OUTDIR/shelter.apk"            "https://f-droid.org/repo/net.typeblog.shelter_${SHELTER_VER}.apk" &
   wait
   ok "F-Droid downloads complete"
 
@@ -61,6 +56,4 @@ run_fdroid() {
   adb install "$OUTDIR/termux.apk"              && ok "Termux"
   adb install "$OUTDIR/termux-api.apk"          && ok "Termux:API"
   adb install "$OUTDIR/newpipe.apk"             && ok "NewPipe"
-  adb install "$OUTDIR/ntfy.apk"                && ok "ntfy (UnifiedPush distributor)"
-  adb install "$OUTDIR/shelter.apk"             && ok "Shelter (container profile manager)"
 }

@@ -14,9 +14,14 @@ skip()    { echo "SKIP $*"; }
 fail()    { echo "FAIL $*"; }
 
 fdroid_latest() {
-  local pkg=$1
-  curl -s "https://f-droid.org/api/v1/packages/$pkg" \
-    | grep -o '"suggestedVersionCode":[0-9]*' | grep -o '[0-9]*'
+  local pkg=$1 v=
+  for i in 1 2 3; do
+    v=$(curl -s "https://f-droid.org/api/v1/packages/$pkg" | jq -r '.suggestedVersionCode // empty')
+    [[ -n "$v" && "$v" =~ ^[0-9]+$ ]] && { echo "$v"; return 0; }
+    sleep 2
+  done
+  echo "ERROR: fdroid_latest $pkg returned no version after 3 attempts" >&2
+  return 1
 }
 
 install_xapk() {
@@ -25,14 +30,6 @@ install_xapk() {
   mkdir -p "$dir"
   unzip -o "$xapk" -d "$dir" > /dev/null 2>&1
   adb install-multiple "$dir"/*.apk
-}
-
-install_xapk_user() {
-  local xapk=$1 name=$2 user=$3
-  local dir="$OUTDIR/${name}-extracted"
-  mkdir -p "$dir"
-  unzip -o "$xapk" -d "$dir" > /dev/null 2>&1
-  adb install-multiple --user "$user" "$dir"/*.apk
 }
 
 pm_uninstall() {
