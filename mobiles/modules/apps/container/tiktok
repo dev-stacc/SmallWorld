@@ -1,0 +1,2 @@
+#!/data/data/com.termux/files/usr/bin/sh
+rish am start --user 10 -n com.zhiliaoapp.musically/com.ss.android.ugc.aweme.splash.SplashActivity
