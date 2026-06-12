@@ -5,11 +5,8 @@ run_sideload() {
   mkdir -p "$OUTDIR"
   section "apps/sideload — downloading via apkeep"
 
-  apkeep -a com.discord              -d apk-pure "$OUTDIR/" &
-  apkeep -a com.instagram.android    -d apk-pure "$OUTDIR/" &
   apkeep -a us.zoom.videomeetings    -d apk-pure "$OUTDIR/" &
   apkeep -a com.twitter.android      -d apk-pure "$OUTDIR/" &
-  apkeep -a com.zhiliaoapp.musically -d apk-pure "$OUTDIR/" &
   apkeep -a com.spotify.music        -d apk-pure "$OUTDIR/" &
   apkeep -a com.here.app.maps        -d apk-pure "$OUTDIR/" &
   wait
@@ -18,10 +15,7 @@ run_sideload() {
   section "apps/sideload — installing"
   adb install "$OUTDIR/com.here.app.maps.apk"  && ok "HERE WeGo"
 
-  install_xapk "$OUTDIR/com.discord.xapk"              discord   && ok "Discord"
-  install_xapk "$OUTDIR/com.instagram.android.xapk"    instagram && ok "Instagram"
   install_xapk "$OUTDIR/us.zoom.videomeetings.xapk"    zoom      && ok "Zoom"
   install_xapk "$OUTDIR/com.twitter.android.xapk"      twitter   && ok "Twitter/X"
-  install_xapk "$OUTDIR/com.zhiliaoapp.musically.xapk" tiktok    && ok "TikTok"
   install_xapk "$OUTDIR/com.spotify.music.xapk"        spotify   && ok "Spotify"
 }

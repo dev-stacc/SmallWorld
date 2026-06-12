@@ -6,4 +6,5 @@ run_apps() {
   run_fdroid
   run_direct
   run_sideload
+  run_container
 }

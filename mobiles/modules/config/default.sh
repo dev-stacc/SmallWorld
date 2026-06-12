@@ -7,4 +7,5 @@ run_config() {
   run_privacy
   run_performance
   run_permissions
+  run_background
 }

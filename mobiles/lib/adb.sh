@@ -27,6 +27,14 @@ install_xapk() {
   adb install-multiple "$dir"/*.apk
 }
 
+install_xapk_user() {
+  local xapk=$1 name=$2 user=$3
+  local dir="$OUTDIR/${name}-extracted"
+  mkdir -p "$dir"
+  unzip -o "$xapk" -d "$dir" > /dev/null 2>&1
+  adb install-multiple --user "$user" "$dir"/*.apk
+}
+
 pm_uninstall() {
   local pkg=$1
   local state

@@ -8,7 +8,7 @@ run_performance() {
   setting_global animator_duration_scale   0
 
   section "config/performance — background processes"
-  setting_global max_background_processes  2
+  adb shell settings delete global max_background_processes >/dev/null && ok "max_background_processes=default"
   setting_global adaptive_battery_management_enabled 0
   setting_global app_standby_enabled       0
 
