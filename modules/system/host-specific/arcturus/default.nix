@@ -4,7 +4,7 @@
         ../../common/all/default.nix
         ../../common/desktops/default.nix
         ./graphics.nix
-        ./moonlight.nix
+        ./hyprland.nix
         ./overlays.nix
     ];
 

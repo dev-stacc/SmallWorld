@@ -17,8 +17,6 @@ in {
 
     environment.sessionVariables = {
         LIBVA_DRIVER_NAME = "radeonsi";
-        AQ_NO_ATOMIC = "1";
-        AQ_NO_MODIFIERS = "1";
     };
 
     hardware = {
