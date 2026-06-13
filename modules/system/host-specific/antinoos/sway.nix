@@ -9,6 +9,7 @@
         ELECTRON_OZONE_PLATFORM_HINT = "auto";
         QT_QPA_PLATFORMTHEME       = "xdgdesktopportal";
         XDG_CURRENT_DESKTOP        = "sway";
+        WLR_DRM_NO_ATOMIC          = "1";
     };
 
     environment.systemPackages = with pkgs; [
