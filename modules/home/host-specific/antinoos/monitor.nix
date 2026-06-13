@@ -1,7 +1,7 @@
 { ... }: {
     wayland.windowManager.hyprland.settings = {
         monitor = [
-            "HDMI-A-2, preferred, auto, 1"
+            ",preferred,auto,1"
         ];
 
         render = {
