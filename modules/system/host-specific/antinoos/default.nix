@@ -3,7 +3,6 @@
         ../../common/all/default.nix
         ../../common/desktops/default.nix
         ./graphics.nix
-        ./sunshine.nix
         ./storage.nix
     ];
 

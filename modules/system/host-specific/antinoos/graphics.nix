@@ -1,4 +1,17 @@
-{ config, pkgs, ... } : {
+{ config, pkgs, lib, ... } :
+let
+    sclkStates = [
+        { level = 5; mhz = 1257; mv = 975;  }
+        { level = 6; mhz = 1300; mv = 1000; }
+        { level = 7; mhz = 1340; mv = 1050; }
+    ];
+    mclkStates = [
+        { level = 2; mhz = 2000; mv = 925; }
+    ];
+
+    mkSclk = s: "echo 's ${toString s.level} ${toString s.mhz} ${toString s.mv}' > \"$OD\"";
+    mkMclk = s: "echo 'm ${toString s.level} ${toString s.mhz} ${toString s.mv}' > \"$OD\"";
+in {
     boot.initrd.kernelModules = [ "amdgpu" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
 
@@ -13,25 +26,44 @@
                 libva-vdpau-driver
             ];
         };
-        amdgpu.overdrive = { 
+        amdgpu.overdrive = {
             enable = true;
             ppfeaturemask = "0xffffffff";
         };
     };
 
-    programs.corectrl.enable = true;
-    
     environment.systemPackages = with pkgs; [
         radeontop
     ];
 
-    systemd.user.services.corectrl = {
-        description = "corectrl gpu settings";
-        wantedBy = [ "graphical-session.target" ];
-        partOf = [ "graphical-session.target" ];
+    systemd.services.amdgpu-undervolt = {
+        description = "AMD GPU undervolt (pp_od_clk_voltage)";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "systemd-modules-load.service" ];
         serviceConfig = {
-            ExecStart = "${pkgs.corectrl}/bin/corectrl --minimize-systray";
-            Restart = "on-failure";
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = pkgs.writeShellScript "amdgpu-undervolt" ''
+                set -e
+                CARD=""
+                for c in /sys/class/drm/card*/device; do
+                    [ -f "$c/vendor" ] || continue
+                    [ "$(cat "$c/vendor")" = "0x1002" ] || continue
+                    drv=$(basename "$(readlink "$c/driver")" 2>/dev/null)
+                    [ "$drv" = "amdgpu" ] || continue
+                    CARD="$c"; break
+                done
+                [ -z "$CARD" ] && { echo "no amdgpu card found"; exit 1; }
+
+                OD="$CARD/pp_od_clk_voltage"
+                [ -w "$OD" ] || { echo "$OD not writable"; exit 1; }
+
+                ${lib.concatMapStringsSep "\n                " mkSclk sclkStates}
+                ${lib.concatMapStringsSep "\n                " mkMclk mclkStates}
+                echo 'c' > "$OD"
+
+                echo auto > "$CARD/power_dpm_force_performance_level"
+            '';
         };
     };
 
