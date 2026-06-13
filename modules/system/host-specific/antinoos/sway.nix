@@ -10,6 +10,7 @@
         QT_QPA_PLATFORMTHEME       = "xdgdesktopportal";
         XDG_CURRENT_DESKTOP        = "sway";
         WLR_DRM_NO_ATOMIC          = "1";
+        WLR_NO_HARDWARE_CURSORS    = "1";
     };
 
     environment.systemPackages = with pkgs; [
