@@ -15,6 +15,8 @@ in {
     boot.initrd.kernelModules = [ "amdgpu" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
 
+    environment.sessionVariables.LIBVA_DRIVER_NAME = "radeonsi";
+
     hardware = {
         graphics = {
             enable = true;

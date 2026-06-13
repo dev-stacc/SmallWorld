@@ -3,6 +3,7 @@
         ../../common/all/default.nix
         ../../common/desktops/default.nix
         ./k3s-control/default.nix
+        ./monitor.nix
         ./ssh.nix
     ];
     
