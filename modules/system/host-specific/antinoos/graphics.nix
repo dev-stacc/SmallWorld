@@ -1,12 +1,12 @@
 { config, pkgs, lib, ... } :
 let
     sclkStates = [
-        { level = 5; mhz = 1257; mv = 975;  }
-        { level = 6; mhz = 1300; mv = 1000; }
-        { level = 7; mhz = 1340; mv = 1050; }
+        { level = 5; mhz = 1257; mv = 1050; }
+        { level = 6; mhz = 1300; mv = 1100; }
+        { level = 7; mhz = 1340; mv = 1150; }
     ];
     mclkStates = [
-        { level = 2; mhz = 2000; mv = 925; }
+        { level = 2; mhz = 2000; mv = 950; }
     ];
 
     mkSclk = s: "echo 's ${toString s.level} ${toString s.mhz} ${toString s.mv}' > \"$OD\"";
