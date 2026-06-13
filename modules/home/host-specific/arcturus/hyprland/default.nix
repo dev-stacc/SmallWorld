@@ -4,6 +4,7 @@
     decoration = import ./decoration.nix;
     windowrule = import ./windowrule.nix;
     input = import ./input.nix;
+    monitor = import ./monitor.nix;
 in {
     wayland.windowManager.hyprland = {
         enable = true;
@@ -13,6 +14,7 @@ in {
             decoration
             windowrule
             input
+            monitor
         ];
     };
 }

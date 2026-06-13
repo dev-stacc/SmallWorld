@@ -15,9 +15,6 @@
             url = "github:hyprwm/Hyprland";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        hyprland-legacy = {
-            url = "github:hyprwm/Hyprland/v0.49.0";
-        };
         nixvim = {
             url = "github:nix-community/nixvim";
             inputs.nixpkgs.follows = "nixpkgs";
@@ -49,7 +46,6 @@
         nixcord,
         colmena,
         sops-nix,
-        hyprland-legacy,
         ...
     } @ inputs : {
         nixosConfigurations = {

@@ -2,8 +2,9 @@
     imports = [
         ../../common/all/default.nix
         ../../common/desktops/default.nix
+        ./hyprland/default.nix
+        ./hyprpaper.nix
         ./k3s-control/default.nix
-        ./monitor.nix
         ./ssh.nix
     ];
     
