@@ -14,5 +14,4 @@
         efi.canTouchEfiVariables = true;
     };
 
-    boot.kernelParams = [ "amdgpu.dc=0" ];
 }
