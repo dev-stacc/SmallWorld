@@ -18,6 +18,12 @@ SELECTION=$(printf '%s\n' "$APPS" | fzf --height=40% --border=none --prompt='  L
 
 if [ -n "$SELECTION" ]; then
     COMMAND=$(printf '%s' "$SELECTION" | cut -f2-)
-    hyprctl dispatch exec "$COMMAND"
+    if [ -n "$SWAYSOCK" ]; then
+        swaymsg exec "$COMMAND"
+    elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+        hyprctl dispatch exec "$COMMAND"
+    else
+        nohup sh -c "$COMMAND" &
+    fi
     exit 0
 fi
