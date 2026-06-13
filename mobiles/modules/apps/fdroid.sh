@@ -3,15 +3,15 @@
 
 run_fdroid() {
   section "apps/fdroid — fetching latest version codes"
-  local KISS_VER HELI_VER MSG_VER CAM_VER GAL_VER FENNEC_VER
+  local KISS_VER HELI_VER MSG_VER CAM_VER GAL_VER
   local TERMUX_VER TERMUX_API_VER FM_VER CLK_VER CAL_VER CON_VER PHN_VER NP_VER
+  local NTFY_VER
 
   KISS_VER=$(fdroid_latest fr.neamar.kiss)
   HELI_VER=$(fdroid_latest helium314.keyboard)
   MSG_VER=$(fdroid_latest org.fossify.messages)
   CAM_VER=$(fdroid_latest org.fossify.camera)
   GAL_VER=$(fdroid_latest org.fossify.gallery)
-  FENNEC_VER=$(fdroid_latest org.mozilla.fennec_fdroid)
   TERMUX_VER=$(fdroid_latest com.termux)
   TERMUX_API_VER=$(fdroid_latest com.termux.api)
   FM_VER=$(fdroid_latest org.fossify.filemanager)
@@ -20,6 +20,7 @@ run_fdroid() {
   CON_VER=$(fdroid_latest org.fossify.contacts)
   PHN_VER=$(fdroid_latest org.fossify.phone)
   NP_VER=$(fdroid_latest org.schabi.newpipe)
+  NTFY_VER=$(fdroid_latest io.heckel.ntfy)
 
   mkdir -p "$OUTDIR"
 
@@ -29,7 +30,6 @@ run_fdroid() {
   curl -L -o "$OUTDIR/fossify-messages.apk"   "https://f-droid.org/repo/org.fossify.messages_${MSG_VER}.apk" &
   curl -L -o "$OUTDIR/fossify-camera.apk"     "https://f-droid.org/repo/org.fossify.camera_${CAM_VER}.apk" &
   curl -L -o "$OUTDIR/fossify-gallery.apk"    "https://f-droid.org/repo/org.fossify.gallery_${GAL_VER}.apk" &
-  curl -L -o "$OUTDIR/fennec.apk"             "https://f-droid.org/repo/org.mozilla.fennec_fdroid_${FENNEC_VER}.apk" &
   curl -L -o "$OUTDIR/termux.apk"             "https://f-droid.org/repo/com.termux_${TERMUX_VER}.apk" &
   curl -L -o "$OUTDIR/termux-api.apk"         "https://f-droid.org/repo/com.termux.api_${TERMUX_API_VER}.apk" &
   curl -L -o "$OUTDIR/fossify-filemanager.apk" "https://f-droid.org/repo/org.fossify.filemanager_${FM_VER}.apk" &
@@ -38,6 +38,7 @@ run_fdroid() {
   curl -L -o "$OUTDIR/fossify-contacts.apk"   "https://f-droid.org/repo/org.fossify.contacts_${CON_VER}.apk" &
   curl -L -o "$OUTDIR/fossify-phone.apk"      "https://f-droid.org/repo/org.fossify.phone_${PHN_VER}.apk" &
   curl -L -o "$OUTDIR/newpipe.apk"            "https://f-droid.org/repo/org.schabi.newpipe_${NP_VER}.apk" &
+  curl -L -o "$OUTDIR/ntfy.apk"               "https://f-droid.org/repo/io.heckel.ntfy_${NTFY_VER}.apk" &
   wait
   ok "F-Droid downloads complete"
 
@@ -52,8 +53,8 @@ run_fdroid() {
   adb install "$OUTDIR/fossify-filemanager.apk" && ok "Fossify File Manager"
   adb install "$OUTDIR/fossify-clock.apk"       && ok "Fossify Clock"
   adb install "$OUTDIR/fossify-calendar.apk"    && ok "Fossify Calendar"
-  adb install "$OUTDIR/fennec.apk"              && ok "Fennec"
   adb install "$OUTDIR/termux.apk"              && ok "Termux"
   adb install "$OUTDIR/termux-api.apk"          && ok "Termux:API"
   adb install "$OUTDIR/newpipe.apk"             && ok "NewPipe"
+  adb install "$OUTDIR/ntfy.apk"                && ok "ntfy (UnifiedPush distributor)"
 }

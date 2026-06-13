@@ -22,7 +22,6 @@ run_replaced() {
     com.sec.android.gallery3d
     com.samsung.android.video
     com.sec.android.app.myfiles
-    com.samsung.android.app.clockpack
 
     # Fennec replaces
     com.sec.android.app.sbrowser

@@ -9,8 +9,7 @@ run_background() {
     org.thoughtcrime.securesms
     ch.protonmail.android
     com.tailscale.ipn
-    com.google.android.gms
-    com.google.android.gsf
+    io.heckel.ntfy
   )
   for pkg in "${PKGS[@]}"; do
     adb shell dumpsys deviceidle whitelist "+$pkg" >/dev/null && ok "$pkg"

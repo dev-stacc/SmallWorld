@@ -3,8 +3,7 @@
 
 run_privacy() {
   section "config/privacy — DNS"
-  setting_global private_dns_mode     hostname
-  setting_global private_dns_specifier dns.quad9.net
+  setting_global private_dns_mode off
 
   section "config/privacy — captive portal (redirect away from Google)"
   setting_global captive_portal_https_url "https://detectportal.firefox.com/success.txt"
@@ -27,6 +26,10 @@ run_privacy() {
 
   section "config/privacy — clipboard access notifications"
   setting_secure clipboard_show_access_notifications 1
+
+  section "config/privacy — edge lighting off"
+  setting_system edge_lighting 0
+  setting_system edge_lighting_show_condition 0
 
   section "config/privacy — USB default (charging only)"
   adb shell svc usb setFunctions charging 2>/dev/null && ok "usb=charging" || ok "usb setFunctions not available (ok)"

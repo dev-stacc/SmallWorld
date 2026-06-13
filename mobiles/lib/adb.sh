@@ -34,14 +34,19 @@ install_xapk() {
 
 pm_uninstall() {
   local pkg=$1
+  for k in "${KEEP[@]}"; do
+    if [[ "$k" == "$pkg" ]]; then
+      skip "$pkg  (in KEEP — protected)"; return
+    fi
+  done
   local state
   state=$(adb shell pm list packages --user 0 | grep -x "package:$pkg" || true)
   if [[ -z "$state" ]]; then
     skip "$pkg  (not present)"; return
   fi
   local result
-  result=$(adb shell pm uninstall -k --user 0 "$pkg" 2>&1) || true
-  if echo "$result" | grep -q "Success"; then
+  result=$(adb shell pm disable-user --user 0 "$pkg" 2>&1) || true
+  if echo "$result" | grep -q "new state: disabled"; then
     ok "$pkg"
   else
     fail "$pkg  ($result)"

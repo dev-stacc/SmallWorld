@@ -34,7 +34,7 @@ KEEP=(
   com.sec.epdg
   com.sec.unifiedwfc
 
-  # Launcher (back button depends on this — do not remove)
+  # Samsung Home — default launcher (provides recents UI)
   com.sec.android.app.launcher
 
   # Network stack (OEM unlock + data + VoLTE)
@@ -47,7 +47,6 @@ KEEP=(
   com.samsung.android.wifi.softapwpathree.resources
 
   # OEM unlock path — Samsung server auth
-  com.samsung.android.fmm
   com.samsung.klmsagent
   com.samsung.android.kgclient
   com.knox.vpn.proxyhandler
@@ -65,10 +64,6 @@ KEEP=(
   com.google.android.permissioncontroller
   com.google.android.packageinstaller
 
-  # FCM — minimum Google footprint for push
-  com.google.android.gms
-  com.google.android.gsf
-
   # WebView — system-wide runtime; removing it bootloops the device
   com.google.android.webview
 
@@ -76,12 +71,17 @@ KEEP=(
   com.google.android.providers.media.module
   com.google.android.modulemetadata
 
-  # NFC — system_server uses com.android.nfc package context
+  # NFC — system_server uses com.android.nfc package context;
+  # Samsung's NFC stack shares the same process
   com.android.nfc
+  com.samsung.android.nfc
 
   # systemui plugin hosts — face widget / battery stats receivers crash without these
   com.samsung.android.app.clockpack
   com.sec.android.sdhms
+
+  # Boot-time job scheduler — its own receiver schedules a JobService at boot
+  com.samsung.oda.service
 
   # Navbar overlays (all variants — one is active)
   com.android.internal.systemui.navbar.gestural
