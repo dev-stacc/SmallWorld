@@ -14,7 +14,7 @@ let
 in {
     hardware.amdgpu.overdrive = {
         enable = true;
-        ppfeaturemask = "0xffffffff";
+        ppfeaturemask = "0x4000";
     };
 
     systemd.services.amdgpu-undervolt = {
