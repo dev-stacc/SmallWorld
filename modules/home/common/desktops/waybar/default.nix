@@ -1,5 +1,4 @@
 { config, pkgs, fontName, ... } : let
-    fanScript = pkgs.writeShellScript "fan-speed" (builtins.readFile ./scripts/fan-speed.sh);
     cpuBarsScript = pkgs.writeShellScript "cpu-bars" (builtins.readFile ./scripts/cpu-bars.sh);
     cpuTempsScript = pkgs.writeShellScript "cpu-temps" (builtins.readFile ./scripts/cpu-temps.sh);
     micMuteScript = pkgs.writeShellScript "mic-mute" (builtins.readFile ./scripts/mic-mute.sh);
@@ -18,10 +17,6 @@
     '';
 in {
     home.file = {
-        ".local/bin/fan-speed" = {
-            source = fanScript;
-            executable = true;
-        };
         ".local/bin/cpu-bars" = {
             source = cpuBarsScript;
             executable = true;
@@ -52,7 +47,7 @@ in {
                 
                 modules-left = [
                     "group/cpu-usage"
-                    "group/cpu-temps"
+                    "group/thermals"
                     "memory"
                 ];
                 
@@ -74,12 +69,7 @@ in {
                     orientation = "horizontal";
                     modules = ["cpu" "custom/cores"];
                 };
-                
-                "group/cpu-temps" = {
-                    orientation = "horizontal";
-                    modules = ["temperature" "custom/fan"];
-                };
-                
+
                 "group/audio" = {
                     orientation = "horizontal";
                     modules = ["wireplumber" "custom/mic"];
@@ -102,13 +92,6 @@ in {
                     exec = "${cpuTempsScript}";
                     format = "{}°c";
                     interval = 2;
-                    tooltip = false;
-                };
-                
-                "custom/fan" = {
-                    exec = "${fanScript}";
-                    format = "{} 󰵃 ";
-                    interval = 3;
                     tooltip = false;
                 };
 
