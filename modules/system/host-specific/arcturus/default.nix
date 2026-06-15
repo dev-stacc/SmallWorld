@@ -5,6 +5,7 @@
         ../../common/desktops/default.nix
         ./graphics.nix
         ./hyprland.nix
+        ./k3s-kubeconfig.nix
         ./overlays.nix
     ];
 

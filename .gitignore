@@ -1,0 +1,30 @@
+# Nix build outputs
+result
+result-*
+
+# Direnv
+.direnv/
+.envrc.local
+
+# Environment files
+.env
+.env.*
+
+# Editor / OS junk
+*.swp
+*.swo
+*~
+.DS_Store
+.idea/
+.vscode/
+
+# Credentials and certs (defense in depth — these should never be committed)
+*.kubeconfig
+k3s.yaml
+*.key
+*.pem
+*.pfx
+*.p12
+id_rsa
+id_ed25519
+*.pub.bak
