@@ -1,4 +1,4 @@
-{ inputs, ... } : {
+{ inputs, username, ... } : {
     imports = [
         inputs.sops-nix.nixosModules.sops
         ../../common/all/default.nix
@@ -9,7 +9,7 @@
         ./overlays.nix
     ];
 
-    sops.age.keyFile = "/home/anastasia/.sops/keys.txt";
+    sops.age.keyFile = "/home/${username}/.sops/keys.txt";
 
     networking.hostName = "Arcturus";
 

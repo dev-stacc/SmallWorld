@@ -1,4 +1,4 @@
-{
+{ username }: {
     number = true;
     relativenumber = false;
     tabstop = 2;
@@ -11,7 +11,7 @@
     smartcase = true;
     swapfile = false;
     backup = false;
-    undodir = "/home/anastasia/.cache/nvim/undo";
+    undodir = "/home/${username}/.cache/nvim/undo";
     signcolumn = "yes";
     updatetime = 60;
     timeoutlen = 300;

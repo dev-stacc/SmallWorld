@@ -1,4 +1,4 @@
-{ pkgs, config, inputs, ...} : {
+{ pkgs, config, inputs, username, tailnet, ...} : {
     imports = [
         inputs.home-manager.nixosModules.home-manager
     ];
@@ -8,9 +8,9 @@
         useUserPackages = true;
         backupFileExtension = "backup";
         extraSpecialArgs = {
-            inherit inputs;
+            inherit inputs username tailnet;
             fontName = config.stylix.fonts.monospace.name;
             fontSize = config.stylix.fonts.sizes.terminal;
         };
-    }; 
+    };
 }

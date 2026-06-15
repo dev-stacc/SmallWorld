@@ -1,8 +1,8 @@
-{ ... }: {
+{ tailnet, ... }: {
     services.nfs.server = {
         enable = true;
         exports = ''
-            /srv/nfs 100.88.255.118(rw,sync,no_subtree_check,no_root_squash) 100.111.78.27(rw,sync,no_subtree_check,no_root_squash)
+            /srv/nfs ${tailnet.ips.asta}(rw,sync,no_subtree_check,no_root_squash) ${tailnet.ips.aperture}(rw,sync,no_subtree_check,no_root_squash)
         '';
     };
 

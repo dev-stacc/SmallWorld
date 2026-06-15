@@ -1,7 +1,7 @@
-{ config, ... } : {
+{ config, tailnet, ... } : {
     services.k3s = {
         extraFlags = toString [
-            "--node-ip=100.111.78.27"
+            "--node-ip=${tailnet.ips.aperture}"
             "--flannel-iface=tailscale0"
         ];
     };

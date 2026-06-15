@@ -10,13 +10,17 @@ result-*
 .env
 .env.*
 
-# Editor / OS junk
+# Neovim / nixvim
 *.swp
 *.swo
 *~
+*.un~
+.netrwhist
+Session.vim
+tags
+
+# OS junk
 .DS_Store
-.idea/
-.vscode/
 
 # Credentials and certs (defense in depth — these should never be committed)
 *.kubeconfig

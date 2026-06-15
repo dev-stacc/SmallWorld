@@ -1,4 +1,4 @@
-{ config, pkgs, ... } : {
+{ config, pkgs, tailnet, ... } : {
     sops = {
         age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
         secrets.k3s-token = {
@@ -12,10 +12,10 @@
         tokenFile = config.sops.secrets.k3s-token.path;
         extraFlags = toString [
             "--disable traefik"
-            "--node-ip=100.88.255.118"
-            "--advertise-address=100.88.255.118"
+            "--node-ip=${tailnet.ips.asta}"
+            "--advertise-address=${tailnet.ips.asta}"
             "--tls-san=asta"
-            "--tls-san=<asta-tailscale-ip>"
+            "--tls-san=${tailnet.ips.asta}"
             "--flannel-iface=tailscale0"
         ];
     };

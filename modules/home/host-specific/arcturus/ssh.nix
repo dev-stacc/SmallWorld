@@ -1,4 +1,4 @@
-{ ... }: {
+{ username, tailnet, ... }: {
     programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
@@ -7,8 +7,8 @@
                 extraOptions.AddKeysToAgent = "yes";
             };
             "arcturus" = {
-                hostname = "100.70.3.61";
-                user = "anastasia";
+                hostname = tailnet.ips.arcturus;
+                user = username;
                 identityFile = "~/.ssh/id_ed25519";
             };
         };

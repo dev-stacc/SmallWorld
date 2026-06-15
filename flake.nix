@@ -1,6 +1,6 @@
 {
     description = "Small World in a universe full of giants";
-    
+
     inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
         home-manager = {
@@ -36,7 +36,7 @@
             inputs.nixpkgs.follows = "nixpkgs";
         };
     };
-    
+
     outputs = {
         self,
         nixpkgs,
@@ -47,26 +47,40 @@
         colmena,
         sops-nix,
         ...
-    } @ inputs : {
+    } @ inputs :
+    let
+        username = "anastasia";
+        tailnet = {
+            domain = "tail789d60.ts.net";
+            ips = {
+                arcturus = "100.70.3.61";
+                asta = "100.88.255.118";
+                amateus = "100.70.98.107";
+                aperture = "100.111.78.27";
+                antinoos = "100.103.107.52";
+            };
+        };
+        specialArgs = { inherit inputs username tailnet; };
+    in {
         nixosConfigurations = {
             Arcturus = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs; };
+                inherit specialArgs;
                 modules = [ ./hosts/arcturus/default.nix ];
             };
             Amateus = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs; };
+                inherit specialArgs;
                 modules = [ ./hosts/amateus/default.nix ];
-	          };
+            };
             Asta = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs; };
+                inherit specialArgs;
                 modules = [ ./hosts/asta/default.nix ];
-	          };
+            };
             Antinoos = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs; };
+                inherit specialArgs;
                 modules = [ ./hosts/antinoos/default.nix ];
             };
             Aperture = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs; };
+                inherit specialArgs;
                 modules = [ ./hosts/aperture/default.nix ];
             };
         };
@@ -74,26 +88,26 @@
         colmena = {
             meta = {
                 nixpkgs = import nixpkgs { system = "x86_64-linux"; };
-                specialArgs = { inherit inputs; };
+                inherit specialArgs;
             };
             Asta = { ... } : {
                 imports = [
-                    ./hosts/asta/default.nix 
+                    ./hosts/asta/default.nix
                     sops-nix.nixosModules.sops
                 ];
                 deployment= {
                     targetHost = "asta";
-                    targetUser = "anastasia";
+                    targetUser = username;
                 };
             };
             Amateus = { ... } : {
                 imports = [
-                    ./hosts/amateus/default.nix 
+                    ./hosts/amateus/default.nix
                     sops-nix.nixosModules.sops
                 ];
                 deployment = {
                     targetHost = "amateus";
-                    targetUser = "anastasia";
+                    targetUser = username;
                 };
             };
             Antinoos = { ... } : {
@@ -103,7 +117,7 @@
                 ];
                 deployment = {
                     targetHost = "antinoos";
-                    targetUser = "anastasia";
+                    targetUser = username;
                 };
             };
             Aperture = { ... } : {
@@ -113,7 +127,7 @@
                 ];
                 deployment = {
                     targetHost = "aperture";
-                    targetUser = "anastasia";
+                    targetUser = username;
                 };
             };
         };
