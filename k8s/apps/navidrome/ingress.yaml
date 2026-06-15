@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: navidrome.tail789d60.ts.net
+    - host: navidrome.${TAILNET_DOMAIN}
       http:
         paths:
           - path: /outpost.goauthentik.io/

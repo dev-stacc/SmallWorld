@@ -49,6 +49,6 @@ spec:
             claimName: navidrome-data
         - name: music
           hostPath:
-            path: /home/anastasia/media/music
+            path: ${MEDIA_HOST_PATH}/music
             type: Directory
 

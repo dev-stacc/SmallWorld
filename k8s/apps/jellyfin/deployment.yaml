@@ -38,8 +38,8 @@ spec:
               PLUGIN_VERSION=$(echo "$INFO" | cut -f2)
               echo "Downloading SSO-Auth $PLUGIN_VERSION from $SOURCE_URL"
               curl -fsSL -o /tmp/sso.zip "$SOURCE_URL"
-              mkdir -p "$PLUGIN_DIR/SSO-Auth_${PLUGIN_VERSION}"
-              unzip -o /tmp/sso.zip -d "$PLUGIN_DIR/SSO-Auth_${PLUGIN_VERSION}"
+              mkdir -p "$PLUGIN_DIR/SSO-Auth_$${PLUGIN_VERSION}"
+              unzip -o /tmp/sso.zip -d "$PLUGIN_DIR/SSO-Auth_$${PLUGIN_VERSION}"
               echo "SSO-Auth installed"
           volumeMounts:
             - name: config
@@ -67,5 +67,5 @@ spec:
             claimName: jellyfin-config
         - name: media
           hostPath:
-            path: /home/anastasia/media
+            path: ${MEDIA_HOST_PATH}
             type: Directory

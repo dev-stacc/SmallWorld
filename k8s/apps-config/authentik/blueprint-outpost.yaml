@@ -24,7 +24,7 @@ data:
             - !Find [authentik_providers_proxy.proxyprovider, [name, Marketing Tool Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Pi-hole Provider]]
           config:
-            authentik_host: http://authentik.tail789d60.ts.net:9000
+            authentik_host: http://authentik.${TAILNET_DOMAIN}:9000
             authentik_host_insecure: false
             log_level: info
             kubernetes_replicas: 1

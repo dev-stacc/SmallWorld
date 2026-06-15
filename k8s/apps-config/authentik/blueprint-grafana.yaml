@@ -20,7 +20,7 @@ data:
           client_secret: !Env GRAFANA_OAUTH_CLIENT_SECRET
           redirect_uris:
             - matching_mode: strict
-              url: http://grafana.tail789d60.ts.net/login/generic_oauth
+              url: http://grafana.${TAILNET_DOMAIN}/login/generic_oauth
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
           signing_key: !Find [authentik_crypto.certificatekeypair, [managed, goauthentik.io/crypto/default-certificate]]

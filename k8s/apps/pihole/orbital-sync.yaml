@@ -107,7 +107,7 @@ data:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: orbital-sync-sanctuary-to-k8s
+  name: orbital-sync-remote-to-k8s
   namespace: pihole
 spec:
   schedule: "0 * * * *"
@@ -122,7 +122,7 @@ spec:
               command: ["python", "/scripts/sync.py"]
               env:
                 - name: PRIMARY_URL
-                  value: "http://100.113.161.17"
+                  value: "${REMOTE_PIHOLE_URL}"
                 - name: PRIMARY_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -154,7 +154,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: orbital-sync-k8s-to-sanctuary
+  name: orbital-sync-k8s-to-remote
   namespace: pihole
 spec:
   schedule: "30 * * * *"
@@ -176,7 +176,7 @@ spec:
                       name: pihole-secret
                       key: webpassword
                 - name: SECONDARY_URL
-                  value: "http://100.113.161.17"
+                  value: "${REMOTE_PIHOLE_URL}"
                 - name: SECONDARY_PASSWORD
                   valueFrom:
                     secretKeyRef:

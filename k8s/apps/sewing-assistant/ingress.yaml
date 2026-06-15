@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: sewing.tail789d60.ts.net
+    - host: sewing.${TAILNET_DOMAIN}
       http:
         paths:
           - path: /outpost.goauthentik.io/

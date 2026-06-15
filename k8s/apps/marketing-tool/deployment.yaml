@@ -22,7 +22,7 @@ spec:
             - containerPort: 3000
           env:
             - name: BETTER_AUTH_URL
-              value: http://marketing.tail789d60.ts.net
+              value: http://marketing.${TAILNET_DOMAIN}
             - name: BETTER_AUTH_SECRET
               valueFrom:
                 secretKeyRef:
