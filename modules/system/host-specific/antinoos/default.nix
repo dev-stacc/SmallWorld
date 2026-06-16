@@ -3,6 +3,7 @@
         ../../common/all/default.nix
         ../../common/desktops/default.nix
         ./graphics.nix
+        ./it87-sensor.nix
         ./storage.nix
         ./sway.nix
     ];

@@ -88,7 +88,7 @@ in {
                     tooltip = false;
                 };
                 
-                temperature = {
+                "custom/cpu-temp" = {
                     exec = "${cpuTempsScript}";
                     format = "{}°c";
                     interval = 2;

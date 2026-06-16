@@ -9,7 +9,7 @@ in {
     programs.waybar.settings.mainBar = {
         "group/thermals" = {
             orientation = "horizontal";
-            modules = ["temperature" "custom/fan"];
+            modules = ["custom/cpu-temp" "custom/fan"];
         };
 
         "custom/fan" = {

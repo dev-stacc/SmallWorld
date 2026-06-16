@@ -16,7 +16,7 @@ in {
     programs.waybar.settings.mainBar = {
         "group/thermals" = {
             orientation = "horizontal";
-            modules = ["temperature" "custom/gpu-temp" "custom/gpu-fan"];
+            modules = ["custom/cpu-temp" "custom/gpu-temp" "custom/gpu-fan"];
         };
 
         "custom/gpu-temp" = {
