@@ -7,6 +7,7 @@
         ./hyprland.nix
         ./k3s-kubeconfig.nix
         ./overlays.nix
+        ./virtualisation.nix
     ];
 
     sops.age.keyFile = "/home/${username}/.sops/keys.txt";
