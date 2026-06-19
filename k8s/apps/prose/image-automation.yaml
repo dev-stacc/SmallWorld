@@ -1,0 +1,47 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: prose
+  namespace: flux-system
+spec:
+  image: ghcr.io/stacattacc/prose
+  interval: 1m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: prose
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: prose
+  policy:
+    alphabetical:
+      order: asc
+  filterTags:
+    pattern: "^\\d{14}-[a-f0-9]+"
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: prose
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcd
+      messageTemplate: "chore: update prose image to {{range .Changed.Changes}}{{.NewValue}}{{end}}"
+    push:
+      branch: main
+  update:
+    path: ./k8s/apps/prose
+    strategy: Setters

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prose
+  namespace: prose
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prose
+  template:
+    metadata:
+      labels:
+        app: prose
+    spec:
+      containers:
+        - name: prose
+          image: ghcr.io/stacattacc/prose:PLACEHOLDER # {"$imagepolicy": "flux-system:prose"}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=75 -XX:InitialRAMPercentage=50"
+          envFrom:
+            - secretRef:
+                name: prose-secrets
+          resources:
+            requests:
+              memory: "384Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
