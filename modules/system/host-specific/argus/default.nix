@@ -4,7 +4,7 @@
         ./networking.nix
         ./unbound.nix
         ./pihole.nix
-        ./crowdsec-bouncer.nix
+#        ./crowdsec-bouncer.nix
         ./pihole-sync.nix
     ];
 
@@ -14,11 +14,6 @@
         enable = true;
         device = "/dev/sda";
     };
-
-    swapDevices = [{
-        device = "/swapfile";
-        size = 4096;
-    }];
 
     virtualisation = {
         oci-containers.backend = "podman";
