@@ -58,6 +58,8 @@
                 amateus = "100.70.98.107";
                 aperture = "100.111.78.27";
                 antinoos = "100.103.107.52";
+                # TODO: replace with assigned tailnet IP after first `tailscale up` on argus
+                argus = "100.0.0.0";
             };
         };
         specialArgs = { inherit inputs username tailnet; };
@@ -82,6 +84,10 @@
             Aperture = nixpkgs.lib.nixosSystem {
                 inherit specialArgs;
                 modules = [ ./hosts/aperture/default.nix ];
+            };
+            Argus = nixpkgs.lib.nixosSystem {
+                inherit specialArgs;
+                modules = [ ./hosts/argus/default.nix ];
             };
         };
 
@@ -127,6 +133,16 @@
                 ];
                 deployment = {
                     targetHost = "aperture";
+                    targetUser = username;
+                };
+            };
+            Argus = { ... } : {
+                imports = [
+                    ./hosts/argus/default.nix
+                    sops-nix.nixosModules.sops
+                ];
+                deployment = {
+                    targetHost = "argus";
                     targetUser = username;
                 };
             };
