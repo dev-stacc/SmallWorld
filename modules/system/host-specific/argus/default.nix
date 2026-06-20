@@ -4,7 +4,7 @@
         ./networking.nix
         ./unbound.nix
         ./pihole.nix
-#        ./crowdsec-bouncer.nix
+        ./crowdsec-bouncer.nix
         ./pihole-sync.nix
     ];
 
