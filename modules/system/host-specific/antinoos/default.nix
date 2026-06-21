@@ -14,4 +14,8 @@
         efi.canTouchEfiVariables = true;
     };
 
+    swapDevices = [{
+        device = "/swapfile";
+        size = 16384;
+    }];
 }

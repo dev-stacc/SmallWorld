@@ -12,6 +12,5 @@ resources:
   - sewing-assistant/
   - marketing-tool/
   - prose/
-  - pihole/
   - nfs-provisioner/
   - crowdsec/

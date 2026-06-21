@@ -2,6 +2,7 @@
     imports = [
         inputs.sops-nix.nixosModules.sops
         ../../common/all/default.nix
+        ../../common/admin/default.nix
         ../../common/desktops/default.nix
         ./graphics.nix
         ./hyprland.nix

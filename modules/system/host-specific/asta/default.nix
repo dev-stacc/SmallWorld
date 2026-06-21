@@ -1,6 +1,7 @@
 { ... } : {
     imports = [
         ../../common/all/default.nix
+        ../../common/servers/always-on.nix
         ./k3s-server.nix
         ./flux.nix
         ./media.nix
@@ -17,7 +18,7 @@
 
     swapDevices = [{
         device = "/swapfile";
-       size = 8192;
+        size = 16384;
     }];
 
     hardware.graphics = {

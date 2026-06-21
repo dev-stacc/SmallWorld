@@ -25,15 +25,17 @@ hosts/                          Per-host entrypoints
 ├── antinoos/                   (one folder per host, same shape)
 ├── aperture/
 ├── amateus/
+├── argus/
 └── asta/
 
 modules/
 ├── system/                     NixOS modules
 │   ├── common/
 │   │   ├── all/                Applied to every host
+│   │   ├── admin/              Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
 │   │   ├── desktops/           Shared by desktop hosts (arcturus, antinoos)
-│   │   └── servers/            Shared by server hosts (asta, aperture, amateus)
-│   └── host-specific/          Per-host overrides (graphics, sway, vault, k3s, ...)
+│   │   └── servers/            Shared by server hosts (asta, aperture, amateus, argus)
+│   └── host-specific/          Per-host overrides (graphics, sway, vault, k3s, pi-hole, ...)
 └── home/                       home-manager modules (mirrors the system/ layout)
     ├── common/
     │   ├── all/                Shell, git, ssh, terminal
@@ -47,14 +49,13 @@ k8s/
 ├── flux/
 │   └── flux-system/            Flux bootstrap + cluster-config ConfigMap
 ├── apps/                       Workload Kustomizations (one folder per app)
-│   ├── crowdsec/               IDS + Pi-hole bouncer
+│   ├── crowdsec/               IDS (Pi-hole bouncer now lives on argus as a systemd service)
 │   ├── external-secrets/       Vault-backed runtime secrets
 │   ├── ingress-nginx/
 │   ├── jellyfin/               Media (video)
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
 │   ├── nfs-provisioner/        PVs backed by amateus
-│   ├── pihole/                 + orbital-sync to Sanctuary
 │   ├── tailscale/
 │   ├── uptime-kuma/
 │   ├── vault/
@@ -77,10 +78,11 @@ mobiles/                        Android debloat scripts for personal devices
 | Host      | Hardware                                                          | Role                                                                       |
 |-----------|-------------------------------------------------------------------|----------------------------------------------------------------------------|
 | Arcturus  | ThinkPad E490, i5 8th gen, 32 GB DDR4, Intel iGPU                 | Daily driver. Hyprland desktop. k3s control client (kubeconfig from SOPS). |
-| Asta      | Toshiba Satellite L-855 board, AMD A8/A10, 16 GB DDR3, tray-mount | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth.      |
+| Asta      | Toshiba Satellite L-855 board, AMD A8/A10, 16 GB DDR3, tray-mount | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth. Headless. |
 | Aperture  | Dell OptiPlex 3020, i5 4th gen, 12 GB DDR3, SSD + HDD, dGPU       | k3s agent. Headless.                                                       |
 | Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | NFS server backing cluster `PersistentVolume`s. Headless.                  |
 | Antinoos  | Acer Aspire board, i5 6th gen, 16 GB DDR3, 3 TB storage, RX 580   | Sway desktop driving 4K@60 over Polaris.                                   |
+| Argus     | Acer Aspire laptop, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
 
 All hosts join via Tailscale. Ingress is tailnet-only. No public DNS, no port-forwarding for now.
 
@@ -101,9 +103,11 @@ Every machine here has a history.
 
 **Antinoos** Less linear. Motherboard came from a retired Acer Aspire of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage). I wanted a light-gaming desktop because the console subscription model is going to be more expensive than this over time. First RX 580 was a defective eBay refurb that mostly worked, then didn't - probably ex-mining. Replaced with a sealed, tested RX 580 and a new Corsair PSU; mounted on a serving tray like Asta for airflow. Might become a cluster node next time I rebuild a desktop.
 
+**Argus** Another hand-me-down: some i3-380m laptop, ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle. eventual plan is to strip it down to the motherboard in the spirit of Asta and Antinoos.
+
 ### Honourable mention
 
-**Sanctuary** A Raspberry Pi Zero 2 W running Pi-hole + unbound on Raspberry Pi OS. Not part of this flake (16 GB of storage rules NixOS out for now), but it's where this whole homelab started. The orbital-sync CronJobs in `k8s/apps/pihole/orbital-sync.yaml` keep this Pi and the cluster's Pi-hole mirroring each other.
+**Sanctuary** A Raspberry Pi Zero 2 W running Pi-hole + unbound on Raspberry Pi OS. Not part of this flake (16 GB of storage rules NixOS out for now), but it's where this whole homelab started. The orbital-sync systemd timers in `modules/system/host-specific/argus/pihole-sync.nix` keep this Pi and Argus's Pi-hole mirroring each other.
 
 </details>
 

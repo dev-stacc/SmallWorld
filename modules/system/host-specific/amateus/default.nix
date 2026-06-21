@@ -1,6 +1,7 @@
 { ... } : {
     imports = [
         ../../common/all/default.nix
+        ../../common/servers/always-on.nix
         ./nfs-server.nix
     ];
 
@@ -13,7 +14,7 @@
 
     swapDevices = [{
         device = "/swapfile";
-       size = 8192;
+        size = 4096;
     }];
 
     hardware.graphics = {
