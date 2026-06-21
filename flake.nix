@@ -58,8 +58,7 @@
                 amateus = "100.70.98.107";
                 aperture = "100.111.78.27";
                 antinoos = "100.103.107.52";
-                # TODO: replace with assigned tailnet IP after first `tailscale up` on argus
-                argus = "100.0.0.0";
+                argus = "100.92.77.2";
             };
         };
         specialArgs = { inherit inputs username tailnet; };
