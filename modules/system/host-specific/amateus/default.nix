@@ -1,6 +1,7 @@
 { ... } : {
     imports = [
         ../../common/all/default.nix
+        ../../common/servers/always-on.nix
         ./nfs-server.nix
     ];
 
