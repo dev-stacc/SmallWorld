@@ -21,6 +21,9 @@
             FTLCONF_dns_upstreams = "127.0.0.1#5335";
             FTLCONF_dns_listeningMode = "all";
         };
+        environmentFiles = [
+            config.sops.templates."pihole.env".path
+        ];
         volumes = [
             "/var/lib/pihole/etc-pihole:/etc/pihole"
             "/var/lib/pihole/etc-dnsmasq.d:/etc/dnsmasq.d"
@@ -31,6 +34,5 @@
     systemd.services."podman-pihole" = {
         after = [ "unbound.service" "sops-nix.service" "tailscaled.service" ];
         requires = [ "unbound.service" ];
-        serviceConfig.EnvironmentFile = config.sops.templates."pihole.env".path;
     };
 }
