@@ -14,9 +14,7 @@
     '';
 
     virtualisation.oci-containers.containers.pihole = {
-        # TODO: confirm tag matches the current k3s deployment before cutover:
-        #   kubectl -n pihole describe pod -l app=pihole | grep Image:
-        image = "docker.io/pihole/pihole:2025.07.0";
+        image = "docker.io/pihole/pihole:2026.06.0";
         autoStart = true;
         environment = {
             TZ = "America/Toronto";
