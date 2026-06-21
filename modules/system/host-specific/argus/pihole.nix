@@ -22,6 +22,7 @@
             FTLCONF_dns_listeningMode = "all";
             FTLCONF_webserver_api_max_sessions = "32";
             FTLCONF_webserver_session_timeout = "900";
+            FTLCONF_webserver_session_restore = "false";
         };
         environmentFiles = [
             config.sops.templates."pihole.env".path
