@@ -49,14 +49,13 @@ k8s/
 ├── flux/
 │   └── flux-system/            Flux bootstrap + cluster-config ConfigMap
 ├── apps/                       Workload Kustomizations (one folder per app)
-│   ├── crowdsec/               IDS + Pi-hole bouncer
+│   ├── crowdsec/               IDS (Pi-hole bouncer now lives on argus as a systemd service)
 │   ├── external-secrets/       Vault-backed runtime secrets
 │   ├── ingress-nginx/
 │   ├── jellyfin/               Media (video)
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
 │   ├── nfs-provisioner/        PVs backed by amateus
-│   ├── pihole/                 + orbital-sync to Sanctuary
 │   ├── tailscale/
 │   ├── uptime-kuma/
 │   ├── vault/
@@ -108,7 +107,7 @@ Every machine here has a history.
 
 ### Honourable mention
 
-**Sanctuary** A Raspberry Pi Zero 2 W running Pi-hole + unbound on Raspberry Pi OS. Not part of this flake (16 GB of storage rules NixOS out for now), but it's where this whole homelab started. The orbital-sync CronJobs in `k8s/apps/pihole/orbital-sync.yaml` keep this Pi and the cluster's Pi-hole mirroring each other.
+**Sanctuary** A Raspberry Pi Zero 2 W running Pi-hole + unbound on Raspberry Pi OS. Not part of this flake (16 GB of storage rules NixOS out for now), but it's where this whole homelab started. The orbital-sync systemd timers in `modules/system/host-specific/argus/pihole-sync.nix` keep this Pi and Argus's Pi-hole mirroring each other.
 
 </details>
 

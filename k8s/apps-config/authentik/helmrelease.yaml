@@ -40,7 +40,6 @@ spec:
         - authentik-blueprint-jellyfin-oidc
         - authentik-blueprint-sewing-assistant
         - authentik-blueprint-marketing-tool
-        - authentik-blueprint-pihole
     postgresql:
       enabled: true
       auth:
