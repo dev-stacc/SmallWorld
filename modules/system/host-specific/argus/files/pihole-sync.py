@@ -80,19 +80,33 @@ def sync_lists(p_url, p_sid, s_url, s_sid, list_type):
             if e.code != 404:
                 raise
 
+def logout(base_url, sid):
+    if not sid:
+        return
+    try:
+        api(base_url, sid, "DELETE", "/api/auth")
+    except Exception as e:
+        print(f"logout warning ({base_url}): {e}", flush=True)
+
 print(f"syncing {PRIMARY_URL} -> {SECONDARY_URL}", flush=True)
+p_sid = None
+s_sid = None
 try:
-    p_sid = auth(PRIMARY_URL, PRIMARY_PASSWORD)
-    s_sid = auth(SECONDARY_URL, SECONDARY_PASSWORD)
-except Exception as e:
-    print(f"auth failed: {e}", flush=True)
-    sys.exit(1)
+    try:
+        p_sid = auth(PRIMARY_URL, PRIMARY_PASSWORD)
+        s_sid = auth(SECONDARY_URL, SECONDARY_PASSWORD)
+    except Exception as e:
+        print(f"auth failed: {e}", flush=True)
+        sys.exit(1)
 
-for dtype in ("allow", "deny"):
-    for dkind in ("exact", "regex"):
-        sync_domains(PRIMARY_URL, p_sid, SECONDARY_URL, s_sid, dtype, dkind)
+    for dtype in ("allow", "deny"):
+        for dkind in ("exact", "regex"):
+            sync_domains(PRIMARY_URL, p_sid, SECONDARY_URL, s_sid, dtype, dkind)
 
-for list_type in ("block", "allow"):
-    sync_lists(PRIMARY_URL, p_sid, SECONDARY_URL, s_sid, list_type)
+    for list_type in ("block", "allow"):
+        sync_lists(PRIMARY_URL, p_sid, SECONDARY_URL, s_sid, list_type)
 
-print("done", flush=True)
+    print("done", flush=True)
+finally:
+    logout(PRIMARY_URL, p_sid)
+    logout(SECONDARY_URL, s_sid)
