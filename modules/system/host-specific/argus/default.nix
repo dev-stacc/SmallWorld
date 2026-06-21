@@ -15,6 +15,11 @@
         device = "/dev/sda";
     };
 
+    swapDevices = [{
+        device = "/swapfile";
+        size = 8192;
+    }];
+
     virtualisation = {
         oci-containers.backend = "podman";
         podman = {

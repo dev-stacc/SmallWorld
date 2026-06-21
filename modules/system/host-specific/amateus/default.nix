@@ -13,7 +13,7 @@
 
     swapDevices = [{
         device = "/swapfile";
-       size = 8192;
+        size = 4096;
     }];
 
     hardware.graphics = {
