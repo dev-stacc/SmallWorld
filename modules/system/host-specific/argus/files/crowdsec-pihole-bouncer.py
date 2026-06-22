@@ -12,8 +12,22 @@ PIHOLE_PASSWORD = os.environ["PIHOLE_PASSWORD"]
 
 sid = None
 
+def logout(old_sid):
+    if not old_sid:
+        return
+    try:
+        req = urllib.request.Request(
+            f"{PIHOLE_URL}/api/auth",
+            headers={"Cookie": f"sid={old_sid}"},
+            method="DELETE",
+        )
+        urllib.request.urlopen(req)
+    except Exception:
+        pass
+
 def auth():
     global sid
+    logout(sid)
     payload = json.dumps({"password": PIHOLE_PASSWORD}).encode()
     req = urllib.request.Request(
         f"{PIHOLE_URL}/api/auth",

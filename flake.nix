@@ -59,6 +59,7 @@
                 aperture = "100.111.78.27";
                 antinoos = "100.103.107.52";
                 argus = "100.92.77.2";
+                sanctuary = "100.113.161.17";
             };
         };
         specialArgs = { inherit inputs username tailnet; };

@@ -5,6 +5,7 @@
         ./networking.nix
         ./unbound.nix
         ./pihole.nix
+        ./smartdns.nix
         ./crowdsec-bouncer.nix
         ./pihole-sync.nix
     ];

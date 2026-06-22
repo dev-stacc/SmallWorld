@@ -20,6 +20,7 @@
             TZ = "America/Toronto";
             FTLCONF_dns_upstreams = "127.0.0.1#5335";
             FTLCONF_dns_listeningMode = "all";
+            FTLCONF_dns_port = "5354";
             FTLCONF_webserver_api_max_sessions = "32";
             FTLCONF_webserver_session_timeout = "900";
             FTLCONF_webserver_session_restore = "false";
