@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: prose
-          image: ghcr.io/stacattacc/prose:20260619084152-a124248e045f8c4857046ac50b0dcef1ddd3b805 # {"$imagepolicy": "flux-system:prose"}
+          image: ghcr.io/stacattacc/prose:20260622223337-99f040c0eb829ddcadfb9b1c6466387d0e1322ab # {"$imagepolicy": "flux-system:prose"}
           ports:
             - containerPort: 8080
           env:
