@@ -6,4 +6,5 @@ resources:
   - deployment.yaml
   - service.yaml
   - service-funnel.yaml
+  - networkpolicy.yaml
   - image-automation.yaml

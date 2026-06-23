@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prose-allow
+  namespace: prose
+spec:
+  podSelector:
+    matchLabels:
+      app: prose
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # API surface on 8080. Allowed from any source so kubelet probes and the
+    # Tailscale operator's proxy pods can both reach it; the API enforces auth
+    # itself, so source restriction here would not add real security.
+    - ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # DNS to the cluster CoreDNS pods. Required so the JDBC driver can resolve
+    # the Neon hostname (and so any other public TLS handshake can complete).
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Public internet only. Cluster CIDRs, RFC1918, Tailscale CGNAT, and
+    # link-local (cloud metadata) are explicitly excluded. So an RCE in this
+    # pod cannot dial vault.vault.svc, grafana.monitoring.svc, other tailnet
+    # peers, or 169.254.169.254. Postgres on 5432 (Neon) and 443 (any outbound
+    # HTTPS) are the only allowed destination ports.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 100.64.0.0/10
+              - 169.254.0.0/16
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 443
