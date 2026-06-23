@@ -4,7 +4,7 @@ metadata:
   name: prose-funnel
   namespace: prose
   annotations:
-    tailscale.com/expose: "true"
+    tailscale.com/proxy-group: ingress
     tailscale.com/funnel: "true"
     tailscale.com/hostname: "prose-api"
 spec:
