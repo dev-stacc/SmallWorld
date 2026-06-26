@@ -5,7 +5,6 @@ metadata:
   namespace: prose
   annotations:
     tailscale.com/funnel: "true"
-    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   tls:
