@@ -52,6 +52,8 @@ spec:
           env:
             - name: TS_USERSPACE
               value: "true"
+            - name: TS_KUBE_SECRET
+              value: ""
             - name: TS_HOSTNAME
               value: prose-api
             - name: TS_AUTHKEY

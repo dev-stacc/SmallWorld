@@ -144,4 +144,4 @@ colmena apply                                    # remote deploy of all hosts
 - A sync app that pulls my music library into Navidrome automatically. Targeting autumn 2026.
 
 ---
-Feedback and corrections welcome.
+Feedback and corrections welcome!
