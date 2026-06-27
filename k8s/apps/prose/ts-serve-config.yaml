@@ -8,9 +8,9 @@ data:
     {
       "TCP": { "443": { "HTTPS": true } },
       "Web": {
-        "${TS_CERT_DOMAIN}:443": {
+        "prose-api.tail789d60.ts.net:443": {
           "Handlers": { "/": { "Proxy": "http://127.0.0.1:8080" } }
         }
       },
-      "AllowFunnel": { "${TS_CERT_DOMAIN}:443": true }
+      "AllowFunnel": { "prose-api.tail789d60.ts.net:443": true }
     }
