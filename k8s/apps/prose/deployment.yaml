@@ -47,3 +47,44 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 20
             failureThreshold: 3
+        - name: tailscale
+          image: tailscale/tailscale:v1.98.4
+          env:
+            - name: TS_USERSPACE
+              value: "true"
+            - name: TS_HOSTNAME
+              value: prose-api
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: prose-secrets
+                  key: TS_AUTHKEY
+            - name: TS_EXTRA_ARGS
+              value: "--advertise-tags=tag:k8s"
+            - name: TS_STATE_DIR
+              value: /tmp/ts-state
+            - name: TS_SERVE_CONFIG
+              value: /etc/ts/serve-config.json
+          volumeMounts:
+            - name: ts-serve-config
+              mountPath: /etc/ts
+              readOnly: true
+            - name: ts-state
+              mountPath: /tmp/ts-state
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: ts-serve-config
+          configMap:
+            name: ts-serve-config
+        - name: ts-state
+          emptyDir: {}
