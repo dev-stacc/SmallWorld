@@ -17,7 +17,7 @@ spec:
         kubernetes.io/hostname: asta
       containers:
         - name: marketing-tool
-          image: ghcr.io/stacattacc/marketing-tool:20260628223028-d3e690732e865e57ada5a3bdd227f2d97115150e # {"$imagepolicy": "flux-system:marketing-tool"}
+          image: ghcr.io/stacattacc/marketing-tool:20260628223506-e944a5fcd3e98d1f6dd77c3b62fc8e4d92b6d5d6 # {"$imagepolicy": "flux-system:marketing-tool"}
           ports:
             - containerPort: 3000
           env:
