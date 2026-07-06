@@ -82,7 +82,7 @@ mobiles/                        Android debloat scripts for personal devices
 | Aperture  | Dell OptiPlex 3020, i5 4th gen, 12 GB DDR3, SSD + HDD, dGPU       | k3s agent. Headless.                                                       |
 | Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | NFS server backing cluster `PersistentVolume`s. Headless.                  |
 | Antinoos  | Acer Aspire board, i5 6th gen, 16 GB DDR3, 3 TB storage, RX 580   | Sway desktop driving 4K@60 over Polaris.                                   |
-| Argus     | Acer Aspire laptop, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
+| Argus     | Acer Aspire 7741, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
 
 All hosts join via Tailscale. Ingress is tailnet-only. No public DNS, no port-forwarding for now.
 
