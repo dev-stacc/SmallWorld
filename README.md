@@ -99,11 +99,11 @@ Every machine here has a history.
 
 **Amateus** A refurbished ThinkPad SL500 from eBay, missing a few keys but the seller was honest about it. Cleaned, repasted, +2 GB DDR2. Keyboard feels great even with the gaps. Used to be the k3s agent. Eventual plan is a modern-internals mod in the spirit of the X210AI project (modern CPU, DDR5, NVMe inside the vintage chassis).
 
-**Aperture** A refurbished Dell OptiPlex 3020 from eBay, $80. i5 4th gen, 12 GB DDR3, SSD + HDD, dedicated GPU. Light dust, fresh paste, NixOS, `git pull`, done - fastest a host has ever joined this cluster. Original case kept. It's now the k3s agent, taking over the role Amateus used to fill.
+**Aperture** A refurbished Dell OptiPlex 3020 from eBay, $80. i5 4th gen, 12 GB DDR3, SSD + HDD, dedicated GPU. Light dust, fresh paste, NixOS, `git pull`, done. That was the fastest a host has ever joined this cluster. Original case kept. It's now the k3s agent, taking over the role Amateus used to fill.
 
-**Antinoos** Less linear. Motherboard came from a retired Acer Aspire of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage). I wanted a light-gaming desktop because the console subscription model is going to be more expensive than this over time. First RX 580 was a defective eBay refurb that mostly worked, then didn't - probably ex-mining. Replaced with a sealed, tested RX 580 and a new Corsair PSU; mounted on a serving tray like Asta for airflow. Might become a cluster node next time I rebuild a desktop.
+**Antinoos** Less linear. Motherboard came from a retired Acer Aspire of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage). I wanted a light-gaming desktop because the console subscription model is going to be more expensive than this over time. First RX 580 was a defective eBay refurb that mostly worked, then didn't (probably ex-mining). Replaced with a sealed, tested RX 580 and a new Corsair PSU. Mounted on a serving tray like Asta for airflow. Might become a cluster node next time I rebuild a desktop.
 
-**Argus** Another hand-me-down: some i3-380m laptop, ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle. eventual plan is to strip it down to the motherboard in the spirit of Asta and Antinoos.
+**Argus** An Acer Aspire 7741 from ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle because of windows. Will eventuall strip it down to the motherboard in the spirit of Asta and Antinoos. It's currently running Pi-Hole 24/7.
 
 ### Honourable mention
 
