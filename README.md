@@ -93,7 +93,7 @@ All hosts join via Tailscale. Ingress is tailnet-only. No public DNS, no port-fo
 
 Every machine here has a history.
 
-**Arcturus** A ThinkPad E490 (i5 8th gen, Intel iGPU). Bought 2018-19 for the CÉGEP with Windows 10 that auto-promoted itself to 11. The 4 GB Windows baseline made IDEs crawl, so I switched to Linux Mint, then Arch (dependency-conflict hell, dotfile sprawl), then NixOS. Since then: 32 GB RAM, new battery, and a two-heatpipe heatsink swap I had to do twice because the first Amazon seller shipped an E480 part claiming it fit and I found one on Alibaba that actually fit. Stock E490s idles at 50-65 °C, this one stays under 40, and the workflow usually fits in 3 GB so the 32 is overkill in the best way.
+**Arcturus** A ThinkPad E490 (i5 8th gen, Intel iGPU). Bought 2018-19 for the CÉGEP with Windows 10 that auto-promoted itself to 11. The 4 GB Windows baseline made IDEs crawl, so I switched to Linux Mint, then Arch (dependency-conflict hell, dotfile sprawl), then NixOS. Since then: 32 GB RAM, new battery, and a two-heatpipe heatsink swap I had to do twice because the first Amazon seller shipped an E480 part claiming it fit and I found one on Alibaba that actually fit. Stock E490s idles at 50-65 °C, this one usually stays around 40, and the workflow usually fits in 3 GB so the 32 is overkill in the best way.
 
 **Asta** A stripped-down Toshiba Satellite L-855 (socketed AMD A8/A10, ~10+ years old) my brother handed down. I tore off the shell and standoffed the motherboard onto a serving tray with the HDD, RAM, and heatsink. At that point it was literally going to serve things. 16 GB DDR3 upgrade done, CPU swap planned. First node in the cluster.
 
