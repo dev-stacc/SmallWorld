@@ -22,8 +22,7 @@ spec:
           enabled: true
           existingClaim: crowdsec-db
       service:
-        type: NodePort
-        nodePort: 30008
+        type: ClusterIP
       env:
         - name: ENROLL_KEY
           valueFrom:
