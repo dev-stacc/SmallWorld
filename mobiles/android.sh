@@ -43,6 +43,10 @@ case "$MODULE" in
     _source_group apps;    run_apps
     _source_group config;  run_config
     ;;
+  family)
+    _source_group apps;   run_light
+    _source_group config; run_family
+    ;;
   debloat|apps|config)
     _source_group "$MODULE"; "run_$MODULE"
     ;;
@@ -54,7 +58,7 @@ case "$MODULE" in
     ;;
   *)
     echo "unknown module: $MODULE"
-    echo "usage: $0 [device] [all|debloat|apps|config|debloat/nuclear|apps/fdroid|config/privacy|...]"
+    echo "usage: $0 [device] [all|family|debloat|apps|config|debloat/nuclear|apps/fdroid|config/privacy|...]"
     exit 1
     ;;
 esac
