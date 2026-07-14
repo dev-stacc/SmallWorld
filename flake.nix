@@ -1,5 +1,5 @@
 {
-    description = "Small World in a universe full of giants";
+    description = "Main flake";
 
     inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
