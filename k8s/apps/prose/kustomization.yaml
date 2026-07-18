@@ -7,4 +7,5 @@ resources:
   - deployment.yaml
   - service.yaml
   - networkpolicy.yaml
+  - postgres.yaml
   - image-automation.yaml

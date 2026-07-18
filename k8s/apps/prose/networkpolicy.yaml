@@ -32,11 +32,15 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    # Public internet only. Cluster CIDRs, RFC1918, Tailscale CGNAT, and
-    # link-local (cloud metadata) are explicitly excluded. So an RCE in this
-    # pod cannot dial vault.vault.svc, grafana.monitoring.svc, other tailnet
-    # peers, or 169.254.169.254. Postgres on 5432 (Neon) and 443 (any outbound
-    # HTTPS) are the only allowed destination ports.
+    # In-cluster postgres pod.
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Public HTTPS for any outbound calls (e.g. Tailscale control plane).
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
@@ -47,7 +51,5 @@ spec:
               - 100.64.0.0/10
               - 169.254.0.0/16
       ports:
-        - protocol: TCP
-          port: 5432
         - protocol: TCP
           port: 443
