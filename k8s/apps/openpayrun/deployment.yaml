@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: openpayrun
-          image: ghcr.io/stacattacc/openpayrun:20260718052733-f61384dbc748d527626fb045c200a833cb622166 # {"$imagepolicy": "flux-system:openpayrun"}
+          image: ghcr.io/stacattacc/openpayrun:20260718111600-85a640f477b2a957f086fa6e84eb1c4bfc079c94 # {"$imagepolicy": "flux-system:openpayrun"}
           ports:
             - containerPort: 8080
           env:
