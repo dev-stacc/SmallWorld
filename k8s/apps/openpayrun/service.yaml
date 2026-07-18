@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: openpayrun
   namespace: openpayrun
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/funnel: "true"
+    tailscale.com/hostname: openpayrun-api
 spec:
   selector:
     app: openpayrun

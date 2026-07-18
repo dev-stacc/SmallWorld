@@ -4,7 +4,6 @@ resources:
   - namespace.yaml
   - externalsecret.yaml
   - mssql.yaml
-  - ts-serve-config.yaml
   - deployment.yaml
   - service.yaml
   - networkpolicy.yaml
