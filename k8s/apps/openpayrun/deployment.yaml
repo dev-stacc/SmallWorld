@@ -63,6 +63,8 @@ spec:
               value: "--advertise-tags=tag:k8s"
             - name: TS_SERVE_CONFIG
               value: /etc/ts/serve-config.json
+            - name: TS_KUBE_SECRET
+              value: ""
             - name: TS_STATE_DIR
               value: /tmp/ts-state
           resources:
