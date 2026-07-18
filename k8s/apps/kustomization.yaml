@@ -12,5 +12,6 @@ resources:
   - sewing-assistant/
   - marketing-tool/
   - prose/
+  - openpayrun/
   - nfs-provisioner/
   - crowdsec/
