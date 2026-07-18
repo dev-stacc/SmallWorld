@@ -22,7 +22,7 @@ spec:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
             - name: AllowedOrigins__0
-              value: https://openpayrun.vercel.app # update after Vercel deploy
+              value: https://open-payrun.vercel.app
           envFrom:
             - secretRef:
                 name: openpayrun-secrets
