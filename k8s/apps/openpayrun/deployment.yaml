@@ -13,7 +13,6 @@ spec:
       labels:
         app: openpayrun
     spec:
-      serviceAccountName: openpayrun-tailscale
       containers:
         - name: openpayrun
           image: ghcr.io/stacattacc/openpayrun:20260718111600-85a640f477b2a957f086fa6e84eb1c4bfc079c94 # {"$imagepolicy": "flux-system:openpayrun"}
@@ -65,7 +64,9 @@ spec:
             - name: TS_SERVE_CONFIG
               value: /etc/ts/serve-config.json
             - name: TS_KUBE_SECRET
-              value: tailscale-state
+              value: ""
+            - name: TS_STATE_DIR
+              value: /tmp/ts-state
           resources:
             requests:
               cpu: 20m
@@ -77,7 +78,11 @@ spec:
             - name: ts-serve-config
               mountPath: /etc/ts
               readOnly: true
+            - name: ts-state
+              mountPath: /tmp/ts-state
       volumes:
         - name: ts-serve-config
           configMap:
             name: ts-serve-config
+        - name: ts-state
+          emptyDir: {}
