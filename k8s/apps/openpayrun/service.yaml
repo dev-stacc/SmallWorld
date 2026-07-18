@@ -4,13 +4,13 @@ metadata:
   name: openpayrun
   namespace: openpayrun
   annotations:
-    tailscale.com/expose: "true"
     tailscale.com/funnel: "true"
     tailscale.com/hostname: openpayrun-api
 spec:
+  loadBalancerClass: tailscale
   selector:
     app: openpayrun
   ports:
     - port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: LoadBalancer
