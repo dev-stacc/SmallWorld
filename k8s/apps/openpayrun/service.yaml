@@ -3,14 +3,28 @@ kind: Service
 metadata:
   name: openpayrun
   namespace: openpayrun
-  annotations:
-    tailscale.com/funnel: "true"
-    tailscale.com/hostname: openpayrun-api
 spec:
-  loadBalancerClass: tailscale
   selector:
     app: openpayrun
   ports:
     - port: 8080
       targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openpayrun
+  namespace: openpayrun
+  annotations:
+    tailscale.com/funnel: "true"
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: openpayrun
+      port:
+        number: 8080
+  tls:
+    - hosts:
+        - openpayrun-api
