@@ -39,7 +39,7 @@ spec:
       author:
         email: fluxcdbot@users.noreply.github.com
         name: fluxcdbot
-      messageTemplate: 'chore: update openpayrun image to {{range .Updated.Images}}{{.}}{{end}}'
+      messageTemplate: 'chore: update openpayrun image to {{range .Changed.Images}}{{.}}{{end}}'
     push:
       branch: main
   update:
