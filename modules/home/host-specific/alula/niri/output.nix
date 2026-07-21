@@ -1,0 +1,3 @@
+{ ... }: {
+    programs.niri.settings.outputs = {};
+}
