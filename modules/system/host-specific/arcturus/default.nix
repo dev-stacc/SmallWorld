@@ -4,6 +4,7 @@
         ../../common/all/default.nix
         ../../common/admin/default.nix
         ../../common/desktops/default.nix
+        ../../common/desktops/steam.nix
         ./graphics.nix
         ./hyprland.nix
         ./k3s-kubeconfig.nix
