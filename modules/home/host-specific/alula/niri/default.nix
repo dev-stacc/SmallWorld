@@ -1,5 +1,6 @@
-{ ... }: {
+{ inputs, ... }: {
     imports = [
+        inputs.niri.homeModules.niri
         ./bind.nix
         ./general.nix
         ./input.nix
