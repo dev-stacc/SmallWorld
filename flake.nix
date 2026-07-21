@@ -60,6 +60,7 @@
                 antinoos = "100.103.107.52";
                 argus = "100.92.77.2";
                 sanctuary = "100.113.161.17";
+                alula = "PLACEHOLDER";
             };
         };
         specialArgs = { inherit inputs username tailnet; };
@@ -88,6 +89,10 @@
             Argus = nixpkgs.lib.nixosSystem {
                 inherit specialArgs;
                 modules = [ ./hosts/argus/default.nix ];
+            };
+            Alula = nixpkgs.lib.nixosSystem {
+                inherit specialArgs;
+                modules = [ ./hosts/alula/default.nix ];
             };
         };
 
@@ -143,6 +148,16 @@
                 ];
                 deployment = {
                     targetHost = "argus";
+                    targetUser = username;
+                };
+            };
+            Alula = { ... } : {
+                imports = [
+                    ./hosts/alula/default.nix
+                    sops-nix.nixosModules.sops
+                ];
+                deployment = {
+                    targetHost = "alula";
                     targetUser = username;
                 };
             };
