@@ -12,6 +12,7 @@
         slurp
         wl-clipboard
         xdg-desktop-portal-termfilechooser
+        xwayland-satellite
     ];
 
     programs.xwayland.enable = true;
