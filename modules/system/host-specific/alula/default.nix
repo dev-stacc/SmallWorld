@@ -26,6 +26,7 @@
 
     nix.settings = {
         substituters = [ "https://niri.cachix.org" ];
+        trusted-substituters = [ "https://niri.cachix.org" ];
         trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfry9N4MhbkDiwnZCPLx/g9LUVmsk=" ];
     };
 
