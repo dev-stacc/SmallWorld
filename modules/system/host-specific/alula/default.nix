@@ -2,6 +2,7 @@
     imports = [
         ../../common/all/default.nix
         ../../common/desktops/default.nix
+        ./graphics.nix
         ./niri.nix
         ./overlays.nix
     ];
