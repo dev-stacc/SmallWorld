@@ -4,10 +4,12 @@ in {
     programs.niri.settings.binds = {
         "Mod+Return".action.spawn = [ "kitty" ];
         "Mod+D".action.spawn      = [ "kitty" "--title" "kitty-launcher" "-e" "${bin}/kitty-launcher" ];
+        "Mod+N".action.spawn      = [ "kitty" "--title" "kitty-control" "-e" "${bin}/kitty-control" ];
         "Mod+E".action.spawn      = [ "kitty" "--title" "kitty-explorer" "-e" "yazi" ];
 
         "Mod+Q".action.close-window       = {};
         "Mod+F".action.fullscreen-window  = {};
+        "Mod+M".action.quit               = {};
         "Mod+Shift+C".action.quit         = {};
 
         "Mod+Left".action.focus-column-left   = {};
