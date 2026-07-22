@@ -26,14 +26,15 @@ hosts/                          Per-host entrypoints
 ├── aperture/
 ├── amateus/
 ├── argus/
-└── asta/
+├── asta/
+└── alula/
 
 modules/
 ├── system/                     NixOS modules
 │   ├── common/
 │   │   ├── all/                Applied to every host
 │   │   ├── admin/              Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
-│   │   ├── desktops/           Shared by desktop hosts (arcturus, antinoos)
+│   │   ├── desktops/           Shared by desktop hosts (arcturus, antinoos, alula)
 │   │   └── servers/            Shared by server hosts (asta, aperture, amateus, argus)
 │   └── host-specific/          Per-host overrides (graphics, sway, vault, k3s, pi-hole, ...)
 └── home/                       home-manager modules (mirrors the system/ layout)
@@ -83,6 +84,7 @@ mobiles/                        Android debloat scripts for personal devices
 | Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | NFS server backing cluster `PersistentVolume`s. Headless.                  |
 | Antinoos  | Acer Aspire board, i5 6th gen, 16 GB DDR3, 3 TB storage, RX 580   | Sway desktop driving 4K@60 over Polaris.                                   |
 | Argus     | Acer Aspire 7741, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
+| Alula     | Intel Compute Stick T6, Atom x5-Z8350, 4 GB RAM, 64 GB storage   | Portable niri desktop. Coding + browsing. Future cyberdeck base.           |
 
 All hosts join via Tailscale. Ingress is tailnet-only. No public DNS, no port-forwarding for now.
 
@@ -104,6 +106,8 @@ Every machine here has a history.
 **Antinoos** Less linear. Motherboard came from a retired Acer Aspire of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage). I wanted a light-gaming desktop because the console subscription model is going to be more expensive than this over time. First RX 580 was a defective eBay refurb that mostly worked, then didn't (probably ex-mining). Replaced with a sealed, tested RX 580 and a new Corsair PSU. Mounted on a serving tray like Asta for airflow. Might become a cluster node next time I rebuild a desktop.
 
 **Argus** An Acer Aspire 7741 from ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle because of windows. Will eventuall strip it down to the motherboard in the spirit of Asta and Antinoos. It's currently running Pi-Hole 24/7.
+
+**Alula** An Intel Compute Stick T6 from eBay. Wanted something portable with real x86 compatibility rather than a Pi, plus the nostalgia factor of a full PC on a stick. 4 GB RAM and 64 GB storage covers nixvim, Brave, and a terminal. Niri made sense over a traditional tiling WM since scrollable columns adapt better to whatever screen is nearby. Long-term plan is a modular cyberdeck build around it.
 
 ### Honourable mention
 
