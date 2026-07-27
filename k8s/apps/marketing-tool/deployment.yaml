@@ -38,6 +38,11 @@ spec:
                 secretKeyRef:
                   name: marketing-tool-secrets
                   key: ANTHROPIC_API_KEY
+            - name: BETTER_AUTH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: marketing-tool-secrets
+                  key: BETTER_AUTH_API_KEY
           resources:
             requests:
               memory: "256Mi"
