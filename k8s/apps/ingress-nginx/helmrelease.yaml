@@ -15,11 +15,16 @@ spec:
         namespace: flux-system
   values:
     controller:
-      allowSnippetAnnotations: true
+      allowSnippetAnnotations: false
       admissionWebhooks:
         enabled: false
-      extraArgs:
-        enable-annotation-validation: "false"
+      addHeaders:
+        X-Frame-Options: "SAMEORIGIN"
+        X-Content-Type-Options: "nosniff"
+        Referrer-Policy: "strict-origin-when-cross-origin"
+        Permissions-Policy: "geolocation=(), microphone=(), camera=()"
+        X-XSS-Protection: "1; mode=block"
+        Strict-Transport-Security: "max-age=31536000; includeSubDomains"
       service:
         type: LoadBalancer
         loadBalancerClass: tailscale

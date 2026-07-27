@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: grafana.tail789.ts.net
+    - host: grafana.${TAILNET_DOMAIN}
       http:
         paths:
           - path: /

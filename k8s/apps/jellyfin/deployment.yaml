@@ -30,14 +30,26 @@ spec:
               fi
               apk add --no-cache curl jq unzip ca-certificates
               MANIFEST=$(curl -fsSL https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json)
-              INFO=$(echo "$MANIFEST" | jq -r '.[0].versions[] | select(.targetAbi | startswith("10.11")) | [.sourceUrl,.version] | @tsv' | head -1)
+              INFO=$(echo "$MANIFEST" | jq -r '.[0].versions[] | select(.targetAbi | startswith("10.11")) | [.sourceUrl,.version,.checksum] | @tsv' | head -1)
               if [ -z "$INFO" ]; then
-                INFO=$(echo "$MANIFEST" | jq -r '[.[0].versions[0].sourceUrl, .[0].versions[0].version] | @tsv')
+                INFO=$(echo "$MANIFEST" | jq -r '[.[0].versions[0].sourceUrl, .[0].versions[0].version, .[0].versions[0].checksum] | @tsv')
               fi
               SOURCE_URL=$(echo "$INFO" | cut -f1)
               PLUGIN_VERSION=$(echo "$INFO" | cut -f2)
-              echo "Downloading SSO-Auth $PLUGIN_VERSION from $SOURCE_URL"
-              curl -fsSL -o /tmp/sso.zip "$SOURCE_URL"
+              EXPECTED_CHECKSUM=$(echo "$INFO" | cut -f3)
+              ATTEMPTS=0
+              while true; do
+                ATTEMPTS=$((ATTEMPTS + 1))
+                echo "Downloading SSO-Auth $PLUGIN_VERSION from $SOURCE_URL (attempt $ATTEMPTS)"
+                curl -fsSL -o /tmp/sso.zip "$SOURCE_URL"
+                ACTUAL_CHECKSUM=$(md5sum /tmp/sso.zip | cut -d' ' -f1)
+                if [ "$ACTUAL_CHECKSUM" = "$EXPECTED_CHECKSUM" ]; then
+                  echo "Checksum verified"
+                  break
+                fi
+                echo "Checksum mismatch (attempt $ATTEMPTS): expected=$EXPECTED_CHECKSUM got=$ACTUAL_CHECKSUM, retrying..."
+                rm -f /tmp/sso.zip
+              done
               mkdir -p "$PLUGIN_DIR/SSO-Auth_$${PLUGIN_VERSION}"
               unzip -o /tmp/sso.zip -d "$PLUGIN_DIR/SSO-Auth_$${PLUGIN_VERSION}"
               echo "SSO-Auth installed"
