@@ -8,7 +8,7 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
@@ -22,6 +22,275 @@
     { device = "/dev/disk/by-uuid/2F2C-4E81";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/f254857d-42a4-40a3-ba9e-3485ff416cdc/volumes/kubernetes.io~projected/kube-api-access-94d5j" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/dd239c8b-527d-47ff-ae62-397d373c4cfe/volumes/kubernetes.io~projected/kube-api-access-458qf" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/4f51ff8e-755a-473d-86cc-200ae7017b4e/volumes/kubernetes.io~local-volume/pvc-2e2cd2f4-16c0-43a2-80f9-9ce2d3519a91" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-2e2cd2f4-16c0-43a2-80f9-9ce2d3519a91_prose_postgres-data";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/c5c2d80e-322a-462c-886b-b755151d84f8/volumes/kubernetes.io~projected/kube-api-access-bpqd5" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/c5c2d80e-322a-462c-886b-b755151d84f8/volumes/kubernetes.io~local-volume/pvc-8a707a96-096a-4309-8378-27def7887210" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-8a707a96-096a-4309-8378-27def7887210_crowdsec_crowdsec-config-pvc";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/49dd8266-d588-4ded-867d-9a3b595efeb5/volumes/kubernetes.io~projected/kube-api-access-7966s" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/49dd8266-d588-4ded-867d-9a3b595efeb5/volumes/kubernetes.io~secret/config" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/4f51ff8e-755a-473d-86cc-200ae7017b4e/volumes/kubernetes.io~projected/kube-api-access-t85qv" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/855a872e-75a8-4246-a2d0-5bba2c0c6cd2/volumes/kubernetes.io~projected/kube-api-access-gp44b" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/855a872e-75a8-4246-a2d0-5bba2c0c6cd2/volumes/kubernetes.io~local-volume/pvc-c8e027f2-b74a-499a-9a0e-228c15f78966" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-c8e027f2-b74a-499a-9a0e-228c15f78966_openpayrun_mssql-data";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/c5c2d80e-322a-462c-886b-b755151d84f8/volumes/kubernetes.io~local-volume/pvc-f3e6d0b3-04b7-4d7a-96b9-df0961c3a0d2" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-f3e6d0b3-04b7-4d7a-96b9-df0961c3a0d2_crowdsec_crowdsec-db";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/a60ab130-f7b7-458b-8f8e-da1a132904a1/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/a60ab130-f7b7-458b-8f8e-da1a132904a1/volumes/kubernetes.io~projected/kube-api-access-5b9st" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/fbbb32ce-4d82-43c4-b400-5e061eab928a/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/fbbb32ce-4d82-43c4-b400-5e061eab928a/volumes/kubernetes.io~secret/serve-config-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/fbbb32ce-4d82-43c4-b400-5e061eab928a/volumes/kubernetes.io~projected/kube-api-access-dbx7j" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volumes/kubernetes.io~secret/config" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volumes/kubernetes.io~projected/tls-assets" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volumes/kubernetes.io~local-volume/pvc-caefaff0-ac03-417f-81ca-1d9e729c5dd6" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-caefaff0-ac03-417f-81ca-1d9e729c5dd6_monitoring_prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volumes/kubernetes.io~secret/web-config" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volumes/kubernetes.io~empty-dir/config-out" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volumes/kubernetes.io~projected/kube-api-access-kvg9b" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/dce9e80d-731d-4efb-932d-fbb635e91b39/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/dce9e80d-731d-4efb-932d-fbb635e91b39/volumes/kubernetes.io~projected/kube-api-access-hw5xv" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~secret/cluster-tls-config" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~secret/config-volume" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~local-volume/pvc-eadfe174-aecc-4167-8e2b-cb78eaad7ff2" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-eadfe174-aecc-4167-8e2b-cb78eaad7ff2_monitoring_alertmanager-kube-prometheus-stack-alertmanager-db-alertmanager-kube-prometheus-stack-alertmanager-0";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~projected/tls-assets" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~empty-dir/config-out" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~secret/web-config" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volumes/kubernetes.io~projected/kube-api-access-psgln" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/be57b715-1b1d-4a46-853e-9f3557184266/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/be57b715-1b1d-4a46-853e-9f3557184266/volumes/kubernetes.io~projected/kube-api-access-l9gq2" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/9a54b14d-1ad0-451e-97fb-5c633cf805cb/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/9a54b14d-1ad0-451e-97fb-5c633cf805cb/volumes/kubernetes.io~projected/kube-api-access-t9qrf" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/55ea05fa-f4b3-4229-8f73-2f8aa92e7063/volumes/kubernetes.io~projected/kube-api-access-nrrpb" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/55ea05fa-f4b3-4229-8f73-2f8aa92e7063/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/7c053c7d-5e71-4061-a834-cc61a6e101ed/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/7c053c7d-5e71-4061-a834-cc61a6e101ed/volumes/kubernetes.io~projected/kube-api-access-59vjw" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/fb0f4d27-d1d5-46dc-bab2-f2d8710fe6ea/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/fb0f4d27-d1d5-46dc-bab2-f2d8710fe6ea/volumes/kubernetes.io~projected/kube-api-access-m4mjx" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/a8638125-01bb-4e17-8768-8e78ded171cc/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/a8638125-01bb-4e17-8768-8e78ded171cc/volumes/kubernetes.io~projected/kube-api-access-89nvc" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/123c7b1e-8961-45d7-9098-dd032631c7fb/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/123c7b1e-8961-45d7-9098-dd032631c7fb/volumes/kubernetes.io~projected/kube-api-access-mhp6m" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/f0d8d06d-c343-4a9f-9e7c-b4b6c398b625/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/f0d8d06d-c343-4a9f-9e7c-b4b6c398b625/volumes/kubernetes.io~projected/kube-api-access-lmjwq" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/1411fedc-a197-46d6-92c6-9436a02cf4ca/volumes/kubernetes.io~secret/tailscaledconfig-0" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/1411fedc-a197-46d6-92c6-9436a02cf4ca/volumes/kubernetes.io~projected/kube-api-access-pd6cp" =
+    { device = "tmpfs";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/kubelet/pods/c5c2d80e-322a-462c-886b-b755151d84f8/volume-subpaths/pvc-f3e6d0b3-04b7-4d7a-96b9-df0961c3a0d2/crowdsec-lapi/1" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-f3e6d0b3-04b7-4d7a-96b9-df0961c3a0d2_crowdsec_crowdsec-db/crowdsec";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/596d707e-3e07-44d5-89a4-1f1c80089491/volume-subpaths/pvc-eadfe174-aecc-4167-8e2b-cb78eaad7ff2/alertmanager/3" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-eadfe174-aecc-4167-8e2b-cb78eaad7ff2_monitoring_alertmanager-kube-prometheus-stack-alertmanager-db-alertmanager-kube-prometheus-stack-alertmanager-0/alertmanager-db";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/kubelet/pods/82af04c7-c50d-4f03-b8e4-eed203a7a45a/volume-subpaths/pvc-caefaff0-ac03-417f-81ca-1d9e729c5dd6/prometheus/2" =
+    { device = "/var/lib/rancher/k3s/storage/pvc-caefaff0-ac03-417f-81ca-1d9e729c5dd6_monitoring_prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0/prometheus-db";
+      fsType = "none";
+      options = [ "bind" ];
     };
 
   swapDevices = [ ];
