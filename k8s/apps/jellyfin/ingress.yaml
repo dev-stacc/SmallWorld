@@ -27,6 +27,9 @@ kind: Ingress
 metadata:
   name: jellyfin-outpost
   namespace: jellyfin
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_cookie_domain ~^http://(.+)$ $1;
 spec:
   ingressClassName: nginx
   rules:
