@@ -12,8 +12,6 @@ in {
         opts = import ./opts.nix { inherit username; };
         treesitter = import ./treesitter.nix;
         keymaps = import ./keymaps.nix;
-        luasnip.enable = true;
-
         extraConfigLua = extras.extraConfigLua;
 
         plugins = {
@@ -23,6 +21,7 @@ in {
             transparent = import ./transparent.nix;
             cmp = import ./cmp.nix;
             lsp = import ./lsp.nix;
+            luasnip.enable = true;
         };
     };
 }
