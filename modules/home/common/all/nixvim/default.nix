@@ -10,7 +10,6 @@ in {
         globals.mapleader = " ";
 
         opts = import ./opts.nix { inherit username; };
-        treesitter = import ./treesitter.nix;
         keymaps = import ./keymaps.nix;
         extraConfigLua = extras.extraConfigLua;
 
@@ -22,6 +21,7 @@ in {
             cmp = import ./cmp.nix;
             lsp = import ./lsp.nix;
             luasnip.enable = true;
+            treesitter = import ./treesitter.nix;
         };
     };
 }
