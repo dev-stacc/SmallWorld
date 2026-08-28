@@ -1,9 +1,7 @@
 { pkgs, username, ... }: {
     programs.yt-dlp = {
         enable = true;
-        package = pkgs.yt-dlp.override {
-            javascriptSupport = false;
-        };
+        package = pkgs.yt-dlp;
         settings = {
             paths = "/home/${username}/media/fresh-downloads";
             output = "%(title)s.%(ext)s";

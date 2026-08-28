@@ -12,7 +12,6 @@ in {
         opts = import ./opts.nix { inherit username; };
         lsp = import ./lsp.nix;
         treesitter = import ./treesitter.nix;
-        cmp = import ./cmp.nix;
         keymaps = import ./keymaps.nix;
         luasnip.enable = true;
 
@@ -23,6 +22,7 @@ in {
             telescope = import ./telescope.nix;
             nvim-tree = import ./nvimtree.nix;
             transparent = import ./transparent.nix;
+            cmp = import ./cmp.nix;
         };
     };
 }
