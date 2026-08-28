@@ -17,6 +17,6 @@
 
     home.packages = with pkgs; [
         ffmpeg
-        deno
+        nodejs
     ];
 }
