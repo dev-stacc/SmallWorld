@@ -14,13 +14,6 @@ spec:
     - host: jellyfin.${TAILNET_DOMAIN}
       http:
         paths:
-          - path: /outpost.goauthentik.io/
-            pathType: Prefix
-            backend:
-              service:
-                name: authentik-outpost
-                port:
-                  number: 80
           - path: /
             pathType: Prefix
             backend:
@@ -28,3 +21,22 @@ spec:
                 name: jellyfin
                 port:
                   number: 8096
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-outpost
+  namespace: jellyfin
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: jellyfin.${TAILNET_DOMAIN}
+      http:
+        paths:
+          - path: /outpost.goauthentik.io/
+            pathType: Prefix
+            backend:
+              service:
+                name: authentik-outpost
+                port:
+                  number: 80
