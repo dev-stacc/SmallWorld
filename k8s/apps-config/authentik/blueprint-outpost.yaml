@@ -25,6 +25,7 @@ data:
           config:
             authentik_host: http://authentik.${TAILNET_DOMAIN}:9000
             authentik_host_insecure: false
+            cookie_domain: ${TAILNET_DOMAIN}
             log_level: info
             kubernetes_replicas: 1
             kubernetes_namespace: authentik
