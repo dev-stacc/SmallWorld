@@ -10,7 +10,7 @@
         ];
         mapping = {
             "<C-n>" = "cmp.mapping.select_next_item()";
-            "<C-p>" = "cmp.mapping.select_previous_item()";
+            "<C-p>" = "cmp.mapping.select_prev_item()";
             "<CR>" = "cmp.mapping.confirm({ select = true })";
         };
     };
