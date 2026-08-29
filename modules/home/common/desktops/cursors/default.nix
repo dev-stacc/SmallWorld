@@ -7,6 +7,7 @@ let
   '';
 in {
   home.pointerCursor = {
+    enable = true;
     package = cyberpunk-cursors;
     name = "Cyberpunk2077";
     size = 12;

@@ -2,14 +2,12 @@
     programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
-        matchBlocks = {
-            "*" = {
-                extraOptions.AddKeysToAgent = "yes";
-            };
-            "arcturus" = {
-                hostname = tailnet.ips.arcturus;
-                user = username;
-                identityFile = "~/.ssh/id_ed25519";
+        settings = {
+            AddKeysToAgent = "yes";
+            "Host arcturus" = {
+                Hostname = tailnet.ips.arcturus;
+                User = username;
+                IdentityFile = "~/.ssh/id_ed25519";
             };
         };
     };

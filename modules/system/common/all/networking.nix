@@ -39,20 +39,22 @@
                 PermitRootLogin = "no";
             };
         };
-        networkd-dispatcher = {
-            enable = true;
-            rules."50-tailscale-optimizations" = {
-                onState = [ "routable" ];
-                script = ''
-                    ${pkgs.ethtool}/bin/ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off
-                '';
-            };
-        };
     };
     sops.secrets.tailscale-authkey = {
         sopsFile = "${inputs.self}/secrets/secrets.yaml";
     };
 
-    systemd.network.wait-online.enable = false; 
+    systemd.network.wait-online.enable = false;
     boot.initrd.systemd.network.wait-online.enable = false;
+
+    systemd.services.tailscale-gro-fix = {
+        description = "Apply GRO optimizations for Tailscale";
+        after = [ "tailscaled.service" "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${pkgs.ethtool}/bin/ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off";
+        };
+    };
 }

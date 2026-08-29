@@ -6,13 +6,7 @@ in {
         vesktop.enable = false;
         discord = {
             enable = true;
-            package = inputs.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.discord.overrideAttrs (_: {
-                version = "0.0.134";
-                src = pkgs.fetchurl {
-                    url = "https://stable.dl2.discordapp.net/apps/linux/0.0.134/discord-0.0.134.tar.gz";
-                    hash = "sha256-N4gdcj8LYiXxvkbZhZyiWr375vaXt6JnwcoqLOKMsGg=";
-                };
-            });
+            silenceNoModClientWarning = true;
         };
 
         config = {
@@ -20,7 +14,7 @@ in {
             transparent = true;
             enableReactDevtools = true;
             plugins = {
-                ClearURLs.enable = true;
+                clearUrls.enable = true;
 
                 noDevtoolsWarning.enable = true;
                 noReplyMention.enable = true;
