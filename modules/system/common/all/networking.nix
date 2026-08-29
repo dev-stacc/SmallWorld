@@ -1,10 +1,7 @@
-{ config, pkgs, inputs, ... } : {
+{ config, inputs, ... } : {
     imports = [
 	      inputs.sops-nix.nixosModules.sops
     ];
-    environment.systemPackages = [
-        pkgs.ethtool
-    ];    
     networking = {
         wireless = {
             iwd = {
@@ -47,14 +44,4 @@
     systemd.network.wait-online.enable = false;
     boot.initrd.systemd.network.wait-online.enable = false;
 
-    systemd.services.tailscale-gro-fix = {
-        description = "Apply GRO optimizations for Tailscale";
-        after = [ "tailscaled.service" "network.target" ];
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            ExecStart = "${pkgs.ethtool}/bin/ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off";
-        };
-    };
 }
