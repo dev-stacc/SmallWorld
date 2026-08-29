@@ -3,7 +3,9 @@
         enable = true;
         enableDefaultConfig = false;
         settings = {
-            AddKeysToAgent = "yes";
+            "Host *" = {
+                AddKeysToAgent = "yes";
+            };
             "Host arcturus" = {
                 Hostname = tailnet.ips.arcturus;
                 User = username;

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, username, ... } : let
+{ config, lib, pkgs, inputs, username, ... } : let
     extras = import ./extra-config-lua/default.nix {
         inherit config lib pkgs;
     };
