@@ -38,16 +38,19 @@
 
             opener = {
                 edit = [
-                    { run = "nvim \"$@\""; block = true ;}
+                    { run = "nvim %s"; block = true ;}
                 ];
                 open = [
-                    { run = "xdg-open \"$@\""; }
+                    { run = "xdg-open %s"; }
                 ];
                 play = [
-                    { run = "mpv \"$@\""; orphan = true; }
+                    { run = "mpv %s"; orphan = true; }
                 ];
                 extract = [
-                    { run = "unar \"$1\""; }
+                    { run = "unar %s1"; }
+                ];
+                pdf = [
+                    { run = "tdf %s1"; block = true; }
                 ];
             };
 
@@ -80,6 +83,10 @@
                     {
                         mime = "application/gzip";
                         use = [ "extract" "open" ];
+                    }
+                    {
+                        mime = "application/pdf";
+                        use = [ "pdf" "open" ];
                     }
                     {
                         mime = "*";
