@@ -54,7 +54,7 @@
             open = {
                 rules = [
                     {
-                        name = "*/";
+                        url = "*/";
                         use = [ "edit" "open" ];
                     }
                     { 
