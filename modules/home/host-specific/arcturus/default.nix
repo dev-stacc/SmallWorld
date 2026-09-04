@@ -11,7 +11,6 @@
     
     home.packages = with pkgs; [
         claude-code
-        ungoogled-chromium
         libreoffice
     ];
 }

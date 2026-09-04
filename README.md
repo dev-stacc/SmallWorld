@@ -40,7 +40,7 @@ modules/
 └── home/                       home-manager modules (mirrors the system/ layout)
     ├── common/
     │   ├── all/                Shell, git, ssh, terminal
-    │   └── desktops/           Waybar (shared), nixvim, qutebrowser, fonts
+    │   └── desktops/           Waybar (shared), nixvim, librewolf, fonts
     └── host-specific/          WM configs, host-specific waybar (GPU vs CPU thermals)
 
 secrets/
