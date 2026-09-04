@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiwix
+  namespace: kiwix
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: kiwix
+  template:
+    metadata:
+      labels:
+        app: kiwix
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: aperture
+      initContainers:
+        - name: fetch-zim
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              ZIM=/data/wikipedia_en_all_nopic.zim
+              if [ -s "$ZIM" ]; then
+                echo "ZIM already present, skipping download"
+                exit 0
+              fi
+              echo "Downloading Wikipedia (text only, no images)..."
+              curl -fL --retry 10 --retry-delay 30 -C - \
+                -o "$ZIM.part" \
+                https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_nopic.zim
+              mv "$ZIM.part" "$ZIM"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+      containers:
+        - name: kiwix-serve
+          image: ghcr.io/kiwix/kiwix-serve:3.8.2
+          args:
+            - "--port=8080"
+            - "/data/wikipedia_en_all_nopic.zim"
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: kiwix-data
