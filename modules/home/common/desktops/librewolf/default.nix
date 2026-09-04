@@ -1,4 +1,6 @@
 { pkgs, lib, config, ... } : {
+    imports = [ ./theme.nix ];
+
     programs.librewolf = {
         enable = true;
 
@@ -10,6 +12,7 @@
             settings = {
                 "browser.startup.homepage" = "https://duckduckgo.com";
                 "browser.newtabpage.enabled" = false;
+                "privacy.resistFingerprinting.letterboxing" = true;
             };
 
             search = {
@@ -25,15 +28,4 @@
         };
     };
 
-    home.file.".config/tridactyl/tridactylrc".text = ''
-        " sensible defaults for a qutebrowser -> tridactyl switch
-        set searchengine duckduckgo
-
-        set editorcmd kitty -e nvim
-        set yankto both
-        set putfrom clipboard
-
-        " don't nag about becoming the default browser / native messenger
-        set nativemessenger true
-    '';
 }

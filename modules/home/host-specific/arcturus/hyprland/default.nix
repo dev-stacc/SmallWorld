@@ -5,6 +5,7 @@
     windowrule = import ./windowrule.nix;
     input = import ./input.nix;
     monitor = import ./monitor.nix;
+    misc = import ./misc.nix;
 in {
     wayland.windowManager.hyprland = {
         enable = true;
@@ -16,6 +17,7 @@ in {
             windowrule
             input
             monitor
+            misc
         ];
     };
 }
