@@ -14,8 +14,8 @@
 
             search = {
                 force = true;
-                default = "DuckDuckGo";
-                order = [ "DuckDuckGo" ];
+                default = "ddg";
+                order = [ "ddg" ];
             };
 
             extensions = {
