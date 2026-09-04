@@ -52,7 +52,6 @@ spec:
         - name: kiwix-serve
           image: ghcr.io/kiwix/kiwix-serve:3.8.2
           args:
-            - "--port=8080"
             - "/data/wikipedia_en_all_nopic.zim"
           ports:
             - containerPort: 8080
