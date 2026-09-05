@@ -115,4 +115,61 @@
         mode = "n";
         options.desc = "Previous diagnostic";
     }
+
+
+    {
+        key = "]c";
+        action = "<cmd>lua require('gitsigns').next_hunk()<CR>";
+        mode = "n";
+        options.desc = "Next git hunk";
+    }
+    {
+        key = "[c";
+        action = "<cmd>lua require('gitsigns').prev_hunk()<CR>";
+        mode = "n";
+        options.desc = "Previous git hunk";
+    }
+    {
+        key = "<leader>hs";
+        action = "<cmd>lua require('gitsigns').stage_hunk()<CR>";
+        mode = "n";
+        options.desc = "Stage git hunk";
+    }
+    {
+        key = "<leader>hr";
+        action = "<cmd>lua require('gitsigns').reset_hunk()<CR>";
+        mode = "n";
+        options.desc = "Reset git hunk";
+    }
+    {
+        key = "<leader>hp";
+        action = "<cmd>lua require('gitsigns').preview_hunk()<CR>";
+        mode = "n";
+        options.desc = "Preview git hunk";
+    }
+    {
+        key = "<leader>hb";
+        action = "<cmd>lua require('gitsigns').blame_line()<CR>";
+        mode = "n";
+        options.desc = "Blame line";
+    }
+
+    {
+        key = "<leader>gd";
+        action = "<cmd>DiffviewOpen<CR>";
+        mode = "n";
+        options.desc = "Open diffview";
+    }
+    {
+        key = "<leader>gc";
+        action = "<cmd>DiffviewClose<CR>";
+        mode = "n";
+        options.desc = "Close diffview";
+    }
+    {
+        key = "<leader>gh";
+        action = "<cmd>DiffviewFileHistory<CR>";
+        mode = "n";
+        options.desc = "File history";
+    }
 ]
