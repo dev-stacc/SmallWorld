@@ -2,6 +2,6 @@
     windowrule = [
         "match:title kitty-launcher, float yes, center yes, dim_around yes, size 420 195, no_anim yes"
         "match:title kitty-control, float yes, center yes, dim_around yes, size 420 195, no_anim yes"
-        "match:class librewolf, opacity 0.9"
+        "match:class librewolf, opacity 0.8"
     ];
 }

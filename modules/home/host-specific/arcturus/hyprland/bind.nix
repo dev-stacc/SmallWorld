@@ -2,6 +2,7 @@
     "$mod" = "SUPER";
     bind = [
         "$mod,Return,exec,kitty"
+        "$mod,T,exec,librewolf"
         "$mod,D,exec,pkill kitty-launcher || kitty --title kitty-launcher -e ~/.local/bin/kitty-launcher"
         "$mod,N,exec,pkill kitty-control || kitty --title kitty-control -e ~/.local/bin/kitty-control"
         "$mod,E,exec,pkill yazi || kitty --title kitty-explorer -e yazi"

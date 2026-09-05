@@ -31,9 +31,6 @@ spec:
                 exit 0
               fi
               echo "Downloading Wikipedia (text only, no images)..."
-              # NOTE: the undated alias (wikipedia_en_all_nopic.zim) 404s on some
-              # load-balanced mirrors, so pin to a known-good dated snapshot.
-              # Bump this filename periodically to pick up newer content.
               curl -fL --retry 10 --retry-delay 30 -C - \
                 -o "$ZIM.part" \
                 https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_nopic_2026-06.zim
