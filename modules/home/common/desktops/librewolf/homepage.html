@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>homepage</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: {{base00}};
+            color: {{base04}};
+            font-family: "{{fontName}}", monospace;
+            font-size: {{fontSize}}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cmds {
+            color: {{base05}};
+        }
+        .cmds div {
+            margin: 0.2em 0;
+        }
+        .key {
+            color: {{base02}};
+            display: inline-block;
+            width: 8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="cmds">
+        <div><span class="key">f</span>hint mode</div>
+        <div><span class="key">d</span>close tab</div>
+        <div><span class="key">u</span>undo close tab</div>
+        <div><span class="key">gt / gT</span>next / prev tab</div>
+        <div><span class="key">t</span>open in new tab</div>
+        <div><span class="key">yy</span>yank url</div>
+        <div><span class="key">:tabopen</span>scriptable new tab</div>
+    </div>
+</body>
+</html>

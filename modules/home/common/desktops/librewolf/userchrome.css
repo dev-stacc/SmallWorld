@@ -1,0 +1,79 @@
+:root {
+    --base00: {{base00}};
+    --base01: {{base01}};
+    --base02: {{base02}};
+    --base03: {{base03}};
+    --base04: {{base04}};
+    --base05: {{base05}};
+    --tab-min-height: 22px;
+}
+
+:root, #titlebar, #nav-bar, #TabsToolbar, #PersonalToolbar, #navigator-toolbox, toolbar {
+    background: var(--base00) !important;
+    color: var(--base02) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#tabbrowser-tabs, .tabbrowser-tab, .toolbarbutton-text, #urlbar, #urlbar-input {
+    font-family: "{{fontName}}", monospace !important;
+    color: var(--base02) !important;
+}
+
+.tab-background {
+    background: var(--base00) !important;
+}
+
+.tab-background[selected] {
+    background: var(--base00) !important;
+}
+
+.tabbrowser-tab .tab-label {
+    color: var(--base05) !important;
+}
+
+.tabbrowser-tab[selected] .tab-label {
+    color: var(--base02) !important;
+}
+
+#TabsToolbar {
+    padding-block: 0 !important;
+}
+
+.tab-content {
+    padding-block: 0 !important;
+}
+
+.tab-icon-image,
+.tab-throbber,
+.tab-icon-overlay,
+.tab-icon-sound {
+    display: none !important;
+}
+
+#urlbar-background {
+    background: var(--base00) !important;
+    border: 1px solid var(--base02) !important;
+}
+
+#nav-bar, #PersonalToolbar {
+    display: none !important;
+}
+
+#navigator-toolbox::after {
+    border: none !important;
+    box-shadow: none !important;
+    background: none !important;
+}
+
+#appcontent, #browser, #tabbrowser-tabpanels {
+    background: var(--base00) !important;
+}
+
+.browserContainer, .browserSidebarContainer {
+    background-color: inherit !important;
+}
+
+#tabbrowser-tabpanels {
+    margin-top: 24px !important;
+}

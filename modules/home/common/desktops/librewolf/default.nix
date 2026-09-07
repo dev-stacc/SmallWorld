@@ -1,5 +1,5 @@
 { pkgs, lib, config, ... } : {
-    imports = [ ./theme.nix ];
+    imports = [ ./userchrome.nix ./tridactyl.nix ./homepage.nix ];
 
     programs.librewolf = {
         enable = true;
