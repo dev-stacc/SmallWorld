@@ -47,6 +47,8 @@ in {
             
             font_family = fontName;
             font_size = fontSize;
+
+            symbol_map = "U+002C,U+002E,U+003A,U+003B JetBrainsMono Nerd Font Mono";
         };
     };
 }
