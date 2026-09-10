@@ -18,6 +18,12 @@
         options.desc = "Save file";
     }
     {
+        key = ";";
+        action = ";<CR>";
+        mode = "i";
+        options.desc = "Newline after semicolon";
+    }
+    {
         key = "<esc>";
         action = "<cmd>nohlsearch<CR>";
         mode = "n";
