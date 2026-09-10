@@ -21,7 +21,7 @@ in {
             cmp = import ./cmp.nix;
             lsp = import ./lsp.nix;
             luasnip.enable = true;
-            nvim-autopairs.enable = true;
+            nvim-autopairs = import ./autopairs.nix;
             treesitter = import ./treesitter.nix;
             ts-autotag.enable = true;
             gitsigns.enable = true;

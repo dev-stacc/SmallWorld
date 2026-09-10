@@ -7,5 +7,6 @@
         lua_ls.enable = true;
         bashls.enable = true;
         jsonls.enable = true;
+        yamlls.enable = true;
     };
 }

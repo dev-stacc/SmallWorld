@@ -1,16 +1,10 @@
 local npairs = require('nvim-autopairs')
+local Rule = require('nvim-autopairs.rule')
 
-npairs.setup({
-  pairs = {
-    ['{'] = '}',
-    ['['] = ']',
-    ['('] = ')',
-    ['<'] = '>',
-    ['`'] = '`',
-    ['*'] = '*',
-    ['"'] = '"',
-    ["'"] = "'",
-  },
+npairs.add_rules({
+  Rule('<', '>'),
+  Rule('`', '`'),
+  Rule('*', '*'),
 })
 
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
