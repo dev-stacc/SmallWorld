@@ -4,7 +4,7 @@ metadata:
   name: marketing-tool
   namespace: flux-system
 spec:
-  image: ghcr.io/stacattacc/marketing-tool
+  image: ghcr.io/dev-stacc/marketing-tool
   interval: 1m
 
 ---

@@ -4,7 +4,7 @@ metadata:
   name: prose
   namespace: flux-system
 spec:
-  image: ghcr.io/stacattacc/prose
+  image: ghcr.io/dev-stacc/prose
   interval: 1m
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2

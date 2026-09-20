@@ -4,7 +4,7 @@ metadata:
   name: sewing-assistant
   namespace: flux-system
 spec:
-  image: ghcr.io/stacattacc/sewingassistant
+  image: ghcr.io/dev-stacc/sewingassistant
   interval: 1m
 
 ---
