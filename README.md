@@ -44,7 +44,8 @@ modules/
     └── host-specific/          WM configs, host-specific waybar (GPU vs CPU thermals)
 
 secrets/
-└── secrets.yaml                SOPS-encrypted, shared across all five hosts
+├── secrets.yaml                SOPS-encrypted, readable by the six hosts in .sops.yaml
+└── vault-init.json             SOPS-encrypted Vault unseal keys + root token
 
 k8s/
 ├── flux/
@@ -54,6 +55,7 @@ k8s/
 │   ├── external-secrets/       Vault-backed runtime secrets
 │   ├── ingress-nginx/
 │   ├── jellyfin/               Media (video)
+│   ├── kiwix/                  Offline Wikipedia mirror (kiwix-serve) on aperture
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
 │   ├── nfs-provisioner/        PVs backed by amateus
@@ -61,9 +63,11 @@ k8s/
 │   ├── uptime-kuma/
 │   ├── vault/
 │   ├── marketing-tool/         Version of an app I built during my internship at Enjoy Social
+│   ├── openpayrun/             Own app; MSSQL backend, Flux image automation, NetworkPolicy
+│   ├── prose/                  Own app; Postgres backend, Tailscale sidecar, Flux image automation
 │   └── sewing-assistant/       Full-stack personal project to track my sewing projects
 └── apps-config/                Post-deploy configs
-    ├── authentik/              SSO blueprints
+    ├── authentik/              Authentik deployment + SSO blueprints
     ├── crowdsec/
     ├── external-secrets/
     └── grafana/
