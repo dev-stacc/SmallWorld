@@ -73,6 +73,7 @@ k8s/
     └── grafana/
 
 mobiles/                        Android debloat scripts for personal devices
+├── android.sh                  Entrypoint
 ├── devices/                    Per-device package lists
 ├── modules/                    Reusable debloat actions (apps, config, debloat)
 └── lib/
