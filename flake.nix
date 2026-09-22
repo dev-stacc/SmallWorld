@@ -68,6 +68,7 @@
                 argus = "100.92.77.2";
                 sanctuary = "100.113.161.17";
                 alula = "PLACEHOLDER";
+                atlas = "PLACEHOLDER";
             };
         };
         specialArgs = { inherit inputs username tailnet; };
@@ -100,6 +101,10 @@
             Alula = nixpkgs.lib.nixosSystem {
                 inherit specialArgs;
                 modules = [ ./hosts/alula/default.nix ];
+            };
+            Atlas = nixpkgs.lib.nixosSystem {
+                inherit specialArgs;
+                modules = [ ./hosts/atlas/default.nix ];
             };
         };
 
@@ -165,6 +170,16 @@
                 ];
                 deployment = {
                     targetHost = "alula";
+                    targetUser = username;
+                };
+            };
+            Atlas = { ... } : {
+                imports = [
+                    ./hosts/atlas/default.nix
+                    sops-nix.nixosModules.sops
+                ];
+                deployment = {
+                    targetHost = "atlas";
                     targetUser = username;
                 };
             };
