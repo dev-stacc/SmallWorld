@@ -1,4 +1,4 @@
-{ pkgs, ... } : let
+{ pkgs, lib, ... } : let
     fanScript = pkgs.writeShellScript "fan-speed" (builtins.readFile ./scripts/fan-speed.sh);
 in {
     home.file.".local/bin/fan-speed" = {
@@ -7,6 +7,14 @@ in {
     };
 
     programs.waybar.settings.mainBar = {
+        modules-center = lib.mkForce [
+            "group/audio"
+            "backlight"
+            "niri/workspaces"
+            "clock"
+        ];
+        "niri/workspaces" = {};
+
         "group/thermals" = {
             orientation = "horizontal";
             modules = ["custom/cpu-temp" "custom/fan"];
