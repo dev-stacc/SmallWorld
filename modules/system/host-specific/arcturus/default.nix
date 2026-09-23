@@ -6,8 +6,8 @@
         ../../common/desktops/default.nix
         ../../common/desktops/steam.nix
         ./graphics.nix
+        ./hyprland.nix
         ./k3s-kubeconfig.nix
-        ./niri.nix
         ./overlays.nix
         ./virtualisation.nix
     ];
