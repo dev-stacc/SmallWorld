@@ -1,4 +1,4 @@
-{ config, pkgs, fontName, fontSize, ... } : {    
+{ pkgs, fontName, ... } : {    
     home.packages = with pkgs; [
         major-mono-display
         nerd-fonts.jetbrains-mono

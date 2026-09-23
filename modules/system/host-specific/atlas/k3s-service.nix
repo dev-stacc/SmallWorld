@@ -1,4 +1,4 @@
-{ config, lib, tailnet, ... } : {
+{ lib, tailnet, ... } : {
     services.k3s = {
         enable = lib.mkForce (tailnet.ips.atlas != "PLACEHOLDER");
         extraFlags = toString (

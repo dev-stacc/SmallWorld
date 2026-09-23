@@ -1,4 +1,4 @@
-{ config, pkgs, ... } : {
+{ pkgs, ... } : {
     services.xserver.videoDrivers = [ "modesetting" ];
 
     environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";

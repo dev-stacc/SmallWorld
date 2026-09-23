@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... } : let
+{ config, ... } : let
     colors = config.stylix.base16Scheme;
 in {
     general = {

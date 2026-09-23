@@ -1,4 +1,4 @@
-{ config, pkgs, ... } : {
+{ ... } : {
     hardware.alsa.enablePersistence = true;
 
     services.pipewire = {

@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... } : {
+{ pkgs, ... } : {
     imports = [ ./userchrome.nix ./tridactyl.nix ./homepage.nix ];
 
     programs.librewolf = {

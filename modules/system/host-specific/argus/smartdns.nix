@@ -1,4 +1,4 @@
-{ config, pkgs, tailnet, ... } :
+{ pkgs, tailnet, ... } :
 let
     smartdnsConfig = pkgs.writeText "smartdns.conf" ''
         bind ${tailnet.ips.argus}:53

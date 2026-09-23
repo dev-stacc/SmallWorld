@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... } : let
+{ config, lib, ... } : let
     colors = config.lib.stylix.colors;
 
     tridactylVars = {

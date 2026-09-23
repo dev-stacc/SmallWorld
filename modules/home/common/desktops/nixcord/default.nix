@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, fontName, fontSize, ... } : let
+{ config, fontName, ... } : let
     colors = config.stylix.base16Scheme;
 in {
     programs.nixcord = {

@@ -1,4 +1,4 @@
-{ config, pkgs, ... } : {
+{ ... } : {
     environment.pathsToLink = [
         "/share/applications"
         "/share/xdg-desktop-portal"

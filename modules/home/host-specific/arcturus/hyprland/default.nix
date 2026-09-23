@@ -1,4 +1,4 @@
-{ config, lib, pkgs, self, inputs, ... } : let
+{ config, lib, pkgs, ... } : let
     bind = import ./bind.nix;
     general = import ./general.nix { inherit config lib pkgs; };
     decoration = import ./decoration.nix;

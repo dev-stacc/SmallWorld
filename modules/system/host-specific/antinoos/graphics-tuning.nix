@@ -1,5 +1,5 @@
 #Work in progress
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 let
     sclkStates = [
         { level = 5; mhz = 1257; mv = 1050; }

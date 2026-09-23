@@ -1,4 +1,4 @@
-{ config, pkgs, username, ... } : {
+{ username, ... } : {
     users.users.${username} = {
         isNormalUser = true;
         openssh.authorizedKeys.keys = [

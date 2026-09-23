@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... } : let
+{ config, lib, ... } : let
     colors = config.stylix.base16Scheme;
 
     template = builtins.readFile ./colors.lua;

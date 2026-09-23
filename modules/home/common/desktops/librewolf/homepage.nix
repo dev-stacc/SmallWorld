@@ -1,4 +1,4 @@
-{ config, lib, pkgs, fontName, fontSize, ... } : let
+{ config, pkgs, fontName, fontSize, ... } : let
     colors = config.lib.stylix.colors;
 
     colorNames = [

@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... } : let
+{ pkgs, ... } : let
     kittyLauncher = pkgs.writeShellScript "kitty-launcher" (builtins.readFile ./raw-files/kitty-launcher.sh);
     kittyControl = pkgs.writeShellScript "kitty-control" (builtins.readFile ./raw-files/kitty-control.sh);
 in { 

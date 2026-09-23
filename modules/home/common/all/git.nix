@@ -1,4 +1,4 @@
-{ config, lib, pkgs, username, ... } : {
+{ username, ... } : {
     programs.git = {
         enable = true;
         settings = {
