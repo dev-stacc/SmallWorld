@@ -13,9 +13,9 @@
             base01 = "000000"; #BLACK
 
             base02 = "ff4050"; #main FOREGROUND
-            base03 = "00ccff"; #secondary FOREGROUND
+            base03 = "5ef6ff"; #secondary FOREGROUND
             base04 = "ffe44d"; #highlight FOREGROUND
-            base05 = "666666"; #muted FOREGROUND
+            base05 = "ffffff"; #muted FOREGROUND
             base06 = "6abf24"; #special FOREGROUND
 
             base07 = "000000"; #

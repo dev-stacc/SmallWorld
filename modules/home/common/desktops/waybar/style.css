@@ -1,9 +1,9 @@
 window#waybar {
     background: transparent;
-    color: #ff4050;
+    color: {{base02}};
     font-size: 9px;
     min-height: 0;
-    border-bottom: 2px solid #ff4050;
+    border-bottom: 2px solid {{base02}};
 }
    
 * {
@@ -16,17 +16,17 @@ window#waybar {
 }
 
 #custom-cores, #cpu {
-    color: #00ccff;
+    color: {{base03}};
 }
 
 #temperature, #custom-fan {
-    color: #6abf24;
+    color: {{base06}};
 }
 
 #bluetooth, #custom-tailscale {
-    color: #ffe44d;
+    color: {{base04}};
 }
 
 #workspaces button {
-    color: #00ccff;
+    color: {{base03}};
 }
