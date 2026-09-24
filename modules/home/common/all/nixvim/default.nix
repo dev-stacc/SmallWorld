@@ -23,6 +23,7 @@ in {
             luasnip.enable = true;
             nvim-autopairs = import ./autopairs.nix;
             treesitter = import ./treesitter.nix;
+            render-markdown = import ./render-markdown.nix;
             ts-autotag.enable = true;
             gitsigns.enable = true;
             diffview.enable = true;

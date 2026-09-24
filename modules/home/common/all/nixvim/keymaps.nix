@@ -178,4 +178,10 @@
         mode = "n";
         options.desc = "File history";
     }
+    {
+        key = "<leader>tm";
+        action = "<cmd>RenderMarkdown toggle<CR>";
+        mode = "n";
+        options.desc = "Toggle markdown rendering";
+    }
 ]

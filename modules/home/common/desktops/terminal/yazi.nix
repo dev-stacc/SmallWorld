@@ -1,6 +1,7 @@
 {  pkgs, ... } : {
     home.packages = with pkgs; [
         bat
+        glow
         ffmpegthumbnailer
         unar
         jq
@@ -16,7 +17,26 @@
         shellWrapperName = "y";
         package = pkgs.yazi;
 
+        plugins = {
+            # Generic "pipe a shell command as a previewer" plugin.
+            piper = pkgs.yaziPlugins.piper;
+        };
+
         settings = {
+            # Render Markdown with glow instead of showing highlighted source.
+            # piper exposes $w/$h (real pane size) and $t (terminal dark/light),
+            # unlike yaziPlugins.glow which hardcodes a 55-column width.
+            plugin.prepend_previewers = [
+                {
+                    url = "*.md";
+                    run = "piper -- CLICOLOR_FORCE=1 glow -w=$w -s=$t \"$1\"";
+                }
+                {
+                    url = "*.markdown";
+                    run = "piper -- CLICOLOR_FORCE=1 glow -w=$w -s=$t \"$1\"";
+                }
+            ];
+
             mgr = {
                 sort_by = "natural";
                 sort_sensitive = false;
