@@ -56,7 +56,7 @@
                     sleep 5
                 done
 
-                if ${pkgs.fluxcd}/bin/flux check --pre &>/dev/null; then
+                if ${pkgs.kubectl}/bin/kubectl get deployment source-controller -n flux-system &>/dev/null; then
                     exit 0
                 fi
 
