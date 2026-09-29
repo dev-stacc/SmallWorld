@@ -57,7 +57,7 @@
             domain = "tail789d60.ts.net";
             ips = {
                 arcturus = "100.70.3.61";
-                asta = "100.88.255.118";
+                asta = "100.75.73.92";
                 amateus = "100.70.98.107";
                 aperture = "100.111.78.27";
                 antinoos = "100.103.107.52";
