@@ -67,6 +67,7 @@
                     --repository=BiggerWorld \
                     --branch=main \
                     --path=k8s/flux \
+                    --components-extra=image-reflector-controller,image-automation-controller \
                     --personal \
                     --private
             '';
