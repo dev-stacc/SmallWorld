@@ -11,7 +11,13 @@ spec:
     name: flux-system
   path: ./k8s/apps
   prune: true
-  wait: true
+  # wait:false is load-bearing. The ClusterSecretStore lives in apps-config,
+  # which dependsOn apps. With wait:true, apps could never report Ready until
+  # every app Deployment was healthy - but those Deployments need secrets that
+  # only sync once the store exists. That was an unbreakable cycle on a fresh
+  # cluster. Applying apps is enough to unblock apps-config; the ExternalSecrets
+  # retry every 1m until the store lands.
+  wait: false
   decryption:
     provider: sops
     secretRef:
