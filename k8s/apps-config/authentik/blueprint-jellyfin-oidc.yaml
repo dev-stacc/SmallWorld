@@ -18,6 +18,12 @@ data:
           name: jellyfin-oidc
           client_id: !Env JELLYFIN_OIDC_CLIENT_ID
           client_secret: !Env JELLYFIN_OIDC_CLIENT_SECRET
+          # Required since authentik 2026.x: an OAuth2 provider created without this
+          # gets grant_types=[] and rejects the code flow with "Invalid grant_type
+          # for provider", which surfaces to the client only as invalid_request.
+          grant_types:
+            - authorization_code
+            - refresh_token
           redirect_uris:
             - matching_mode: strict
               url: http://jellyfin.${TAILNET_DOMAIN}/sso/OID/r/Authentik
