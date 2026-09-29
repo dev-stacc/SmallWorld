@@ -19,10 +19,13 @@ spec:
         name: authentik
         namespace: flux-system
   values:
-    authentik:
-      secret_key: "${AUTHENTIK_SECRET_KEY}"
-      postgresql:
-        password: "${AUTHENTIK_POSTGRESQL_PASSWORD}"
+    # secret_key and postgresql.password are deliberately omitted. They used to
+    # be Flux substitution placeholders (AUTHENTIK_SECRET_KEY and
+    # AUTHENTIK_POSTGRESQL_PASSWORD) that were never defined in the
+    # cluster-config ConfigMap, so strict-mode substitution failed and
+    # apps-config had not applied since 2026-06-15. Both values reach authentik
+    # as env vars from the authentik-secrets ExternalSecret via global.envFrom
+    # below, which is what authentik actually reads.
     global:
       envFrom:
         - secretRef:
