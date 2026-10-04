@@ -1,6 +1,6 @@
 { config, pkgs, inputs, tailnet, ... } : {
     sops.secrets.crowdsec-bouncer-api-key = {
-        sopsFile = "${inputs.self}/secrets/secrets.yaml";
+        sopsFile = ../../../../secrets/secrets.yaml;
     };
 
     sops.templates."crowdsec-bouncer.env".content = ''

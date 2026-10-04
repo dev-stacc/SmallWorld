@@ -6,7 +6,7 @@
     ];
 
     sops.secrets.pihole-web-password = {
-        sopsFile = "${inputs.self}/secrets/secrets.yaml";
+        sopsFile = ../../../../secrets/secrets.yaml;
     };
 
     sops.templates."pihole.env".content = ''

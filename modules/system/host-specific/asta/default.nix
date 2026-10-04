@@ -1,7 +1,5 @@
 { ... } : {
     imports = [
-        ../../common/all/default.nix
-        ../../common/servers/always-on.nix
         ./graphics.nix
         ./k3s-server.nix
         ./flux.nix
@@ -10,7 +8,6 @@
         ./suricata.nix
     ];
 
-    networking.hostName = "Asta";
 
     boot.loader = {
         systemd-boot.enable = true;

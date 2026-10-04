@@ -1,7 +1,5 @@
 { ... } : {
     imports = [
-        ../../common/all/default.nix
-        ../../common/servers/always-on.nix
         ./networking.nix
         ./unbound.nix
         ./pihole.nix
@@ -10,7 +8,6 @@
         ./pihole-sync.nix
     ];
 
-    networking.hostName = "Argus";
 
     boot.loader.grub = {
         enable = true;

@@ -1,9 +1,7 @@
 { ... }: {
     imports = [
-        ../../common/all/default.nix
-        ../../common/desktops/default.nix
         ./graphics.nix
-        ./niri.nix
+        ./sway.nix
         ./overlays.nix
     ];
 
@@ -25,13 +23,6 @@
         ];
     };
 
-    nix.settings = {
-        substituters = [ "https://niri.cachix.org" ];
-        trusted-substituters = [ "https://niri.cachix.org" ];
-        trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
-    };
-
     hardware.enableRedistributableFirmware = true;
 
-    networking.hostName = "Alula";
 }

@@ -1,5 +1,5 @@
-{ config, ... } : let
-    colors = config.stylix.base16Scheme;
+{ theme, ... } : let
+    colors = theme.base16;
 in {
     general = {
         gaps_in = 6;

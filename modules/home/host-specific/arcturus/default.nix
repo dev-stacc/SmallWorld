@@ -1,7 +1,7 @@
-{ pkgs, ... } : {
+{ inputs, pkgs, ... } : {
     imports = [
-        ../../common/all/default.nix
-        ../../common/desktops/default.nix
+        inputs.nixcord.homeModules.nixcord
+        ./nixcord/default.nix
         ./hyprland/default.nix
         ./hyprpaper.nix
         ./k3s-control/default.nix

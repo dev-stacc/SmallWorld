@@ -1,0 +1,32 @@
+{ lib, username, theme, ... } : let
+    extras = import ./extra-config-lua/default.nix {
+        inherit lib theme;
+    };
+in {
+    programs.nixvim = {
+        enable = true;
+        defaultEditor = true;
+
+        globals.mapleader = " ";
+
+        opts = import ./opts.nix { inherit username; };
+        keymaps = import ./keymaps.nix;
+        extraConfigLua = extras.extraConfigLua;
+
+        plugins = {
+            web-devicons.enable = true;
+            telescope = import ./telescope.nix;
+            nvim-tree = import ./nvimtree.nix;
+            transparent = import ./transparent.nix;
+            cmp = import ./cmp.nix;
+            lsp = import ./lsp.nix;
+            luasnip.enable = true;
+            nvim-autopairs = import ./autopairs.nix;
+            treesitter = import ./treesitter.nix;
+            render-markdown = import ./render-markdown.nix;
+            ts-autotag.enable = true;
+            gitsigns.enable = true;
+            diffview.enable = true;
+        };
+    };
+}

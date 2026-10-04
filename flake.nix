@@ -7,12 +7,9 @@
             url = "github:nix-community/home-manager";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        stylix = {
-            url = "github:danth/stylix";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
         nixvim = {
             url = "github:nix-community/nixvim";
+            inputs.nixpkgs.follows = "nixpkgs";
         };
         claude-code = {
             url = "github:sadjow/claude-code-nix";
@@ -22,16 +19,8 @@
             url = "github:FlameFlag/nixcord";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        colmena = {
-            url = "github:zhaofengli/colmena";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
         sops-nix = {
             url = "github:Mic92/sops-nix";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
-        niri = {
-            url = "github:sodiboo/niri-flake";
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nur = {
@@ -40,18 +29,10 @@
         };
     };
 
-    outputs = {
-        self,
-        nixpkgs,
-        home-manager,
-        stylix,
-        claude-code,
-        nixcord,
-        colmena,
-        sops-nix,
-        ...
-    } @ inputs :
+    outputs = { self, nixpkgs, ... } @ inputs :
     let
+        inherit (nixpkgs) lib;
+
         username = "anastasia";
         tailnet = {
             domain = "tail789d60.ts.net";
@@ -67,118 +48,27 @@
                 atlas = "PLACEHOLDER";
             };
         };
-        specialArgs = { inherit inputs username tailnet; };
+        theme = import ./modules/theme;
+
+        hosts = import ./hosts;
+
+        inherit (import ./lib/mkHost.nix {
+            inherit inputs lib username tailnet theme hosts;
+        }) specialArgs mkSystem mkNode;
+
+        byHostName = f: lib.mapAttrs' (name: host:
+            lib.nameValuePair host.hostName (f name host)
+        );
     in {
-        nixosConfigurations = {
-            Arcturus = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/arcturus/default.nix ];
-            };
-            Amateus = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/amateus/default.nix ];
-            };
-            Asta = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/asta/default.nix ];
-            };
-            Antinoos = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/antinoos/default.nix ];
-            };
-            Aperture = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/aperture/default.nix ];
-            };
-            Argus = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/argus/default.nix ];
-            };
-            Alula = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/alula/default.nix ];
-            };
-            Atlas = nixpkgs.lib.nixosSystem {
-                inherit specialArgs;
-                modules = [ ./hosts/atlas/default.nix ];
-            };
-        };
+        nixosConfigurations = byHostName mkSystem hosts;
 
         colmena = {
             meta = {
                 nixpkgs = nixpkgs.legacyPackages.x86_64-linux;
                 inherit specialArgs;
             };
-            Asta = { ... } : {
-                imports = [
-                    ./hosts/asta/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment= {
-                    targetHost = "asta";
-                    targetUser = username;
-                };
-            };
-            Amateus = { ... } : {
-                imports = [
-                    ./hosts/amateus/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment = {
-                    targetHost = "amateus";
-                    targetUser = username;
-                };
-            };
-            Antinoos = { ... } : {
-                imports = [
-                    ./hosts/antinoos/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment = {
-                    targetHost = "antinoos";
-                    targetUser = username;
-                };
-            };
-            Aperture = { ... } : {
-                imports = [
-                    ./hosts/aperture/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment = {
-                    targetHost = "aperture";
-                    targetUser = username;
-                };
-            };
-            Argus = { ... } : {
-                imports = [
-                    ./hosts/argus/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment = {
-                    targetHost = "argus";
-                    targetUser = username;
-                };
-            };
-            Alula = { ... } : {
-                imports = [
-                    ./hosts/alula/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment = {
-                    targetHost = "alula";
-                    targetUser = username;
-                };
-            };
-            Atlas = { ... } : {
-                imports = [
-                    ./hosts/atlas/default.nix
-                    sops-nix.nixosModules.sops
-                ];
-                deployment = {
-                    targetHost = "atlas";
-                    targetUser = username;
-                };
-            };
-        };
+        } // byHostName mkNode (
+            lib.filterAttrs (_: host: host.deploy or true) hosts
+        );
     };
 }

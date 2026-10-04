@@ -2,9 +2,9 @@
     programs.waybar.settings.mainBar = {
         modules-center = lib.mkForce [
             "group/audio"
-            "niri/workspaces"
+            "sway/workspaces"
             "clock"
         ];
-        "niri/workspaces" = {};
+        "sway/workspaces" = {};
     };
 }

@@ -1,10 +1,5 @@
-{ inputs, username, ... } : {
+{ username, ... } : {
     imports = [
-        inputs.sops-nix.nixosModules.sops
-        ../../common/all/default.nix
-        ../../common/admin/default.nix
-        ../../common/desktops/default.nix
-        ../../common/desktops/steam.nix
         ./graphics.nix
         ./hyprland.nix
         ./k3s-kubeconfig.nix
@@ -14,7 +9,6 @@
 
     sops.age.keyFile = "/home/${username}/.sops/keys.txt";
 
-    networking.hostName = "Arcturus";
 
     boot.loader = {
         systemd-boot.enable = true;

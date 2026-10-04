@@ -1,4 +1,4 @@
-{ config, pkgs, ... } : {
+{ pkgs, theme, ... } : {
     home.packages = with pkgs; [
         hyprpaper
     ];
@@ -7,11 +7,11 @@
         enable = true;
         settings = {
             preload = [
-                config.stylix.image
+                "${theme.wallpaper}"
             ];
             wallpaper = [{
                 monitor = "";
-                path = config.stylix.image;
+                path = "${theme.wallpaper}";
             }];
         };
     };
