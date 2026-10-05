@@ -3,6 +3,7 @@
         ./graphics.nix
         ./hyprland.nix
         ./k3s-kubeconfig.nix
+        ./lid.nix
         ./overlays.nix
         ./virtualisation.nix
     ];

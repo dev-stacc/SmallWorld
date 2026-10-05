@@ -7,6 +7,7 @@
         "$mod,N,exec,pkill kitty-control || kitty --title kitty-control -e ~/.local/bin/kitty-control"
         "$mod,E,exec,pkill yazi || kitty --title kitty-explorer -e yazi"
         "$mod SHIFT,C,exec,hyprctl reload"
+        "$mod,L,exec,~/.local/bin/lockout"
         "$mod,M,exit,Hyprland"
         "$mod,Q,killactive"
         "$mod,F,fullscreen"

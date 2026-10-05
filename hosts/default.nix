@@ -14,6 +14,7 @@
 
     # easy to steal: deliberately holds no decryptable secrets, and is absent
     # from .sops.yaml. Joins the tailnet by hand rather than via a sops key.
+    # intel compute stick: no lid switch, so Mod+L is the only trigger
     alula = {
         hostName = "Alula";
         roles = [ "desktop" "editor" "wireless" ];

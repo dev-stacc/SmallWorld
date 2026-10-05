@@ -13,4 +13,6 @@
         claude-code
         libreoffice
     ];
+
+    programs.bash.shellAliases.hyprland = "exec Hyprland";
 }

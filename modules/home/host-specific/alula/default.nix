@@ -10,4 +10,6 @@
     home.packages = with pkgs; [
         claude-code
     ];
+
+    programs.bash.shellAliases.sway = "exec sway";
 }

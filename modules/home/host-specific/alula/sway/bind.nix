@@ -14,6 +14,7 @@ in {
         "${mod}+m"       = "exit";
         "${mod}+q"       = "kill";
         "${mod}+f"       = "fullscreen toggle";
+        "${mod}+l"       = "exec ~/.local/bin/lockout";
 
         "${mod}+Left"        = "focus left";
         "${mod}+Right"       = "focus right";
