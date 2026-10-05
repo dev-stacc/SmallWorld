@@ -26,9 +26,15 @@
         supportedFilesystems = [ "nfs" "nfs4" ];
     };
 
-    networking.firewall = {
-        allowedTCPPorts = [ 6443 10250 ];
-        allowedUDPPorts = [ 8472 ];
+    # cni0/flannel.1 are needed for pods ON asta: they reach the API at asta's own
+    # node IP, which is delivered locally rather than arriving over tailscale0.
+    networking.firewall.interfaces = {
+        tailscale0 = {
+            allowedTCPPorts = [ 6443 10250 ];
+            allowedUDPPorts = [ 8472 ];
+        };
+        cni0.allowedTCPPorts = [ 6443 10250 ];
+        "flannel.1".allowedTCPPorts = [ 6443 10250 ];
     };
 
     environment = {
