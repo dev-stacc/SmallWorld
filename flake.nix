@@ -46,7 +46,7 @@
                 sanctuary = "100.113.161.17";
                 alula = "100.104.236.122";
                 atlas = "PLACEHOLDER";
-                albireo = "PLACEHOLDER";
+                albireo = "100.114.197.75";
 
                 # k8s services exposed by the tailscale operator, not hosts
                 crowdsec = "100.127.104.71";
