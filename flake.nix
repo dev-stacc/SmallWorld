@@ -46,16 +46,11 @@
                 sanctuary = "100.113.161.17";
                 alula = "100.104.236.122";
                 atlas = "PLACEHOLDER";
-                # Not a host: the CrowdSec LAPI, exposed on the tailnet by the
-                # tailscale operator via k8s/apps/crowdsec/service.yaml. Hosts
-                # reach it by IP rather than MagicDNS name because argus runs
-                # its own resolver with services.resolved disabled.
+
+                # k8s services exposed by the tailscale operator, not hosts
                 crowdsec = "100.127.104.71";
-                # Likewise Loki, exposed by k8s/apps/monitoring/loki-service.yaml
-                # so albireo's host-level Alloy can push to it. Fill this in once
-                # the LoadBalancer has been assigned its address - albireo's
-                # log-shipping.nix stays off while it reads PLACEHOLDER.
-                loki = "PLACEHOLDER";
+                loki = "100.126.37.99";
+                vault = "100.96.166.122";
             };
         };
         theme = import ./modules/theme;
@@ -70,6 +65,8 @@
             lib.nameValuePair host.hostName (f name host)
         );
     in {
+        inherit tailnet;
+
         nixosConfigurations = byHostName mkSystem hosts;
 
         colmena = {
