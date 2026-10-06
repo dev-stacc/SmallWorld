@@ -34,6 +34,8 @@ spec:
             name: authentik-blueprint-grafana-env
         - secretRef:
             name: authentik-blueprint-jellyfin-env
+        - secretRef:
+            name: authentik-blueprint-nextcloud-env
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
@@ -41,6 +43,7 @@ spec:
         - authentik-blueprint-monitoring
         - authentik-blueprint-outpost
         - authentik-blueprint-jellyfin-oidc
+        - authentik-blueprint-nextcloud-oidc
         - authentik-blueprint-sewing-assistant
         - authentik-blueprint-marketing-tool
     postgresql:
