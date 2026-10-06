@@ -15,3 +15,111 @@ spec:
   tls:
     - hosts:
         - nextcloud
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-jellyfin
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: jellyfin
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - jellyfin
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-navidrome
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: navidrome
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - navidrome
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-uptime
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: uptime
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - uptime
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-sewing
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: sewing
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - sewing
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-marketing
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: marketing
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - marketing
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-wikipedia
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: wikipedia
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - wikipedia

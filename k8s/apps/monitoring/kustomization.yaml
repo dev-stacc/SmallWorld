@@ -4,7 +4,7 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - grafana-service.yaml
+  - grafana-tailscale-ingress.yaml
   - grafana-secret.yaml
   - grafana-ingress.yaml
   - grafana-helmrepository.yaml
