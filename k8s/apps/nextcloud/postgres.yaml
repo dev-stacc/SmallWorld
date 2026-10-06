@@ -6,8 +6,6 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    # Recreate, not RollingUpdate: two postgres pods must never hold the same
-    # hostPath data directory open at once.
     type: Recreate
   selector:
     matchLabels:
@@ -17,8 +15,6 @@ spec:
       labels:
         app: postgres
     spec:
-      # Pinned to albireo because the data directory is a hostPath on its ZFS
-      # pool. Unlike the local-path PVC used elsewhere, this is not portable.
       nodeSelector:
         kubernetes.io/hostname: albireo
       containers:
@@ -39,8 +35,6 @@ spec:
                 secretKeyRef:
                   name: nextcloud-secrets
                   key: POSTGRES_PASSWORD
-            # Keep the cluster in a subdirectory rather than at the mount root,
-            # so initdb never has to contend with anything the mount itself owns.
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           resources:
@@ -66,10 +60,9 @@ spec:
             periodSeconds: 20
             failureThreshold: 3
       volumes:
-        # On ZFS so the database snapshots and replicates with the files it
-        # describes. Must be owned by uid 999 on albireo (see storage.nix).
         - name: postgres-data
           hostPath:
+            # must be owned by uid 999 on albireo (see its storage.nix)
             path: /srv/nextcloud/db
             type: Directory
 ---
@@ -103,8 +96,6 @@ spec:
         - podSelector:
             matchLabels:
               app: nextcloud
-        # The nightly pg_dump CronJob, which carries its own label precisely so
-        # it is not picked up by the nextcloud Service's selector.
         - podSelector:
             matchLabels:
               app: nextcloud-dump

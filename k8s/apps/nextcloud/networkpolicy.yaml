@@ -11,14 +11,10 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Port 80 from any source, so both kubelet probes and the ingress controller
-    # can reach it. Nextcloud enforces its own auth, so restricting by source
-    # here would not add real security.
     - ports:
         - protocol: TCP
           port: 80
   egress:
-    # Cluster DNS.
     - to:
         - namespaceSelector:
             matchLabels:
@@ -45,10 +41,9 @@ spec:
       ports:
         - protocol: TCP
           port: 6379
-    # The tailnet range, which is how authentik is reachable for the OIDC token
-    # and userinfo calls. prose's policy excludes this range; Nextcloud needs it.
     - to:
         - ipBlock:
+            # the tailnet, for authentik OIDC. prose's policy excludes it.
             cidr: 100.64.0.0/10
       ports:
         - protocol: TCP
@@ -57,7 +52,6 @@ spec:
           port: 443
         - protocol: TCP
           port: 9000
-    # Public HTTPS for the app store and external shares.
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0

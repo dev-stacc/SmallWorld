@@ -4,20 +4,11 @@ metadata:
   name: nextcloud
   namespace: nextcloud
   annotations:
-    # Deliberately NO authentik forward-auth annotations here, unlike navidrome
-    # and kiwix. Nextcloud's desktop and mobile sync clients speak WebDAV and
-    # cannot follow an interactive browser redirect, so forward auth would lock
-    # every client out. Authentik integration is done inside Nextcloud via OIDC
-    # instead - see k8s/apps-config/authentik/blueprint-nextcloud-oidc.yaml.
-    #
-    # Large uploads need this raised; keep it in step with PHP_UPLOAD_LIMIT.
+    # deliberately no authentik forward-auth: it would break the WebDAV
+    # sync clients, which cannot follow a browser redirect. OIDC instead.
     nginx.ingress.kubernetes.io/proxy-body-size: "10g"
-    # Big uploads over a slow link otherwise hit the default 60s timeouts.
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    # No configuration-snippet for the /.well-known/{carddav,caldav} redirects:
-    # the controller sets allowSnippetAnnotations: false, and the -apache image
-    # already handles those redirects in its shipped .htaccess.
 spec:
   ingressClassName: nginx
   rules:

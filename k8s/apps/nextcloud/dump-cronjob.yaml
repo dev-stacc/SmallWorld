@@ -1,8 +1,3 @@
-# A ZFS snapshot of a live postgres data directory is atomic but only
-# crash-consistent - equivalent to pulling the plug. This produces a clean
-# logical dump next to the files, which albireo's restic job then ships to
-# amateus. Without it a restore could come back with a database that needs
-# recovery rather than one that simply opens.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -18,14 +13,12 @@ spec:
       backoffLimit: 2
       template:
         metadata:
-          # Deliberately NOT app: nextcloud - that label is the Service's
-          # selector, so this pod would start receiving web traffic. The
-          # postgres NetworkPolicy allows this label explicitly instead.
           labels:
+            # NOT app: nextcloud - that is the Service selector, and web
+            # traffic would get routed to this job's pod
             app: nextcloud-dump
         spec:
           restartPolicy: OnFailure
-          # Must land on albireo: the dump is written to a hostPath on its pool.
           nodeSelector:
             kubernetes.io/hostname: albireo
           securityContext:
@@ -52,8 +45,6 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                # Write to a temp name and move into place, so restic can never
-                # pick up a half-written dump if the two timers overlap.
                 - |
                   set -eu
                   out=/dumps/nextcloud.sql.gz

@@ -30,12 +30,6 @@ spec:
               name: crowdsec-secret
               key: enrollment-key
               optional: true
-        # Bouncer registration. Without these the LAPI has no bouncers at all
-        # (`cscli bouncers list` was empty), so every decision CrowdSec collects
-        # - including the thousands of CAPI community-blocklist bans - was
-        # enforced by nothing. bouncer-secret already existed in the repo but was
-        # never wired to the LAPI, so argus's Pi-hole bouncer could only ever
-        # have got a 403 even with a correct LAPI URL.
         - name: BOUNCER_KEY_pihole
           valueFrom:
             secretKeyRef:

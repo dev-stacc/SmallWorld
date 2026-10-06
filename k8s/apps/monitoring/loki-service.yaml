@@ -1,14 +1,3 @@
-# Exposes Loki on the tailnet so host-level log shippers can reach it.
-#
-# Needed because albireo runs Grafana Alloy as a NixOS service (not a pod) to
-# tail Suricata's eve.json, and a host process cannot resolve or route to
-# loki.monitoring.svc.cluster.local. Same mechanism as crowdsec-tailscale and
-# authentik-tailscale.
-#
-# NB: the Loki release sets auth_enabled: false, so any tailnet device can read
-# and write all logs through this. That matches the exposure authentik and the
-# CrowdSec LAPI already have, but it is a real widening - the alternative is an
-# in-cluster Alloy DaemonSet with a hostPath onto albireo's /var/log/suricata.
 apiVersion: v1
 kind: Service
 metadata:
@@ -18,8 +7,8 @@ metadata:
     tailscale.com/expose: "true"
     tailscale.com/hostname: "loki"
 spec:
-  # Must pin component=single-binary: app.kubernetes.io/name=loki alone also
-  # matches the loki-canary DaemonSet, which does not serve the push API.
+  # component pins the single-binary pod; name alone also matches loki-canary,
+  # which does not serve the push API
   selector:
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki

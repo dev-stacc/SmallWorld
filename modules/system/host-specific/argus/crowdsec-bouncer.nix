@@ -3,11 +3,6 @@
         sopsFile = ../../../../secrets/secrets.yaml;
     };
 
-    # LAPI_URL was http://${tailnet.ips.asta}:30008 - a NodePort nothing ever
-    # served, since k8s/apps/crowdsec/helmrelease.yaml sets
-    # lapi.service.type: ClusterIP. `cscli bouncers list` was empty, confirming
-    # this bouncer never reached the LAPI. It is exposed on the tailnet instead,
-    # by k8s/apps/crowdsec/service.yaml.
     sops.templates."crowdsec-bouncer.env".content = ''
         LAPI_URL=http://${tailnet.ips.crowdsec}:8080
         BOUNCER_API_KEY=${config.sops.placeholder.crowdsec-bouncer-api-key}

@@ -1,6 +1,3 @@
-# Nextcloud needs Redis for transactional file locking; without it concurrent
-# clients corrupt each other's uploads. Deliberately has no persistence - the
-# lock table is disposable state, so it is not pinned to albireo either.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,6 +15,7 @@ spec:
     spec:
       containers:
         - name: redis
+          # nextcloud needs redis for transactional file locking
           image: redis:7-alpine
           ports:
             - containerPort: 6379
