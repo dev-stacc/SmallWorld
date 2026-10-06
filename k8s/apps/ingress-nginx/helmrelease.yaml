@@ -16,6 +16,9 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: false
+      config:
+        use-forwarded-headers: "true"
+        proxy-real-ip-cidr: "10.42.0.0/16"
       admissionWebhooks:
         enabled: false
       addHeaders:
