@@ -54,11 +54,11 @@
                 vault = "100.96.166.122";
             };
         };
-        theme = import ./modules/theme;
+        theme = import ./hosts/modules/theme;
 
         hosts = import ./hosts;
 
-        inherit (import ./lib/mkHost.nix {
+        inherit (import ./hosts/mkHost.nix {
             inherit inputs lib username tailnet theme hosts;
         }) specialArgs mkSystem mkNode;
 

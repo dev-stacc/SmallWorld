@@ -20,33 +20,27 @@ This doubles as a CV piece. Built solo while teaching myself the stack.
 ```
 flake.nix                       Inputs, tailnet IPs, theme; derives nixosConfigurations + colmena
 
-lib/
-├── mkHost.nix                  Turns a registry entry into a module list (shared by both outputs)
-└── roles.nix                   role -> {system, home, unfree} module lists
-
 hosts/
 ├── default.nix                 THE HOST REGISTRY: hostName, roles, unfree, secrets, deploy
-└── <host>/                     hardware-configuration.nix only (one folder per host)
-
-modules/
-├── system/                     NixOS modules
-│   ├── profiles/               Selected per host by lib/roles.nix
-│   │   ├── base/               Implicit everywhere: nix, networking, tailscale, ssh, users
-│   │   ├── server/             always-on.nix (role "server") + k3s-agent.nix (role "k3s-agent")
-│   │   ├── desktop/            Shared by desktop hosts (bluetooth, sound, overlays)
-│   │   ├── admin/              Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
-│   │   ├── gaming/             Steam + gamemode
-│   │   └── wireless.nix        iwd, for the two portable hosts
-│   └── host-specific/          Per-host overrides (graphics, vault, k3s, pi-hole, storage, ...)
-└── home/                       home-manager modules (mirrors the system/ layout)
-    ├── profiles/
-    │   ├── base/               Shell, git, ssh, terminal
-    │   ├── desktop/            Waybar, librewolf, fonts
-    │   └── editor/             nixvim with the full LSP stack
-    └── host-specific/          WM configs, host-specific waybar (GPU vs CPU thermals)
+├── mkHost.nix                  Turns a registry entry into a module list (shared by both outputs)
+├── roles.nix                   role -> {system, home, unfree} module lists
+└── modules/
+    ├── system/                 NixOS modules
+    │   ├── profiles/           Selected per host by hosts/roles.nix
+    │   │   ├── base/           Implicit everywhere: nix, networking, tailscale, ssh, users
+    │   │   ├── server/         always-on.nix (role "server") + k3s-agent.nix (role "k3s-agent")
+    │   │   ├── desktop/        Shared by desktop hosts (bluetooth, sound, overlays)
+    │   │   ├── admin/          Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
+    │   │   ├── gaming/         Steam + gamemode
+    │   │   └── wireless.nix    iwd, for the two portable hosts
+    │   └── host-specific/      Per-host: hardware-configuration.nix + overrides
+    ├── home/                   home-manager modules (mirrors the system/ layout)
+    │   ├── profiles/           base (shell, git, ssh), desktop (waybar, librewolf), editor (nixvim)
+    │   └── host-specific/      WM configs, host-specific waybar (GPU vs CPU thermals)
+    └── theme/                  Shared colours, fonts, wallpapers
 
 secrets/
-├── secrets.yaml                SOPS-encrypted, readable by the six hosts in .sops.yaml
+├── secrets.yaml                SOPS-encrypted, readable by the seven hosts in .sops.yaml
 └── vault-init.json             SOPS-encrypted Vault unseal keys + root token
 
 k8s/
