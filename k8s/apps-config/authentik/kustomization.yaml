@@ -10,7 +10,7 @@ resources:
   - blueprint-monitoring.yaml
   - blueprint-outpost.yaml
   - helmrelease.yaml
-  - service.yaml
+  - tailscale-ingress.yaml
   - auth-proxy.yaml
   - blueprint-jellyfin-oidc.yaml
   - externalsecret-blueprint-jellyfin-env.yaml
