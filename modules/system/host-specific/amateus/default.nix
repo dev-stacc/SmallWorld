@@ -1,6 +1,7 @@
 { ... } : {
     imports = [
         ./nfs-server.nix
+        ./restic-server.nix
     ];
 
 
