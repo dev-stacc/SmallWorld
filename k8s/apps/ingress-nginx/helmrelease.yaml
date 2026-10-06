@@ -19,6 +19,8 @@ spec:
       config:
         use-forwarded-headers: "true"
         proxy-real-ip-cidr: "10.42.0.0/16"
+      proxySetHeaders:
+        X-Forwarded-Proto: "https"
       admissionWebhooks:
         enabled: false
       addHeaders:
