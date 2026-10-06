@@ -135,5 +135,5 @@ spec:
       volumes:
         - name: nextcloud-data
           hostPath:
-            path: /srv/nextcloud/html
+            path: /bigstorage/nextcloud/html
             type: Directory

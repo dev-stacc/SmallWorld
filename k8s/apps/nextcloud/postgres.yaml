@@ -63,7 +63,7 @@ spec:
         - name: postgres-data
           hostPath:
             # must be owned by uid 999 on albireo (see its storage.nix)
-            path: /srv/nextcloud/db
+            path: /bigstorage/nextcloud/db
             type: Directory
 ---
 apiVersion: v1

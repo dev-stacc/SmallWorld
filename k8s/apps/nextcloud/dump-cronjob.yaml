@@ -64,5 +64,5 @@ spec:
           volumes:
             - name: dumps
               hostPath:
-                path: /srv/nextcloud/dumps
+                path: /bigstorage/nextcloud/dumps
                 type: Directory

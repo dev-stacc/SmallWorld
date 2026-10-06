@@ -2,7 +2,7 @@
     services.nfs.server = {
         enable = true;
         exports = ''
-            /srv/nfs ${tailnet.ips.asta}(rw,sync,no_subtree_check,root_squash) ${tailnet.ips.aperture}(rw,sync,no_subtree_check,root_squash)
+            /bigstorage/nfs ${tailnet.ips.asta}(rw,sync,no_subtree_check,root_squash) ${tailnet.ips.aperture}(rw,sync,no_subtree_check,root_squash)
         '';
     };
 
