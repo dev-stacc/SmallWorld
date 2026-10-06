@@ -18,29 +18,31 @@ This doubles as a CV piece. Built solo while teaching myself the stack.
 ## Repo layout
 
 ```
-flake.nix                       Hosts, colmena, specialArgs (username + tailnet)
+flake.nix                       Inputs, tailnet IPs, theme; derives nixosConfigurations + colmena
 
-hosts/                          Per-host entrypoints
-├── arcturus/                   hardware-configuration + home-manager binding
-├── antinoos/                   (one folder per host, same shape)
-├── aperture/
-├── amateus/
-├── argus/
-├── asta/
-└── alula/
+lib/
+├── mkHost.nix                  Turns a registry entry into a module list (shared by both outputs)
+└── roles.nix                   role -> {system, home, unfree} module lists
+
+hosts/
+├── default.nix                 THE HOST REGISTRY: hostName, roles, unfree, secrets, deploy
+└── <host>/                     hardware-configuration.nix only (one folder per host)
 
 modules/
 ├── system/                     NixOS modules
-│   ├── common/
-│   │   ├── all/                Applied to every host
+│   ├── profiles/               Selected per host by lib/roles.nix
+│   │   ├── base/               Implicit everywhere: nix, networking, tailscale, ssh, users
+│   │   ├── server/             always-on.nix (role "server") + k3s-agent.nix (role "k3s-agent")
+│   │   ├── desktop/            Shared by desktop hosts (bluetooth, sound, overlays)
 │   │   ├── admin/              Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
-│   │   ├── desktops/           Shared by desktop hosts (arcturus, antinoos, alula)
-│   │   └── servers/            Shared by server hosts (asta, aperture, amateus, argus)
-│   └── host-specific/          Per-host overrides (graphics, sway, vault, k3s, pi-hole, ...)
+│   │   ├── gaming/             Steam + gamemode
+│   │   └── wireless.nix        iwd, for the two portable hosts
+│   └── host-specific/          Per-host overrides (graphics, vault, k3s, pi-hole, storage, ...)
 └── home/                       home-manager modules (mirrors the system/ layout)
-    ├── common/
-    │   ├── all/                Shell, git, ssh, terminal
-    │   └── desktops/           Waybar (shared), nixvim, librewolf, fonts
+    ├── profiles/
+    │   ├── base/               Shell, git, ssh, terminal
+    │   ├── desktop/            Waybar, librewolf, fonts
+    │   └── editor/             nixvim with the full LSP stack
     └── host-specific/          WM configs, host-specific waybar (GPU vs CPU thermals)
 
 secrets/
@@ -58,12 +60,12 @@ k8s/
 │   ├── kiwix/                  Offline Wikipedia mirror (kiwix-serve) on aperture
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
+│   ├── nextcloud/              Files + sync; pinned to albireo, data on its ZFS pool
 │   ├── nfs-provisioner/        PVs backed by amateus
 │   ├── tailscale/
 │   ├── uptime-kuma/
 │   ├── vault/
 │   ├── marketing-tool/         Version of an app I built during my internship at Enjoy Social
-│   ├── openpayrun/             Own app; MSSQL backend, Flux image automation, NetworkPolicy
 │   ├── prose/                  Own app; Postgres backend, Tailscale sidecar, Flux image automation
 │   └── sewing-assistant/       Full-stack personal project to track my sewing projects
 └── apps-config/                Post-deploy configs

@@ -46,6 +46,16 @@
                 sanctuary = "100.113.161.17";
                 alula = "100.104.236.122";
                 atlas = "PLACEHOLDER";
+                # Not a host: the CrowdSec LAPI, exposed on the tailnet by the
+                # tailscale operator via k8s/apps/crowdsec/service.yaml. Hosts
+                # reach it by IP rather than MagicDNS name because argus runs
+                # its own resolver with services.resolved disabled.
+                crowdsec = "100.127.104.71";
+                # Likewise Loki, exposed by k8s/apps/monitoring/loki-service.yaml
+                # so albireo's host-level Alloy can push to it. Fill this in once
+                # the LoadBalancer has been assigned its address - albireo's
+                # log-shipping.nix stays off while it reads PLACEHOLDER.
+                loki = "PLACEHOLDER";
             };
         };
         theme = import ./modules/theme;
