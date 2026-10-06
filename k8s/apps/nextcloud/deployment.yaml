@@ -50,9 +50,8 @@ spec:
                   key: NEXTCLOUD_ADMIN_PASSWORD
             - name: NEXTCLOUD_TRUSTED_DOMAINS
               value: nextcloud.${TAILNET_DOMAIN}
-            # http, not https: nothing in this cluster terminates TLS
             - name: OVERWRITEPROTOCOL
-              value: http
+              value: https
             - name: OVERWRITEHOST
               value: nextcloud.${TAILNET_DOMAIN}
             - name: TRUSTED_PROXIES

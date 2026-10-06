@@ -26,7 +26,7 @@ data:
             - refresh_token
           redirect_uris:
             - matching_mode: strict
-              url: http://nextcloud.${TAILNET_DOMAIN}/apps/user_oidc/code
+              url: https://nextcloud.${TAILNET_DOMAIN}/apps/user_oidc/code
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
           signing_key: !Find [authentik_crypto.certificatekeypair, [managed, goauthentik.io/crypto/default-certificate]]
