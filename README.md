@@ -24,20 +24,25 @@ hosts/
 ├── default.nix                 THE HOST REGISTRY: hostName, roles, unfree, secrets, deploy
 ├── mkHost.nix                  Turns a registry entry into a module list (shared by both outputs)
 ├── roles.nix                   role -> {system, home, unfree} module lists
-└── modules/
-    ├── system/                 NixOS modules
-    │   ├── profiles/           Selected per host by hosts/roles.nix
-    │   │   ├── base/           Implicit everywhere: nix, networking, tailscale, ssh, users
-    │   │   ├── server/         always-on.nix (role "server") + k3s-agent.nix (role "k3s-agent")
-    │   │   ├── desktop/        Shared by desktop hosts (bluetooth, sound, overlays)
-    │   │   ├── admin/          Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
-    │   │   ├── gaming/         Steam + gamemode
-    │   │   └── wireless.nix    iwd, for the two portable hosts
-    │   └── host-specific/      Per-host: hardware-configuration.nix + overrides
-    ├── home/                   home-manager modules (mirrors the system/ layout)
-    │   ├── profiles/           base (shell, git, ssh), desktop (waybar, librewolf), editor (nixvim)
-    │   └── host-specific/      WM configs, host-specific waybar (GPU vs CPU thermals)
-    └── theme/                  Shared colours, fonts, wallpapers
+├── modules/
+│   ├── system/                 NixOS modules
+│   │   ├── profiles/           Selected per host by hosts/roles.nix
+│   │   │   ├── base/           Implicit everywhere: nix, networking, tailscale, ssh, users
+│   │   │   ├── server/         always-on.nix (role "server") + k3s-agent.nix (role "k3s-agent")
+│   │   │   ├── desktop/        Shared by desktop hosts (bluetooth, sound, overlays)
+│   │   │   ├── admin/          Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
+│   │   │   ├── gaming/         Steam + gamemode
+│   │   │   └── wireless.nix    iwd, for the two portable hosts
+│   │   └── host-specific/      Per-host: hardware-configuration.nix + overrides
+│   ├── home/                   home-manager modules (mirrors the system/ layout)
+│   │   ├── profiles/           base (shell, git, ssh), desktop (waybar, librewolf), editor (nixvim)
+│   │   └── host-specific/      WM configs, host-specific waybar (GPU vs CPU thermals)
+│   └── theme/                  Shared colours, fonts, wallpapers
+└── phones/                     ADB debloat scripts - shell, not Nix
+    ├── android.sh              Entrypoint; re-execs into nix-shell for android-tools
+    ├── devices/                Per-device package lists (Algol, A16)
+    ├── modules/                Reusable debloat actions (apps, config, debloat)
+    └── lib/                    adb.sh, keep.sh
 
 secrets/
 ├── secrets.yaml                SOPS-encrypted, readable by the seven hosts in .sops.yaml
@@ -67,12 +72,6 @@ k8s/
     ├── crowdsec/
     ├── external-secrets/
     └── grafana/
-
-mobiles/                        Android debloat scripts for personal devices
-├── android.sh                  Entrypoint
-├── devices/                    Per-device package lists
-├── modules/                    Reusable debloat actions (apps, config, debloat)
-└── lib/
 ```
 
 ## Hosts
@@ -131,7 +130,7 @@ colmena apply                                    # remote deploy of all hosts
 - `modules/system/host-specific/arcturus/k3s-kubeconfig.nix` - `~/.kube/config` is a `mkOutOfStoreSymlink` to a SOPS-decrypted kubeconfig, so admin cluster credentials are declarative without ending up in the Nix store.
 - `k8s/flux/flux-system/cluster-config.yaml` - the single ConfigMap every workload substitutes against.
 - `modules/system/host-specific/asta/vault.nix` - Vault unseal driven by SOPS, ordered against `sops-nix.service` so it survives reboots.
-- `mobiles/` - bonus: ADB-driven debloat for a Samsung Galaxy A16 5G (40+ packages removed, Knox left alone).
+- `hosts/phones/` - bonus: ADB-driven debloat for a Samsung Galaxy A16 5G (40+ packages removed, Knox left alone).
 
 ## What I'd do differently
 
@@ -143,7 +142,7 @@ colmena apply                                    # remote deploy of all hosts
 ## Future / ongoing
 
 - A "Wrapped"-style web app for AO3 reading history (currently in progress).
-- Ongoing tuning of the `mobiles/` debloat scripts. Still iterating on what to keep vs drop so the phone has the functionality I need without reintroducing the weight.
+- Ongoing tuning of the `hosts/phones/` debloat scripts. Still iterating on what to keep vs drop so the phone has the functionality I need without reintroducing the weight.
 - Cluster nodes in more physical locations so power outages don't take everything down at once. UPS coverage helps but doesn't outlive a long outage. Targeting December 2026.
 - A physical-media ripper of my own, instead of relying on an existing package, for the CDs, DVDs, and Blu-rays I own. Targeting summer 2026.
 - A sync app that pulls my music library into Navidrome automatically. Targeting autumn 2026.
