@@ -16,5 +16,6 @@ resources:
   - externalsecret-blueprint-jellyfin-env.yaml
   - blueprint-sewing-assistant.yaml
   - blueprint-marketing-tool.yaml
+  - blueprint-kiwix.yaml
   - blueprint-nextcloud-oidc.yaml
   - externalsecret-blueprint-nextcloud-env.yaml

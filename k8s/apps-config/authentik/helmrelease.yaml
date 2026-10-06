@@ -46,6 +46,7 @@ spec:
         - authentik-blueprint-nextcloud-oidc
         - authentik-blueprint-sewing-assistant
         - authentik-blueprint-marketing-tool
+        - authentik-blueprint-kiwix
     postgresql:
       enabled: true
       auth:

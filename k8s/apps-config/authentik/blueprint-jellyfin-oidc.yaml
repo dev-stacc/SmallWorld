@@ -26,7 +26,7 @@ data:
             - refresh_token
           redirect_uris:
             - matching_mode: strict
-              url: http://jellyfin.${TAILNET_DOMAIN}/sso/OID/r/Authentik
+              url: https://jellyfin.${TAILNET_DOMAIN}/sso/OID/r/Authentik
           authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
           signing_key: !Find [authentik_crypto.certificatekeypair, [managed, goauthentik.io/crypto/default-certificate]]
