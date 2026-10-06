@@ -6,6 +6,7 @@
         ./media.nix
         ./vault.nix
         ./suricata.nix
+        ./media-sync-key.nix
     ];
 
 
