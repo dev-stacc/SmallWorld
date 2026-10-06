@@ -8,8 +8,8 @@ metadata:
     tailscale.com/hostname: "crowdsec"
 spec:
   selector:
-    app.kubernetes.io/name: crowdsec
-    app.kubernetes.io/component: lapi
+    k8s-app: crowdsec
+    type: lapi
   ports:
     - port: 8080
       targetPort: 8080
