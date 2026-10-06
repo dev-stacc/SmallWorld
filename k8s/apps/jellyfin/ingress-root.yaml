@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-root
+  namespace: jellyfin
+  annotations:
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://jellyfin.${TAILNET_DOMAIN}/sso/OID/p/Authentik"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: jellyfin.${TAILNET_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: jellyfin
+                port:
+                  number: 8096
