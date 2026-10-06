@@ -1,6 +1,12 @@
 { config, pkgs, tailnet, username, ... } : {
     sops.secrets.albireo-media-sync-key = {
         sopsFile = ../../../../../secrets/secrets.yaml;
+    };
+
+    sops.templates."media-sync-key" = {
+        content = ''
+            ${config.sops.placeholder.albireo-media-sync-key}
+        '';
         mode = "0400";
     };
 
@@ -9,11 +15,11 @@
         after = [ "tailscaled.service" "sops-nix.service" ];
         wants = [ "tailscaled.service" ];
 
+        unitConfig.ConditionPathIsMountPoint = "/bigstorage";
+
         serviceConfig = {
             Type = "oneshot";
             StateDirectory = "media-sync";
-
-            ConditionPathIsMountPoint = "/bigstorage";
 
             ExecStart = ''
                 ${pkgs.rsync}/bin/rsync \
@@ -21,7 +27,7 @@
                     --partial \
                     --human-readable \
                     --info=stats2 \
-                    -e '${pkgs.openssh}/bin/ssh -i ${config.sops.secrets.albireo-media-sync-key.path} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/var/lib/media-sync/known_hosts' \
+                    -e '${pkgs.openssh}/bin/ssh -i ${config.sops.templates."media-sync-key".path} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/var/lib/media-sync/known_hosts' \
                     ${username}@${tailnet.ips.asta}:/home/${username}/media/ \
                     /bigstorage/media-backup/
             '';
