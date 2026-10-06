@@ -54,4 +54,9 @@
         hostName = "Atlas";
         roles = [ "server" "k3s-agent" ];
     };
+
+    albireo = {
+        hostName = "Albireo";
+        roles = [ "server" "k3s-agent" ];
+    };
 }

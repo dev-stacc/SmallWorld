@@ -5,6 +5,7 @@ keys:
   - &antinoos age1kufgdtz7h7r40nl6wa55zgvxfzuc5sc3mh2qzthvfvz5l778hvjq6gxdjt
   - &aperture age132hqe27z8z6t79uzsaxh6yfn2vnshvc0n0dmad53fss67tvhxcrsxuk5sa
   - &argus age1xrs7yzr5s2xsd5gqhsztan003p3z5flz88nml6js0wdwuq4gfs2qaxj2e6
+  - &albireo age17kp7epkqetu9p5qwuplln9sym9k779jcpel28u2xvfwgnyn7ny7q63j7et
 creation_rules:
   - path_regex: secrets/.*
     key_groups:
@@ -15,6 +16,7 @@ creation_rules:
         - *antinoos
         - *aperture
         - *argus
+        - *albireo
   - path_regex: k8s/.*
     key_groups:
       - age:
