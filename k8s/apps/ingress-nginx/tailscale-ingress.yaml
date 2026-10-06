@@ -4,6 +4,7 @@ metadata:
   name: ts-nextcloud
   namespace: ingress-nginx
   annotations:
+    tailscale.com/proxy-group: ingress
     tailscale.com/hostname: nextcloud
 spec:
   ingressClassName: tailscale
