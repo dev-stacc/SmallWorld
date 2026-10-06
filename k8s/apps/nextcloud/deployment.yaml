@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  replicas: 1
+  strategy:
+    # Recreate, not RollingUpdate: two pods must never hold the same hostPath
+    # data directory open, and Nextcloud's upgrade step is not concurrency-safe.
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      # Pinned to albireo: the data directory is a hostPath on its ZFS pool, so
+      # this pod is not schedulable anywhere else. Same mechanism jellyfin and
+      # navidrome use to pin to asta.
+      nodeSelector:
+        kubernetes.io/hostname: albireo
+      containers:
+        # Major version is pinned on purpose. Nextcloud refuses to skip major
+        # versions and an unattended jump leaves the instance in maintenance
+        # mode, so upgrades must be done one major at a time, deliberately.
+        - name: nextcloud
+          image: nextcloud:31-apache
+          ports:
+            - containerPort: 80
+          env:
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_DB
+              value: nextcloud
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: POSTGRES_PASSWORD
+            - name: NEXTCLOUD_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: NEXTCLOUD_ADMIN_USER
+            - name: NEXTCLOUD_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: NEXTCLOUD_ADMIN_PASSWORD
+            - name: NEXTCLOUD_TRUSTED_DOMAINS
+              value: nextcloud.${TAILNET_DOMAIN}
+            # The cluster terminates nothing - every app here is served over
+            # plain HTTP on the tailnet - so this must be http, not https, or
+            # Nextcloud generates unreachable URLs and the OIDC redirect fails.
+            - name: OVERWRITEPROTOCOL
+              value: http
+            - name: OVERWRITEHOST
+              value: nextcloud.${TAILNET_DOMAIN}
+            # Pod CIDR, so Nextcloud trusts X-Forwarded-For from ingress-nginx
+            # instead of logging every client as the controller's pod IP.
+            - name: TRUSTED_PROXIES
+              value: 10.42.0.0/16
+            - name: REDIS_HOST
+              value: redis
+            - name: PHP_MEMORY_LIMIT
+              value: 512M
+            # Keep in step with proxy-body-size on the ingress, or large uploads
+            # fail at whichever limit is lower.
+            - name: PHP_UPLOAD_LIMIT
+              value: 10G
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+          volumeMounts:
+            - name: nextcloud-data
+              mountPath: /var/www/html
+          startupProbe:
+            httpGet:
+              path: /status.php
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: nextcloud.${TAILNET_DOMAIN}
+            # First boot runs the installer against an empty database, which is
+            # slow; 30 x 10s gives it five minutes before the kubelet gives up.
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /status.php
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: nextcloud.${TAILNET_DOMAIN}
+            periodSeconds: 15
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /status.php
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: nextcloud.${TAILNET_DOMAIN}
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            failureThreshold: 4
+        # Without this, background jobs never run: Nextcloud warns about it in
+        # the admin overview and file scans, previews and cleanups all stall.
+        - name: cron
+          image: nextcloud:31-apache
+          command: ["/cron.sh"]
+          env:
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_DB
+              value: nextcloud
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: POSTGRES_PASSWORD
+            - name: REDIS_HOST
+              value: redis
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: nextcloud-data
+              mountPath: /var/www/html
+      volumes:
+        # /var/www/html holds config/, custom_apps/, themes/ and data/ together,
+        # so the whole tree lives on ZFS and snapshots as one unit. Must be
+        # owned by uid 33 (www-data) on albireo - see storage.nix.
+        - name: nextcloud-data
+          hostPath:
+            path: /srv/nextcloud/html
+            type: Directory

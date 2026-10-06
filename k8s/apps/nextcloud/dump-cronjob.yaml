@@ -1,0 +1,77 @@
+# A ZFS snapshot of a live postgres data directory is atomic but only
+# crash-consistent - equivalent to pulling the plug. This produces a clean
+# logical dump next to the files, which albireo's restic job then ships to
+# amateus. Without it a restore could come back with a database that needs
+# recovery rather than one that simply opens.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nextcloud-db-dump
+  namespace: nextcloud
+spec:
+  schedule: "15 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          # Deliberately NOT app: nextcloud - that label is the Service's
+          # selector, so this pod would start receiving web traffic. The
+          # postgres NetworkPolicy allows this label explicitly instead.
+          labels:
+            app: nextcloud-dump
+        spec:
+          restartPolicy: OnFailure
+          # Must land on albireo: the dump is written to a hostPath on its pool.
+          nodeSelector:
+            kubernetes.io/hostname: albireo
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          containers:
+            - name: pg-dump
+              image: postgres:16
+              env:
+                - name: PGHOST
+                  value: postgres
+                - name: PGDATABASE
+                  value: nextcloud
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: nextcloud-secrets
+                      key: POSTGRES_USER
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: nextcloud-secrets
+                      key: POSTGRES_PASSWORD
+              command:
+                - /bin/sh
+                - -c
+                # Write to a temp name and move into place, so restic can never
+                # pick up a half-written dump if the two timers overlap.
+                - |
+                  set -eu
+                  out=/dumps/nextcloud.sql.gz
+                  pg_dump --clean --if-exists | gzip -9 > "$out.tmp"
+                  mv "$out.tmp" "$out"
+                  echo "wrote $out ($(stat -c %s "$out") bytes)"
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+                limits:
+                  memory: 512Mi
+                  cpu: 500m
+              volumeMounts:
+                - name: dumps
+                  mountPath: /dumps
+          volumes:
+            - name: dumps
+              hostPath:
+                path: /srv/nextcloud/dumps
+                type: Directory

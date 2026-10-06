@@ -3,8 +3,10 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - externalsecret.yaml
-  - mssql.yaml
+  - postgres.yaml
+  - redis.yaml
   - deployment.yaml
   - service.yaml
+  - ingress.yaml
   - networkpolicy.yaml
-  - image-automation.yaml
+  - dump-cronjob.yaml
