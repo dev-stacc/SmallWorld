@@ -31,7 +31,7 @@ vpn_menu() {
         fi
         DEVICE=$(tailscale status --self 2>/dev/null | head -1 | awk '{print $1, $2}')
         
-        SELECTION=$(printf 'tailscale: [%s]\n%s\n\nturn on\nturn on with exit node\nturn off' \
+        SELECTION=$(printf 'tailscale: [%s]\n%s\n\nturn on\nexit at sanctuary\nexit at argus\nturn off' \
             "$TS_STATUS" "$DEVICE" | \
             fzf --height=100% --border=none --prompt="  vpn: " --header="<- esc" \
                 --bind="esc:abort")
