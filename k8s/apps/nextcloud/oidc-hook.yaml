@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-oidc-hook
+  namespace: nextcloud
+data:
+  10-user-oidc.sh: |
+    #!/bin/sh
+    set -e
+
+    run_occ() {
+      su -p www-data -s /bin/sh -c "php /var/www/html/occ $$*"
+    }
+
+    if ! run_occ status 2>/dev/null | grep -q "installed: true"; then
+      echo "nextcloud not installed yet, skipping user_oidc setup"
+      exit 0
+    fi
+
+    if [ -z "$$NEXTCLOUD_OIDC_CLIENT_ID" ] || [ -z "$$NEXTCLOUD_OIDC_CLIENT_SECRET" ]; then
+      echo "oidc credentials unavailable, skipping user_oidc setup"
+      exit 0
+    fi
+
+    if ! run_occ app:list | grep -q user_oidc; then
+      run_occ app:install user_oidc
+    fi
+    run_occ app:enable user_oidc
+
+    run_occ user_oidc:provider Authentik \
+      --clientid="$$NEXTCLOUD_OIDC_CLIENT_ID" \
+      --clientsecret="$$NEXTCLOUD_OIDC_CLIENT_SECRET" \
+      --discoveryuri="https://authentik.${TAILNET_DOMAIN}/application/o/nextcloud-oidc/.well-known/openid-configuration" \
+      --scope="openid email profile" \
+      --mapping-uid=sub \
+      --unique-uid=0
+
+    echo "user_oidc provider Authentik configured"

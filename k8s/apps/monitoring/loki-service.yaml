@@ -7,12 +7,8 @@ metadata:
     tailscale.com/expose: "true"
     tailscale.com/hostname: "loki"
 spec:
-  # component pins the single-binary pod; name alone also matches loki-canary,
-  # which does not serve the push API
   selector:
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/component: single-binary
+    app: loki-proxy
   ports:
     - port: 3100
       targetPort: 3100

@@ -56,6 +56,88 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+        - name: configure-sso
+          image: alpine:3.19
+          envFrom:
+            - secretRef:
+                name: jellyfin-oidc
+                optional: true
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              CFG=/config/plugins/configurations
+              NET=/config/config/network.xml
+              CIDR=10.42.0.0/16
+              mkdir -p "$$CFG"
+              if [ ! -f "$$NET" ]; then
+                echo "network.xml absent, jellyfin will create it"
+              elif grep -q "$$CIDR" "$$NET"; then
+                echo "KnownProxies already contains $$CIDR"
+              else
+                sed -i "s#<KnownProxies />#<KnownProxies><string>$$CIDR</string></KnownProxies>#" "$$NET"
+                sed -i "s#<KnownProxies></KnownProxies>#<KnownProxies><string>$$CIDR</string></KnownProxies>#" "$$NET"
+                grep -q "$$CIDR" "$$NET" && echo "patched KnownProxies" || echo "could not patch KnownProxies"
+              fi
+              if [ -z "$$JELLYFIN_OIDC_CLIENT_ID" ] || [ -z "$$JELLYFIN_OIDC_CLIENT_SECRET" ]; then
+                echo "OIDC credentials unavailable, leaving SSO-Auth.xml untouched"
+              else
+                cat > "$$CFG/SSO-Auth.xml" <<EOF
+              <?xml version="1.0" encoding="utf-8"?>
+              <PluginConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <SamlConfigs />
+                <OidConfigs>
+                  <item>
+                    <key>
+                      <string>Authentik</string>
+                    </key>
+                    <value>
+                      <PluginConfiguration>
+                        <OidEndpoint>https://authentik.${TAILNET_DOMAIN}/application/o/jellyfin-oidc/</OidEndpoint>
+                        <OidClientId>$$JELLYFIN_OIDC_CLIENT_ID</OidClientId>
+                        <OidSecret>$$JELLYFIN_OIDC_CLIENT_SECRET</OidSecret>
+                        <Enabled>true</Enabled>
+                        <EnableAuthorization>false</EnableAuthorization>
+                        <EnableAllFolders>true</EnableAllFolders>
+                        <EnabledFolders />
+                        <AdminRoles>
+                          <string>authentik Admins</string>
+                        </AdminRoles>
+                        <Roles />
+                        <EnableFolderRoles>false</EnableFolderRoles>
+                        <EnableLiveTvRoles>false</EnableLiveTvRoles>
+                        <EnableLiveTv>false</EnableLiveTv>
+                        <EnableLiveTvManagement>false</EnableLiveTvManagement>
+                        <LiveTvRoles />
+                        <LiveTvManagementRoles />
+                        <RoleClaim>groups</RoleClaim>
+                        <OidScopes>
+                          <string>openid</string>
+                          <string>profile</string>
+                          <string>email</string>
+                        </OidScopes>
+                        <PortOverride xsi:nil="true" />
+                        <NewPath>false</NewPath>
+                        <CanonicalLinks />
+                        <DefaultUsernameClaim>preferred_username</DefaultUsernameClaim>
+                        <AvatarUrlFormat />
+                        <DisableHttps>false</DisableHttps>
+                        <DisablePushedAuthorization>false</DisablePushedAuthorization>
+                        <DoNotValidateEndpoints>true</DoNotValidateEndpoints>
+                        <DoNotValidateIssuerName>true</DoNotValidateIssuerName>
+                        <DoNotLoadProfile>false</DoNotLoadProfile>
+                      </PluginConfiguration>
+                    </value>
+                  </item>
+                </OidConfigs>
+              </PluginConfiguration>
+              EOF
+                echo "wrote SSO-Auth.xml"
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /config
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:latest

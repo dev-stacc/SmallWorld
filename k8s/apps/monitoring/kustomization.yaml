@@ -9,6 +9,8 @@ resources:
   - grafana-ingress.yaml
   - grafana-helmrepository.yaml
   - loki-helmrelease.yaml
+  - loki-auth.yaml
+  - loki-proxy.yaml
   - loki-service.yaml
   - tempo-helmrelease.yaml
   - promtail-helmrelease.yaml

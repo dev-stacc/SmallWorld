@@ -11,7 +11,7 @@
 
     boot.loader.grub = {
         enable = true;
-        device = "/dev/sda";
+        device = "/dev/disk/by-id/ata-SanDisk_SDSSDRC032G_143235415768";
     };
 
     boot.kernelParams = [
