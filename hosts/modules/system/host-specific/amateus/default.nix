@@ -8,7 +8,7 @@
 
     boot.loader.grub = {
         enable = true;
-        device = "/dev/sda";
+        device = "/dev/disk/by-id/ata-TOSHIBA_MQ01ACF050_695ITBR6T";
     };
 
     swapDevices = [{
