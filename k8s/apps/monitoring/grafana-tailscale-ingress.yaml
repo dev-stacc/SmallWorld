@@ -5,6 +5,7 @@ metadata:
   namespace: monitoring
   annotations:
     tailscale.com/hostname: grafana
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:

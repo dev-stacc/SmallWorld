@@ -5,6 +5,7 @@ metadata:
   namespace: vault
   annotations:
     tailscale.com/hostname: vault
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:

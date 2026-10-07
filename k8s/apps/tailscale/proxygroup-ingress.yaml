@@ -4,4 +4,4 @@ metadata:
   name: ingress
 spec:
   type: ingress
-  replicas: 1
+  replicas: 2

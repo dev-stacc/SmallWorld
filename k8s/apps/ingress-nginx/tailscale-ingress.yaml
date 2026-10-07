@@ -5,6 +5,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: nextcloud
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
@@ -23,6 +24,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: jellyfin
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
@@ -41,6 +43,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: navidrome
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
@@ -59,6 +62,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: uptime
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
@@ -77,6 +81,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: sewing
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
@@ -95,6 +100,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: marketing
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
@@ -113,6 +119,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     tailscale.com/hostname: wikipedia
+    tailscale.com/proxy-group: ingress
 spec:
   ingressClassName: tailscale
   defaultBackend:
