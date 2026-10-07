@@ -28,13 +28,9 @@
     };
 
     networking.firewall.interfaces = {
-        tailscale0 = {
-            allowedTCPPorts = [ 6443 10250 ];
-            allowedUDPPorts = [ 8472 51820 ];
-        };
-        eno1.allowedUDPPorts = [ 8472 51820 ];
+        tailscale0.allowedTCPPorts = [ 6443 10250 ];
+        eno1.allowedUDPPorts = [ 51820 ];
         cni0.allowedTCPPorts = [ 6443 10250 ];
-        "flannel.1".allowedTCPPorts = [ 6443 10250 ];
         flannel-wg.allowedTCPPorts = [ 6443 10250 ];
     };
 

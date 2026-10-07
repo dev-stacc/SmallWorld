@@ -6,5 +6,5 @@
         ];
     };
 
-    networking.firewall.interfaces.enp3s0.allowedUDPPorts = [ 8472 51820 ];
+    networking.firewall.interfaces.enp3s0.allowedUDPPorts = [ 51820 ];
 }
