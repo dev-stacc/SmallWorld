@@ -33,7 +33,10 @@
     };
 
     server = {
-        system = [ ./modules/system/profiles/server/always-on.nix ];
+        system = [
+            ./modules/system/profiles/server/always-on.nix
+            ./modules/system/profiles/server/logging.nix
+        ];
     };
 
     k3s-agent = {

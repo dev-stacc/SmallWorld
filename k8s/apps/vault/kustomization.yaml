@@ -4,6 +4,6 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - service.yaml
+  - tailscale-ingress.yaml
   - unseal-secret.yaml
   - unsealer.yaml

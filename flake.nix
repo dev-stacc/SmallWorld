@@ -51,7 +51,6 @@
                 # k8s services exposed by the tailscale operator, not hosts
                 crowdsec = "100.127.104.71";
                 loki = "100.126.37.99";
-                vault = "100.96.166.122";
             };
         };
         theme = import ./hosts/modules/theme;
