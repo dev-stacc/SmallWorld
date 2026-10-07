@@ -6,6 +6,7 @@ metadata:
   annotations:
     tailscale.com/expose: "true"
     tailscale.com/hostname: "loki"
+    tailscale.com/proxy-class: "pod-mtu"
 spec:
   # component pins the single-binary pod; name alone also matches loki-canary,
   # which does not serve the push API
