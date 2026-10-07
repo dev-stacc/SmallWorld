@@ -4,7 +4,7 @@
         tailscale = {
             useRoutingFeatures = "server";
             extraUpFlags = [
-                "--advertize-exit-node"
+                "--advertise-exit-node"
             ];
         };
     };

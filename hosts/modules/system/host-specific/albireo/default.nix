@@ -6,6 +6,7 @@
         ./backup.nix
         ./k3s-service.nix
         ./graphics.nix
+        ./crowdsec-bouncer.nix
     ];
 
     boot.loader.grub = {

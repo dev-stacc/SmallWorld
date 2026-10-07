@@ -42,6 +42,7 @@
     atlas = {
         hostName = "Atlas";
         roles = [ "server" "k3s-agent" ];
+        secrets = false;
     };
 
     albireo = {
