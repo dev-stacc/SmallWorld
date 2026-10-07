@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - externalsecret.yaml
-  - oidc-hook.yaml
   - postgres.yaml
   - redis.yaml
   - deployment.yaml
@@ -11,3 +10,8 @@ resources:
   - ingress.yaml
   - networkpolicy.yaml
   - dump-cronjob.yaml
+configMapGenerator:
+  - name: nextcloud-oidc-hook
+    namespace: nextcloud
+    files:
+      - files/10-user-oidc.sh
