@@ -15,6 +15,10 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: asta
+      hostAliases:
+        - ip: 10.43.174.95
+          hostnames:
+            - authentik.${TAILNET_DOMAIN}
       initContainers:
         - name: install-sso-plugin
           image: alpine:3.19
