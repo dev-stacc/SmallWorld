@@ -41,6 +41,10 @@ if ! run_occ app:list 2>/dev/null | grep -q user_oidc; then
 fi
 run_occ app:enable user_oidc
 
+# authentik resolves to a tailnet ULA, which nextcloud's SSRF guard treats as
+# local and refuses to call, so OIDC discovery fails without this.
+run_occ config:system:set allow_local_remote_servers --value=true --type=boolean
+
 run_occ user_oidc:provider Authentik \
   --clientid="$$NEXTCLOUD_OIDC_CLIENT_ID" \
   --clientsecret="$$NEXTCLOUD_OIDC_CLIENT_SECRET" \

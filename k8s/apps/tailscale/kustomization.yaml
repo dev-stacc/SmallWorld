@@ -5,3 +5,4 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - proxygroup-ingress.yaml
+  - proxygroup-egress.yaml

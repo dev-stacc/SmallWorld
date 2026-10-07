@@ -41,6 +41,12 @@ spec:
       ports:
         - protocol: TCP
           port: 6379
+    # no port: the egress ClusterIP DNATs 443 to the proxy's own container port,
+    # so a port-scoped rule never matches. the namespace is the scope.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: tailscale
     - to:
         - ipBlock:
             # the tailnet, for authentik OIDC. prose's policy excludes it.

@@ -17,6 +17,10 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: albireo
+      hostAliases:
+        - ip: 10.43.174.95
+          hostnames:
+            - authentik.${TAILNET_DOMAIN}
       containers:
         - name: nextcloud
           # major pinned deliberately: nextcloud refuses to skip majors
