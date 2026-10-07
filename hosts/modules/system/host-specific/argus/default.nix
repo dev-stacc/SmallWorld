@@ -11,7 +11,7 @@
 
     boot.loader.grub = {
         enable = true;
-        device = "/dev/sda";
+        device = "/dev/disk/by-id/ata-Hitachi_HTS545050B9A300_101102PBN40317FU36EE";
     };
 
     # Broken eDP panel; force HDMI as the only display the kernel sees.

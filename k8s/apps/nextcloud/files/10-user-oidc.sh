@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+# the image runs hooks through run_as, which drops to www-data; su would then
+# need a password. kubectl exec runs as root, so this branch matters either way.
 run_occ() {
   if [ "$$(id -u)" = "0" ]; then
     su -p www-data -s /bin/sh -c "php /var/www/html/occ $$*"
