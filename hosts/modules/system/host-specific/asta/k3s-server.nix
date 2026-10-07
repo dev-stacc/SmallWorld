@@ -16,7 +16,8 @@
             "--advertise-address=${tailnet.ips.asta}"
             "--tls-san=asta"
             "--tls-san=${tailnet.ips.asta}"
-            "--flannel-iface=tailscale0"
+            "--flannel-iface=eno1"
+            "--flannel-backend=wireguard-native"
         ];
     };
 
@@ -26,15 +27,15 @@
         supportedFilesystems = [ "nfs" "nfs4" ];
     };
 
-    # cni0/flannel.1 are needed for pods ON asta: they reach the API at asta's own
-    # node IP, which is delivered locally rather than arriving over tailscale0.
     networking.firewall.interfaces = {
         tailscale0 = {
             allowedTCPPorts = [ 6443 10250 ];
-            allowedUDPPorts = [ 8472 ];
+            allowedUDPPorts = [ 8472 51820 ];
         };
+        eno1.allowedUDPPorts = [ 8472 51820 ];
         cni0.allowedTCPPorts = [ 6443 10250 ];
         "flannel.1".allowedTCPPorts = [ 6443 10250 ];
+        flannel-wg.allowedTCPPorts = [ 6443 10250 ];
     };
 
     environment = {
