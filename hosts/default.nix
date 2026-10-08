@@ -48,5 +48,6 @@
     altair = {
         hostName = "Altair";
         roles = [ "server" ];
+        secrets = false;
     };
 }

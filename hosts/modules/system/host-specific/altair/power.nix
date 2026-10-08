@@ -1,3 +1,3 @@
 { ... } : {
-    networking.interfaces.PLACEHOLDER.wakeOnLan.enable = true;
+    networking.interfaces.enp5s0.wakeOnLan.enable = true;
 }
