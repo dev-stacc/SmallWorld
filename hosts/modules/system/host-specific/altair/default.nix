@@ -7,9 +7,9 @@
         ./power.nix
     ];
 
-    boot.loader.grub = {
-        enable = true;
-        device = "/dev/disk/by-id/PLACEHOLDER";
+    boot.loader = {
+        systemd-boot.enable = true;
+        efi.canTouchEfiVariables = true;
     };
 
     boot.kernelParams = [

@@ -5,4 +5,9 @@
         device = "/dev/disk/by-label/PLACEHOLDER";
         fsType = "ext4";
     };
+
+    fileSystems."/boot" = {
+        device = "/dev/disk/by-label/PLACEHOLDER-ESP";
+        fsType = "vfat";
+    };
 }
