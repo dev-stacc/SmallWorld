@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-webui
+  namespace: open-webui
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: open-webui
+  template:
+    metadata:
+      labels:
+        app: open-webui
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: asta
+      containers:
+        - name: open-webui
+          image: ghcr.io/open-webui/open-webui:v0.6.18
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OPENAI_API_BASE_URL
+              value: http://altair-egress.tailscale.svc.cluster.local:8080/v1
+            - name: OPENAI_API_KEY
+              value: altair
+            - name: ENABLE_OPENAI_API
+              value: "true"
+            - name: ENABLE_OLLAMA_API
+              value: "false"
+            - name: WEBUI_URL
+              value: https://chat.${TAILNET_DOMAIN}
+            - name: WEBUI_AUTH
+              value: "true"
+            - name: ENABLE_LOGIN_FORM
+              value: "false"
+            - name: WEBUI_AUTH_TRUSTED_EMAIL_HEADER
+              value: X-authentik-email
+            - name: WEBUI_AUTH_TRUSTED_NAME_HEADER
+              value: X-authentik-name
+            - name: AIOHTTP_CLIENT_TIMEOUT
+              value: "900"
+            - name: AIOHTTP_CLIENT_TIMEOUT_MODEL_LIST
+              value: "5"
+            - name: RAG_EMBEDDING_ENGINE
+              value: openai
+            - name: ENABLE_WEB_SEARCH
+              value: "false"
+          volumeMounts:
+            - name: data
+              mountPath: /app/backend/data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: open-webui-data

@@ -23,6 +23,7 @@ data:
             - !Find [authentik_providers_proxy.proxyprovider, [name, Sewing Assistant Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Marketing Tool Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Kiwix Provider]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Open WebUI Provider]]
           config:
             authentik_host: https://authentik.${TAILNET_DOMAIN}
             authentik_host_insecure: false

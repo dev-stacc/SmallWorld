@@ -21,3 +21,19 @@ spec:
     - name: https
       port: 443
       protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: altair-egress
+  namespace: tailscale
+  annotations:
+    tailscale.com/tailnet-fqdn: altair.${TAILNET_DOMAIN}
+    tailscale.com/proxy-group: egress
+spec:
+  type: ExternalName
+  externalName: placeholder
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP

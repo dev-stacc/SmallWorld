@@ -17,5 +17,6 @@ resources:
   - blueprint-sewing-assistant.yaml
   - blueprint-marketing-tool.yaml
   - blueprint-kiwix.yaml
+  - blueprint-open-webui.yaml
   - blueprint-nextcloud-oidc.yaml
   - externalsecret-blueprint-nextcloud-env.yaml

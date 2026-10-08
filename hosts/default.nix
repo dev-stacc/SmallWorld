@@ -13,11 +13,6 @@
         secrets = false;
     };
 
-    antinoos = {
-        hostName = "Antinoos";
-        roles = [ "desktop" "editor" "gaming" ];
-    };
-
     amateus = {
         hostName = "Amateus";
         roles = [ "server" ];
@@ -48,5 +43,10 @@
     albireo = {
         hostName = "Albireo";
         roles = [ "server" "k3s-agent" ];
+    };
+
+    altair = {
+        hostName = "Altair";
+        roles = [ "server" ];
     };
 }

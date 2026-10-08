@@ -41,12 +41,12 @@
                 asta = "100.75.73.92";
                 amateus = "100.70.98.107";
                 aperture = "100.111.78.27";
-                antinoos = "100.105.248.71";
                 argus = "100.92.77.2";
                 sanctuary = "100.113.161.17";
                 alula = "100.104.236.122";
                 atlas = "PLACEHOLDER";
                 albireo = "100.114.197.75";
+                altair = "PLACEHOLDER";
 
                 # k8s services exposed by the tailscale operator, not hosts
                 crowdsec = "100.127.104.71";

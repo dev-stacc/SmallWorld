@@ -8,7 +8,7 @@ This doubles as a CV piece. Built solo while teaching myself the stack.
 
 - **NixOS** flakes for every host config; **home-manager** as a NixOS module
 - **colmena** for remote deploys
-- **k3s** (1 server, 1 agent) on the tailnet (`--flannel-iface=tailscale0`)
+- **k3s** (1 server, 3 agents) on the tailnet; flannel rides the LAN NICs with `--flannel-backend=wireguard-native`
 - **Flux** for GitOps with SOPS decryption + `postBuild.substituteFrom` for cluster-wide variables
 - **SOPS + age** for declarative secrets, plus **Vault** + **external-secrets-operator** for runtime secrets
 - **Authentik** for SSO across self-hosted services
@@ -45,7 +45,7 @@ hosts/
     └── lib/                    adb.sh, keep.sh
 
 secrets/
-├── secrets.yaml                SOPS-encrypted, readable by the seven hosts in .sops.yaml
+├── secrets.yaml                SOPS-encrypted, readable by the hosts in .sops.yaml
 └── vault-init.json             SOPS-encrypted Vault unseal keys + root token
 
 k8s/
@@ -82,7 +82,7 @@ k8s/
 | Asta      | Toshiba Satellite L-855 board, AMD A8/A10, 16 GB DDR3, tray-mount | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth. Headless. |
 | Aperture  | Dell OptiPlex 3020, i5 4th gen, 12 GB DDR3, SSD + HDD, dGPU       | k3s agent. Headless.                                                       |
 | Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | NFS server backing cluster `PersistentVolume`s. Headless.                  |
-| Antinoos  | Acer Aspire board, i5 6th gen, 16 GB DDR3, 3 TB storage, RX 580   | Sway desktop driving 4K@60 over Polaris.                                   |
+| Altair    | LGA1155 board, i5-2500K, DDR3, ex-Antinoos HDD + 1 TB, 2x RX 580  | Local LLM inference (llama.cpp on Vulkan). Wake-on-LAN. Headless.          |
 | Argus     | Acer Aspire 7741, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
 | Alula     | Intel Compute Stick T6, Atom x5-Z8350, 4 GB RAM, 64 GB storage   | Portable niri desktop. Coding + browsing. Future cyberdeck base.           |
 
@@ -103,9 +103,9 @@ Every machine here has a history.
 
 **Aperture** A refurbished Dell OptiPlex 3020 from eBay, $80. i5 4th gen, 12 GB DDR3, SSD + HDD, dedicated GPU. Light dust, fresh paste, NixOS, `git pull`, done. That was the fastest a host has ever joined this cluster. Original case kept. It's now the k3s agent, taking over the role Amateus used to fill.
 
-**Antinoos** Less linear. Motherboard came from a retired Acer Aspire of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage). I wanted a light-gaming desktop because the console subscription model is going to be more expensive than this over time. First RX 580 was a defective eBay refurb that mostly worked, then didn't (probably ex-mining). Replaced with a sealed, tested RX 580 and a new Corsair PSU. Mounted on a serving tray like Asta for airflow. Might become a cluster node next time I rebuild a desktop.
+**Altair** The successor to Antinoos, and the reason Antinoos is gone. Antinoos began as a light-gaming desktop on a retired Acer Aspire board of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage), because the console subscription model was going to cost more than this over time. Its first RX 580 was a defective eBay refurb that mostly worked, then didn't (probably ex-mining); replaced with a sealed, tested card and a new Corsair PSU. It drove 4K@60 over Polaris under Sway, after Hyprland kept dying with `eglDupNativeFenceFDANDROID EGL_BAD_PARAMETER` that `AQ_NO_ATOMIC=1` + `AQ_NO_MODIFIERS=1` couldn't fully fix — `WLR_DRM_NO_ATOMIC=1` + `WLR_NO_HARDWARE_CURSORS=1` on Sway is what finally kept the panel up. Now its root HDD and its RX 580 have moved onto an LGA1155 board (i5-2500K) with two PCIe x16 slots, joined by the RX 580 pulled out of Albireo and a 1 TB model store. Two 8 GB Polaris cards is 16 GB of VRAM, enough for a 14B model at Q5. ROCm dropped gfx803 years ago, so the stack is llama.cpp on Vulkan rather than anything ROCm-based. Normally powered off, woken by a magic packet. Local inference is worth understanding while it's still unrestricted.
 
-**Argus** An Acer Aspire 7741 from ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle because of windows. Will eventuall strip it down to the motherboard in the spirit of Asta and Antinoos. It's currently running Pi-Hole 24/7.
+**Argus** An Acer Aspire 7741 from ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle because of windows. Will eventuall strip it down to the motherboard in the spirit of Asta. It's currently running Pi-Hole 24/7.
 
 **Alula** An Intel Compute Stick T6 from eBay. Wanted something portable with real x86 compatibility rather than a Pi, plus the nostalgia factor of a full PC on a stick. 4 GB RAM and 64 GB storage covers nixvim, Brave, and a terminal. Niri made sense over a traditional tiling WM since scrollable columns adapt better to whatever screen is nearby. Long-term plan is a modular cyberdeck build around it.
 
@@ -126,7 +126,7 @@ colmena apply                                    # remote deploy of all hosts
 
 ## Things worth a read
 
-- `modules/system/host-specific/antinoos/sway.nix` - started this host on Hyprland, hit `eglDupNativeFenceFDANDROID EGL_BAD_PARAMETER` crashes on Polaris that `AQ_NO_ATOMIC=1` + `AQ_NO_MODIFIERS=1` + disabled explicit-sync couldn't fully fix. Switched to Sway with `WLR_DRM_NO_ATOMIC=1` + `WLR_NO_HARDWARE_CURSORS=1` and the panel finally stayed up at 4K@60.
+- `modules/system/host-specific/altair/llama.nix` - the upstream `services.llama-cpp` unit is sandboxed with `DynamicUser = true`, which has two consequences worth knowing. `$HOME` becomes `/var/empty`, so Mesa's on-disk shader cache silently disables itself and RADV recompiles every GGML Vulkan pipeline on each start - hence `MESA_SHADER_CACHE_DIR` pointed into the `CacheDirectory` the unit already has. And because the model store is mounted `nofail`, `RequiresMountsFor` has to go in `unitConfig`, not `serviceConfig`: it's a `[Unit]` directive, and systemd silently ignores it under `[Service]`, leaving llama-server to race the HDD spin-up into a restart loop. Serving is tailnet-only on the strength of `trustedInterfaces` alone, with `openFirewall = false`.
 - `modules/system/host-specific/arcturus/k3s-kubeconfig.nix` - `~/.kube/config` is a `mkOutOfStoreSymlink` to a SOPS-decrypted kubeconfig, so admin cluster credentials are declarative without ending up in the Nix store.
 - `k8s/flux/flux-system/cluster-config.yaml` - the single ConfigMap every workload substitutes against.
 - `modules/system/host-specific/asta/vault.nix` - Vault unseal driven by SOPS, ordered against `sops-nix.service` so it survives reboots.

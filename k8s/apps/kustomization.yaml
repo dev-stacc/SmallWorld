@@ -16,3 +16,4 @@ resources:
   - crowdsec/
   - kiwix/
   - nextcloud/
+  - open-webui/
