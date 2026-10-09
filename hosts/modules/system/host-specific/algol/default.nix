@@ -1,6 +1,6 @@
 { ... } : {
     boot.loader.grub = {
         enable = true;
-        device = "PLACEHOLDER";
+        device = "/dev/disk/by-id/PLACEHOLDER";
     };
 }
