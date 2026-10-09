@@ -9,7 +9,7 @@ in {
             term = "xterm-256color";
 
             background_opacity = "0.6";
-            color0 = "#${colors.base00}";
+            color0 = "#${colors.base05}";
             color1 = "#${colors.base04}";
             color2 = "#${colors.base03}";
             color3 = "#${colors.base03}";
@@ -18,7 +18,7 @@ in {
             color6 = "#${colors.base03}";
             color7 = "#${colors.base02}";
             
-            color8 = "#${colors.base00}";
+            color8 = "#${colors.base05}";
             color9 = "#${colors.base04}";
             color10 = "#${colors.base03}";
             color11 = "#${colors.base03}";

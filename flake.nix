@@ -47,6 +47,7 @@
                 atlas = "PLACEHOLDER";
                 albireo = "100.114.197.75";
                 altair = "100.116.223.58";
+                algol = "PLACEHOLDER";
 
                 # k8s services exposed by the tailscale operator, not hosts
                 crowdsec = "100.127.104.71";
