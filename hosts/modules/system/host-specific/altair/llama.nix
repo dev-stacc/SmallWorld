@@ -8,10 +8,8 @@
             host = "0.0.0.0";
             port = 8080;
             alias = "qwen3-14b";
-            n-gpu-layers = 999;
-            split-mode = "layer";
-            tensor-split = "1,1";
             ctx-size = 8192;
+            parallel = 1;
             batch-size = 512;
             ubatch-size = 128;
             cont-batching = true;
