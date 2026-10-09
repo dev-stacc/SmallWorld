@@ -4,6 +4,8 @@
     models = {
         "Qwen3-14B-Q5_K_M.gguf" =
             "https://huggingface.co/Qwen/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q5_K_M.gguf";
+        "Qwen3-8B-Q5_K_M.gguf" =
+            "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q5_K_M.gguf";
     };
 
     fetch = name: url: ''
