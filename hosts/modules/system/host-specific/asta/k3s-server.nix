@@ -16,7 +16,6 @@
             "--advertise-address=${tailnet.ips.asta}"
             "--tls-san=asta"
             "--tls-san=${tailnet.ips.asta}"
-            "--flannel-iface=eno1"
             "--flannel-backend=wireguard-native"
         ];
     };
@@ -27,9 +26,10 @@
         supportedFilesystems = [ "nfs" "nfs4" ];
     };
 
+    networking.firewall.allowedUDPPorts = [ 51820 ];
+
     networking.firewall.interfaces = {
         tailscale0.allowedTCPPorts = [ 6443 10250 ];
-        eno1.allowedUDPPorts = [ 51820 ];
         cni0.allowedTCPPorts = [ 6443 10250 ];
         flannel-wg.allowedTCPPorts = [ 6443 10250 ];
     };
