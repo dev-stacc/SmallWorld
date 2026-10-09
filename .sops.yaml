@@ -6,7 +6,18 @@ keys:
   - &argus age1xrs7yzr5s2xsd5gqhsztan003p3z5flz88nml6js0wdwuq4gfs2qaxj2e6
   - &albireo age1jlmtpwzu3h38fe0qzgdh8ycw9g3unzt7mxg0zjtqc5r7a4zsga8s76nawj
   - &altair age1c6az60e3c4aj4unekdkve3cesfe2m5c5ynuua8kjzp0m24ffu9nqtt45jx
+  - &algol age15gzvgvxweghvz8x2ekq7e8jc7dm9wpqkwr5v726k34qkha2rfvuq5q7cxz
 creation_rules:
+  - path_regex: secrets/vault-init\.json
+    key_groups:
+      - age:
+        - *arcturus
+        - *asta
+        - *amateus
+        - *aperture
+        - *argus
+        - *albireo
+        - *altair
   - path_regex: secrets/.*
     key_groups:
       - age:
@@ -17,6 +28,7 @@ creation_rules:
         - *argus
         - *albireo
         - *altair
+        - *algol
   - path_regex: k8s/.*
     key_groups:
       - age:

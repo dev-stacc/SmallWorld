@@ -53,6 +53,5 @@
     algol = {
         hostName = "Algol";
         roles = [ "server" ];
-        secrets = false;
     };
 }
