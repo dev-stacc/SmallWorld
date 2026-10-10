@@ -17,6 +17,9 @@ data:
         attrs:
           name: grafana-oauth
           client_id: !Env GRAFANA_OAUTH_CLIENT_ID
+          # Rotated 2026-10-10. This date is load-bearing: authentik only re-applies
+          # a blueprint whose ConfigMap content changed, so bumping it is what makes
+          # a new client_secret in vault actually reach the provider.
           client_secret: !Env GRAFANA_OAUTH_CLIENT_SECRET
           # Required since authentik 2026.x: an OAuth2 provider created without this
           # gets grant_types=[] and rejects the code flow with "Invalid grant_type
