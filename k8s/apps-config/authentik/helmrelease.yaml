@@ -47,6 +47,7 @@ spec:
         - authentik-blueprint-sewing-assistant
         - authentik-blueprint-marketing-tool
         - authentik-blueprint-kiwix
+        - authentik-blueprint-open-webui
     postgresql:
       enabled: true
       auth:
