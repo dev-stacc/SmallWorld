@@ -36,7 +36,9 @@ spec:
             - name: WEBUI_AUTH
               value: "true"
             - name: ENABLE_LOGIN_FORM
-              value: "false"
+              value: "true"
+            - name: ENABLE_SIGNUP
+              value: "true"
             - name: WEBUI_AUTH_TRUSTED_EMAIL_HEADER
               value: X-authentik-email
             - name: WEBUI_AUTH_TRUSTED_NAME_HEADER
