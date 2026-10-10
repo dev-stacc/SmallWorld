@@ -132,8 +132,34 @@ def level(value, warn, bad):
     return OK
 
 
+SECTION_LIMIT = {
+    "hosts": 120,
+    "apps": 210,
+    "nodes": 210,
+    "cluster": 210,
+    "alerts": 210,
+    "backups": 2700,
+}
+
+
+def compact(age):
+    if age < 90:
+        return f"{int(age)}s"
+    if age < 5400:
+        return f"{int(age / 60)}m"
+    return f"{int(age / 3600)}h"
+
+
+def panel(state, label, section):
+    stamp = ((state or {}).get("updated_at") or {}).get(section)
+    if not stamp:
+        return (f"{label}  (pending)", WARN)
+    age = time.time() - stamp
+    if age > SECTION_LIMIT[section]:
+        return (f"{label}  (stale {compact(age)})", BAD)
+    return (label, HEAD)
 def build_hosts(state):
-    rows = [("HOSTS", HEAD)]
+    rows = [panel(state, "HOSTS", "hosts")]
     hosts = (state or {}).get("hosts") or {}
     for name in sorted(hosts):
         host = hosts[name]
@@ -146,7 +172,7 @@ def build_hosts(state):
 
 
 def build_nodes(state):
-    rows = [("", DIM), ("CLUSTER NODES", HEAD),
+    rows = [("", DIM), panel(state, "CLUSTER NODES", "nodes"),
             ("  node        load   mem  disk  temp", DIM)]
     nodes = (state or {}).get("nodes") or {}
     for name in sorted(nodes):
@@ -177,7 +203,7 @@ def build_local(state):
 
 
 def build_apps(state):
-    rows = [("APPS", HEAD)]
+    rows = [panel(state, "APPS", "apps")]
     for app in (state or {}).get("apps") or []:
         code = app.get("code")
         shown = str(code) if code else "---"
@@ -191,7 +217,7 @@ def build_apps(state):
 
 
 def build_cluster(state):
-    rows = [("", DIM), ("CLUSTER", HEAD)]
+    rows = [("", DIM), panel(state, "CLUSTER", "cluster")]
     cluster = (state or {}).get("cluster")
     if not cluster:
         rows.append(("  unavailable", WARN))
@@ -214,7 +240,7 @@ def build_cluster(state):
 
 
 def build_alerts(state):
-    rows = [("", DIM), ("ALERTS", HEAD)]
+    rows = [("", DIM), panel(state, "ALERTS", "alerts")]
     alerts = (state or {}).get("alerts")
     if not alerts:
         rows.append(("  unavailable", WARN))
@@ -232,7 +258,7 @@ def build_alerts(state):
 
 
 def build_backups(state):
-    rows = [("", DIM), ("BACKUPS", HEAD)]
+    rows = [("", DIM), panel(state, "BACKUPS", "backups")]
     backups = (state or {}).get("backups")
     if not backups:
         rows.append(("  unavailable", WARN))

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import base64
+import concurrent.futures
 import datetime
 import json
 import os
@@ -119,6 +120,7 @@ def promql(query):
 
 def node_metrics():
     nodes = {}
+    failures = []
     for field, query in NODE_QUERIES.items():
         try:
             for series in promql(query):
@@ -127,7 +129,10 @@ def node_metrics():
                     continue
                 nodes.setdefault(name, {})[field] = float(series["value"][1])
         except Exception as error:
+            failures.append(f"{field}: {error}")
             print(f"promql {field} failed: {error}", flush=True)
+    if len(failures) == len(NODE_QUERIES):
+        raise RuntimeError("; ".join(failures)[:200])
     return nodes
 
 
@@ -350,6 +355,7 @@ def save_alerts():
     os.replace(temp, ALERT_PATH)
 
 
+ALERT_LOCK = threading.Lock()
 ALERTS = load_alerts()
 
 
@@ -374,28 +380,34 @@ def step(key, failing, summary, threshold):
     record["firing"] = False
 
 
-def evaluate_hosts(state):
-    for name, host in state["hosts"].items():
-        if host.get("class") != "critical":
-            continue
-        step("host:" + name, not host["up"], f"{name} unreachable", FAST_THRESHOLD)
-    save_alerts()
+def evaluate_hosts(hosts):
+    with ALERT_LOCK:
+        for name, host in hosts.items():
+            if host.get("class") != "critical":
+                continue
+            step("host:" + name, not host["up"], f"{name} unreachable", FAST_THRESHOLD)
+        save_alerts()
 
 
-def evaluate_slow(state):
-    for app in state["apps"]:
-        if not app.get("alert", True):
-            continue
-        detail = f"{app['name']} http {app['code']}" if app.get("code") else f"{app['name']} down"
-        step("app:" + app["name"], not app["up"], detail, SLOW_THRESHOLD)
-    for node in (state.get("cluster") or {}).get("nodes", []):
-        step(
-            "node:" + node["name"],
-            not node["ready"],
-            f"node {node['name']} not ready",
-            SLOW_THRESHOLD,
-        )
-    save_alerts()
+def evaluate_slow(apps, cluster):
+    with ALERT_LOCK:
+        for app in apps:
+            if not app.get("alert", True):
+                continue
+            detail = (
+                f"{app['name']} http {app['code']}"
+                if app.get("code")
+                else f"{app['name']} down"
+            )
+            step("app:" + app["name"], not app["up"], detail, SLOW_THRESHOLD)
+        for node in (cluster or {}).get("nodes", []):
+            step(
+                "node:" + node["name"],
+                not node["ready"],
+                f"node {node['name']} not ready",
+                SLOW_THRESHOLD,
+            )
+        save_alerts()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -434,9 +446,6 @@ def publish(state):
     os.replace(temp, STATE_PATH)
 
 
-threading.Thread(target=serve, daemon=True).start()
-print(f"serving on :{PORT}", flush=True)
-
 STATE = {
     "hosts": {},
     "apps": [],
@@ -446,65 +455,136 @@ STATE = {
     "backups": None,
     "local": {},
     "errors": {},
+    "updated_at": {},
+    "tier_ms": {},
 }
-DEADLINES = {"fast": 0.0, "slow": 0.0, "lazy": 0.0}
+
+
+def commit(section, value):
+    with LOCK:
+        STATE[section] = value
+        STATE["updated_at"][section] = time.time()
+
+
+def record_error(key, error):
+    with LOCK:
+        if error is None:
+            STATE["errors"].pop(key, None)
+        else:
+            STATE["errors"][key] = str(error)[:200]
+
+
+def spread(jobs, workers):
+    results = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(action): key for key, action in jobs}
+        for future in concurrent.futures.as_completed(futures):
+            key = futures[future]
+            try:
+                results[key] = (future.result(), None)
+            except Exception as error:
+                results[key] = (None, error)
+    return results
+
+
+def fast_tier():
+    active = {
+        name: host for name, host in HOSTS.items() if host["class"] != "ignore"
+    }
+    jobs = [
+        (name, lambda host=host: tcp_probe(host["ip"], host.get("port", 22)))
+        for name, host in active.items()
+    ]
+    probed = {}
+    for name, (value, error) in spread(jobs, 12).items():
+        probed[name] = value or {"up": False, "error": str(error)[:200]}
+        probed[name]["class"] = active[name]["class"]
+    commit("hosts", probed)
+
+    try:
+        commit("local", local_stats())
+        record_error("local", None)
+    except Exception as error:
+        record_error("local", error)
+
+    evaluate_hosts(probed)
+
+
+def slow_tier():
+    jobs = [
+        (index, lambda app=app: http_probe(app["url"]))
+        for index, app in enumerate(APPS)
+    ]
+    checked = [None] * len(APPS)
+    for index, (value, error) in spread(jobs, 12).items():
+        result = value or {"up": False, "code": None, "error": str(error)[:200]}
+        result["name"] = APPS[index]["name"]
+        result["alert"] = APPS[index].get("alert", True)
+        checked[index] = result
+    commit("apps", checked)
+
+    outcomes = spread(
+        [
+            ("nodes", node_metrics),
+            ("alerts", cluster_alerts),
+            ("cluster", cluster_state),
+        ],
+        3,
+    )
+    for label, (value, error) in outcomes.items():
+        if error is None:
+            commit(label, value)
+        record_error(label, error)
+
+    with LOCK:
+        cluster = STATE["cluster"]
+    evaluate_slow(checked, cluster)
+
+
+def lazy_tier():
+    outcomes = spread([("amateus", restic_latest), ("units", restic_units)], 2)
+    backups = dict(STATE["backups"] or {})
+    for label, (value, error) in outcomes.items():
+        if error is None:
+            backups[label] = value
+        record_error("restic-" + label, error)
+    commit("backups", backups)
+
+
+def run_tier(label, action, interval):
+    while True:
+        started = time.monotonic()
+        try:
+            action()
+            record_error("tier-" + label, None)
+        except Exception as error:
+            record_error("tier-" + label, error)
+            print(f"tier {label} failed: {error}", flush=True)
+        elapsed = time.monotonic() - started
+        with LOCK:
+            STATE["tier_ms"][label] = round(elapsed * 1000)
+        time.sleep(max(1.0, interval - elapsed))
+
+
+threading.Thread(target=serve, daemon=True).start()
+print(f"serving on :{PORT}", flush=True)
+
+for label, action, interval in (
+    ("fast", fast_tier, FAST_INTERVAL),
+    ("slow", slow_tier, SLOW_INTERVAL),
+    ("lazy", lazy_tier, LAZY_INTERVAL),
+):
+    threading.Thread(target=run_tier, args=(label, action, interval), daemon=True).start()
 
 while True:
-    moment = time.monotonic()
-
-    if moment >= DEADLINES["fast"]:
-        DEADLINES["fast"] = moment + FAST_INTERVAL
-        probed = {}
-        for name, host in HOSTS.items():
-            if host["class"] == "ignore":
-                continue
-            result = tcp_probe(host["ip"], host.get("port", 22))
-            result["class"] = host["class"]
-            probed[name] = result
-        STATE["hosts"] = probed
-        try:
-            STATE["local"] = local_stats()
-        except Exception as error:
-            STATE["errors"]["local"] = str(error)[:200]
-        evaluate_hosts(STATE)
-
-    if moment >= DEADLINES["slow"]:
-        DEADLINES["slow"] = moment + SLOW_INTERVAL
-        checked = []
-        for app in APPS:
-            result = http_probe(app["url"])
-            result["name"] = app["name"]
-            result["alert"] = app.get("alert", True)
-            checked.append(result)
-        STATE["apps"] = checked
-        STATE["nodes"] = node_metrics()
-        for label, action in (("alerts", cluster_alerts), ("cluster", cluster_state)):
-            try:
-                STATE[label] = action()
-                STATE["errors"].pop(label, None)
-            except Exception as error:
-                STATE["errors"][label] = str(error)[:200]
-        evaluate_slow(STATE)
-
-    if moment >= DEADLINES["lazy"]:
-        DEADLINES["lazy"] = moment + LAZY_INTERVAL
-        backups = dict(STATE["backups"] or {})
-        for label, action in (("amateus", restic_latest), ("units", restic_units)):
-            try:
-                backups[label] = action()
-                STATE["errors"].pop("restic-" + label, None)
-            except Exception as error:
-                STATE["errors"]["restic-" + label] = str(error)[:200]
-        STATE["backups"] = backups
-
-    STATE["generated_at"] = time.time()
-    STATE["ready"] = True
     with LOCK:
+        STATE["generated_at"] = time.time()
+        STATE["ready"] = bool(STATE["updated_at"])
         SNAPSHOT.clear()
         SNAPSHOT.update(STATE)
+        state = dict(STATE)
     try:
-        publish(STATE)
+        publish(state)
     except Exception as error:
         print(f"publish failed: {error}", flush=True)
-
     time.sleep(TICK)
