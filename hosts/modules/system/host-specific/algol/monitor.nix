@@ -78,11 +78,14 @@ in {
             restic-amateus-repository.sopsFile = secretsFile;
         };
 
-        templates."monitor.env".content = ''
-            GRAFANA_TOKEN=${config.sops.placeholder.grafana-api-token}
-            NTFY_TOPIC=${config.sops.placeholder.ntfy-topic}
-            NTFY_TOKEN=${config.sops.placeholder.ntfy-token}
-        '';
+        templates."monitor.env" = {
+            restartUnits = [ "monitor-poll.service" ];
+            content = ''
+                GRAFANA_TOKEN=${config.sops.placeholder.grafana-api-token}
+                NTFY_TOPIC=${config.sops.placeholder.ntfy-topic}
+                NTFY_TOKEN=${config.sops.placeholder.ntfy-token}
+            '';
+        };
     };
 
     systemd.services.monitor-poll = {

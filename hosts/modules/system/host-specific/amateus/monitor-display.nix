@@ -28,10 +28,13 @@ in {
             ntfy-token.sopsFile = secretsFile;
         };
 
-        templates."monitor-display.env".content = ''
-            NTFY_TOPIC=${config.sops.placeholder.ntfy-topic}
-            NTFY_TOKEN=${config.sops.placeholder.ntfy-token}
-        '';
+        templates."monitor-display.env" = {
+            restartUnits = [ "monitor-display.service" ];
+            content = ''
+                NTFY_TOPIC=${config.sops.placeholder.ntfy-topic}
+                NTFY_TOKEN=${config.sops.placeholder.ntfy-token}
+            '';
+        };
     };
 
     console.colors = palette;
