@@ -8,6 +8,7 @@
         ./pihole-sync.nix
     ];
 
+    biggerworld.serve."/" = "http://127.0.0.1:8081";
 
     boot.loader.grub = {
         enable = true;

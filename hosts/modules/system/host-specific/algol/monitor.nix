@@ -12,16 +12,18 @@ let
         "base0C" "base0D" "base0E" "base0F"
     ];
 
-    pageHtml = builtins.replaceStrings
+    themed = file: builtins.replaceStrings
         (map (n: "{{${n}}}") colorNames ++ [ "{{fontName}}" "{{fontSize}}" "{{refresh}}" ])
         (map (n: "#${colors.${n}}") colorNames ++ [
             theme.fonts.monospace
             (toString theme.fonts.sizes.applications)
             (toString pageRefresh)
         ])
-        (builtins.readFile ./files/flux.html);
+        (builtins.readFile file);
 
-    page = pkgs.writeText "flux-page.html" pageHtml;
+    page = pkgs.writeText "flux-page.html" (themed ./files/flux.html);
+
+    linksPage = pkgs.writeText "links-page.html" (themed ./files/links.html);
 
     classes = {
         asta      = "critical";
@@ -51,30 +53,57 @@ let
         port = ports.${name} or 22;
     }) reachable;
 
-    app = name: {
-        inherit name;
+    clusterApp = auth: name: {
+        inherit name auth;
         url = "https://${name}.${tailnet.domain}/";
+        label = "${name}.${tailnet.domain}";
+        nav = true;
     };
+
+    hostSite = name: path: {
+        inherit name;
+        auth = false;
+        url = "https://${name}.${tailnet.domain}${path}";
+        label = "${name}.${tailnet.domain}${lib.optionalString (path != "/") path}";
+        nav = true;
+        alert = false;
+    };
+
+    unguarded = map (clusterApp false) [
+        "authentik"
+        "vault"
+        "nextcloud"
+    ];
+
+    hostPages = [
+        (hostSite "algol" "/")
+        (hostSite "altair" "/")
+        (hostSite "argus" "/admin")
+    ];
+
+    guarded = map (clusterApp true) [
+        "grafana"
+        "jellyfin"
+        "navidrome"
+        "uptime"
+        "sewing"
+        "marketing"
+        "wikipedia"
+        "chat"
+    ];
+
+    hidden = [{
+        name = "loki";
+        url = "http://${tailnet.ips.loki}:3100/nginx-health";
+        label = "loki.${tailnet.domain}:3100";
+        auth = false;
+        nav = false;
+    }];
 
     targets = {
         inherit hosts;
 
-        apps = map app [
-            "vault"
-            "nextcloud"
-            "jellyfin"
-            "navidrome"
-            "grafana"
-            "uptime"
-            "sewing"
-            "marketing"
-            "wikipedia"
-            "chat"
-            "authentik"
-        ] ++ [{
-            name = "loki";
-            url = "http://${tailnet.ips.loki}:3100/nginx-health";
-        }];
+        apps = unguarded ++ hostPages ++ guarded ++ hidden;
 
         suppressAlerts = [
             "Watchdog"
@@ -125,6 +154,7 @@ in {
             MONITOR_STATE_PATH = "/run/monitor/state.json";
             MONITOR_ALERT_PATH = "/run/monitor/alerts.json";
             MONITOR_PAGE = "${page}";
+            MONITOR_LINKS_PAGE = "${linksPage}";
             MONITOR_DEEP_LINK = "https://grafana.${tailnet.domain}/";
             GRAFANA_URL = "https://grafana.${tailnet.domain}";
             LOKI_URL = "http://${tailnet.ips.loki}:3100";

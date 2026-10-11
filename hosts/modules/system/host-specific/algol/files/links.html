@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="{{refresh}}">
+    <title>links</title>
+    <style>
+        html, body {
+            min-height: 100%;
+            margin: 0;
+            background: {{base00}};
+            color: {{base04}};
+            font-family: "{{fontName}}", monospace;
+            font-size: {{fontSize}}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        * {
+            border-radius: 0;
+        }
+        .page {
+            padding: 2em 1em;
+            width: 100%;
+            max-width: 96ch;
+            box-sizing: border-box;
+        }
+        .sect {
+            color: {{base02}};
+            margin: 1.4em 0 0.6em;
+        }
+        .sect:first-child {
+            margin-top: 0;
+        }
+        .count {
+            color: {{base05}};
+            opacity: 0.45;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(28ch, 1fr));
+            gap: 0.6em;
+        }
+        .card {
+            display: block;
+            padding: 0.7em 0.9em;
+            border: 1px solid {{base01}};
+            background: {{base00}};
+            text-decoration: none;
+            color: {{base04}};
+        }
+        .card:hover {
+            border-color: {{base03}};
+        }
+        .card > div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .name {
+            color: {{base04}};
+        }
+        .sub {
+            color: {{base05}};
+            opacity: 0.6;
+            margin-top: 0.35em;
+        }
+        .dot {
+            margin-right: 0.5em;
+        }
+        .ok { color: {{base06}}; }
+        .bad { color: {{base02}}; }
+        .empty {
+            color: {{base05}};
+            opacity: 0.45;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+{{body}}
+    </div>
+</body>
+</html>

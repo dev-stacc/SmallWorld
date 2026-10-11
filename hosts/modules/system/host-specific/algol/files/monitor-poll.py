@@ -29,6 +29,9 @@ CREDS = os.environ["CREDENTIALS_DIRECTORY"]
 with open(os.environ["MONITOR_PAGE"]) as handle:
     PAGE_TEMPLATE = handle.read()
 
+with open(os.environ["MONITOR_LINKS_PAGE"]) as handle:
+    LINKS_TEMPLATE = handle.read()
+
 HOSTS = TARGETS["hosts"]
 APPS = TARGETS["apps"]
 SUPPRESS = set(TARGETS["suppressAlerts"])
@@ -944,6 +947,37 @@ def render_page(snapshot):
     return PAGE_TEMPLATE.replace("{{body}}", "".join(parts))
 
 
+def link_card(app):
+    dot = "ok" if app.get("up") else "bad"
+    return (
+        f'<a class="card" href="{escape(app["url"])}">'
+        f'<div><span class="dot {dot}">&#9679;</span>'
+        f'{span(app["name"], "name")}</div>'
+        f'<div class="sub">{escape(app.get("label"))}</div>'
+        "</a>"
+    )
+
+
+def link_group(apps):
+    if not apps:
+        return '<div class="empty">none</div>'
+    ordered = sorted(apps, key=lambda app: (bool(app.get("auth")), app["name"]))
+    return '<div class="grid">' + "".join(link_card(a) for a in ordered) + "</div>"
+
+
+def render_links(snapshot):
+    apps = [a for a in (snapshot.get("apps") or []) if a and a.get("nav")]
+    up = [a for a in apps if a.get("up")]
+    down = [a for a in apps if not a.get("up")]
+    parts = [
+        f'<div class="sect">up {span(f"({len(up)})", "count")}</div>',
+        link_group(up),
+        f'<div class="sect">down {span(f"({len(down)})", "count")}</div>',
+        link_group(down),
+    ]
+    return LINKS_TEMPLATE.replace("{{body}}", "".join(parts))
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
@@ -974,6 +1008,17 @@ class Handler(BaseHTTPRequestHandler):
                 body = render_page(snapshot).encode()
             except Exception as error:
                 print(f"render failed: {error}", flush=True)
+                self.respond(500, b"render failed\n", "text/plain; charset=utf-8")
+                return
+            self.respond(200, body, "text/html; charset=utf-8")
+            return
+        if path == "/links":
+            with LOCK:
+                snapshot = {"apps": list(SNAPSHOT.get("apps") or [])}
+            try:
+                body = render_links(snapshot).encode()
+            except Exception as error:
+                print(f"links render failed: {error}", flush=True)
                 self.respond(500, b"render failed\n", "text/plain; charset=utf-8")
                 return
             self.respond(200, body, "text/html; charset=utf-8")
@@ -1068,8 +1113,13 @@ def slow_tier():
     checked = [None] * len(APPS)
     for index, (value, error) in spread(jobs, 12).items():
         result = value or {"up": False, "code": None, "error": str(error)[:200]}
-        result["name"] = APPS[index]["name"]
-        result["alert"] = APPS[index].get("alert", True)
+        target = APPS[index]
+        result["name"] = target["name"]
+        result["alert"] = target.get("alert", True)
+        result["url"] = target["url"]
+        result["label"] = target.get("label", target["url"])
+        result["auth"] = target.get("auth", False)
+        result["nav"] = target.get("nav", False)
         checked[index] = result
     commit("apps", checked)
 

@@ -25,12 +25,12 @@ in {
     sops.templates."pihole-sync-pull.env".content = ''
         PRIMARY_URL=${config.sops.placeholder.remote-pihole-url}
         PRIMARY_PASSWORD=${config.sops.placeholder.remote-pihole-api-password}
-        SECONDARY_URL=http://127.0.0.1
+        SECONDARY_URL=http://127.0.0.1:8081
         SECONDARY_PASSWORD=${config.sops.placeholder.pihole-web-password}
     '';
 
     sops.templates."pihole-sync-push.env".content = ''
-        PRIMARY_URL=http://127.0.0.1
+        PRIMARY_URL=http://127.0.0.1:8081
         PRIMARY_PASSWORD=${config.sops.placeholder.pihole-web-password}
         SECONDARY_URL=${config.sops.placeholder.remote-pihole-url}
         SECONDARY_PASSWORD=${config.sops.placeholder.remote-pihole-api-password}

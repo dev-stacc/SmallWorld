@@ -7,6 +7,8 @@
         ./power.nix
     ];
 
+    biggerworld.serve."/" = "http://127.0.0.1:8080";
+
     boot.loader.grub = {
         enable = true;
         device = "/dev/disk/by-id/ata-TOSHIBA_THNSNF128GCSS_13US1068TH2Y";
