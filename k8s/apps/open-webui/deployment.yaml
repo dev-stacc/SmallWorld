@@ -52,8 +52,6 @@ spec:
               value: "900"
             - name: AIOHTTP_CLIENT_TIMEOUT_MODEL_LIST
               value: "5"
-            - name: RAG_EMBEDDING_ENGINE
-              value: openai
             - name: ENABLE_WEB_SEARCH
               value: "true"
             - name: WEB_SEARCH_ENGINE
