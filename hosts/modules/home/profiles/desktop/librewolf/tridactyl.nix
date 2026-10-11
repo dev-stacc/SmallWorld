@@ -1,4 +1,4 @@
-{ lib, theme, ... } : let
+{ lib, tailnet, theme, ... } : let
     colors = theme.base16;
 
     tridactylVars = {
@@ -25,7 +25,11 @@
 in {
     home.file.".config/tridactyl/tridactylrc".text = ''
         " sensible defaults for a qutebrowser -> tridactyl switch
-        set searchengine duckduckgo
+        set searchurls.search http://127.0.0.1:12345/search.html?q=%s
+        set searchurls.sx http://127.0.0.1:12346/search?q=%s
+        set searchurls.sxc https://search.${tailnet.domain}/search?q=%s
+        set searchurls.ddg https://duckduckgo.com/?q=%s
+        set searchengine search
 
         set editorcmd kitty -e nvim
         set yankto both

@@ -1,0 +1,16 @@
+use_default_settings: true
+general:
+  instance_name: searxng
+  donation_url: false
+  contact_url: false
+server:
+  limiter: false
+  public_instance: false
+  image_proxy: false
+search:
+  formats:
+    - html
+    - json
+  autocomplete: duckduckgo
+ui:
+  query_in_title: true

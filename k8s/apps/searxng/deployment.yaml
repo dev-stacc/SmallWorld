@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: searxng
+  template:
+    metadata:
+      labels:
+        app: searxng
+    spec:
+      containers:
+        - name: searxng
+          image: docker.io/searxng/searxng:2026.10.9-4e2c1ea7f
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SEARXNG_BASE_URL
+              value: https://search.${TAILNET_DOMAIN}/
+            - name: SEARXNG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: searxng-secrets
+                  key: SEARXNG_SECRET
+            - name: FORCE_OWNERSHIP
+              value: "false"
+          volumeMounts:
+            - name: settings
+              mountPath: /etc/searxng
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+      volumes:
+        - name: settings
+          configMap:
+            name: searxng-settings

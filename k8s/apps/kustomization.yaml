@@ -17,3 +17,4 @@ resources:
   - kiwix/
   - nextcloud/
   - open-webui/
+  - searxng/

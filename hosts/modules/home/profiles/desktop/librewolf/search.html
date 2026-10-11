@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>search</title>
+    <noscript><meta http-equiv="refresh" content="0;url=https://duckduckgo.com/"></noscript>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: {{base00}};
+            color: {{base02}};
+            font-family: "{{fontName}}", monospace;
+            font-size: {{fontSize}}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        * {
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+    <div>searching</div>
+    <script>
+        (function () {
+            var q = new URLSearchParams(location.search).get("q") || "";
+            var local = "{{localOrigin}}";
+            var cluster = "{{clusterOrigin}}";
+
+            var searx = function (origin) {
+                return q ? origin + "/search?q=" + encodeURIComponent(q) : origin;
+            };
+
+            var ddg = function () {
+                return q
+                    ? "https://duckduckgo.com/?q=" + encodeURIComponent(q)
+                    : "https://duckduckgo.com/";
+            };
+
+            var probe = function (origin, ms) {
+                return fetch(origin + "/healthz", {
+                    mode: "no-cors",
+                    cache: "no-store",
+                    signal: AbortSignal.timeout(ms)
+                }).then(function () {
+                    return origin;
+                });
+            };
+
+            probe(local, {{localTimeout}})
+                .catch(function () {
+                    return probe(cluster, {{clusterTimeout}});
+                })
+                .then(function (origin) {
+                    location.replace(searx(origin));
+                })
+                .catch(function () {
+                    location.replace(ddg());
+                });
+        })();
+    </script>
+</body>
+</html>

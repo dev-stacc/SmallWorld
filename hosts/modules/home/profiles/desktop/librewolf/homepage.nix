@@ -1,5 +1,9 @@
-{ pkgs, theme, ... } : let
+{ pkgs, tailnet, theme, ... } : let
     colors = theme.base16;
+
+    searxPort = 12346;
+    localTimeout = 250;
+    clusterTimeout = 800;
 
     colorNames = [
         "base00" "base01" "base02" "base03" "base04" "base05"
@@ -7,16 +11,33 @@
         "base0C" "base0D" "base0E" "base0F"
     ];
 
-    template = builtins.readFile ./homepage.html;
+    themed = file: builtins.replaceStrings
+        (map (n: "{{${n}}}") colorNames ++ [
+            "{{fontName}}"
+            "{{fontSize}}"
+            "{{localOrigin}}"
+            "{{clusterOrigin}}"
+            "{{localTimeout}}"
+            "{{clusterTimeout}}"
+        ])
+        (map (n: "#${colors.${n}}") colorNames ++ [
+            theme.fonts.monospace
+            (toString theme.fonts.sizes.terminal)
+            "http://127.0.0.1:${toString searxPort}"
+            "https://search.${tailnet.domain}"
+            (toString localTimeout)
+            (toString clusterTimeout)
+        ])
+        (builtins.readFile file);
 
-    homepageHtml = builtins.replaceStrings
-        (map (n: "{{${n}}}") colorNames ++ [ "{{fontName}}" "{{fontSize}}" ])
-        (map (n: "#${colors.${n}}") colorNames ++ [ theme.fonts.monospace (toString theme.fonts.sizes.terminal) ])
-        template;
+    homepage = pkgs.writeText "homepage.html" (themed ./homepage.html);
 
-    homepage = pkgs.writeText "homepage.html" homepageHtml;
+    searchPage = pkgs.writeText "search.html" (themed ./search.html);
 in {
-    home.file.".local/share/librewolf/homepage.html".source = homepage;
+    home.file = {
+        ".local/share/librewolf/homepage.html".source = homepage;
+        ".local/share/librewolf/search.html".source = searchPage;
+    };
 
     systemd.user.services.librewolf-homepage = {
         Unit = {

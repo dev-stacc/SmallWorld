@@ -75,6 +75,7 @@ let
         authentik = "login";
         vault = "secrets";
         nextcloud = "storage";
+        search = "search";
     };
 
     hostPages = [

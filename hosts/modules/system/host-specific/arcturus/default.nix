@@ -5,6 +5,7 @@
         ./k3s-kubeconfig.nix
         ./lid.nix
         ./overlays.nix
+        ./searx.nix
         ./virtualisation.nix
     ];
 

@@ -20,8 +20,17 @@
 
             search = {
                 force = true;
-                default = "ddg";
-                order = [ "ddg" ];
+                default = "searxng";
+                order = [ "searxng" "ddg" ];
+
+                engines.searxng = {
+                    urls = [{
+                        template = "http://127.0.0.1:12345/search.html?q={searchTerms}";
+                    }];
+                    definedAliases = [ "@s" ];
+                };
+
+                engines.ddg.metaData.alias = "@d";
             };
 
             extensions = {
