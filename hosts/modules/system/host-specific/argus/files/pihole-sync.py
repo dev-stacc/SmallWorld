@@ -26,7 +26,7 @@ def api(base_url, sid, method, path, body=None):
     req = urllib.request.Request(
         f"{base_url}{path}",
         data=payload,
-        headers={"Content-Type": "application/json", "Cookie": f"sid={sid}"},
+        headers={"Content-Type": "application/json", "X-FTL-SID": sid},
         method=method,
     )
     try:
