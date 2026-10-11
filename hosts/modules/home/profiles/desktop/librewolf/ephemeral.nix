@@ -2,7 +2,39 @@
     profile = "${config.home.homeDirectory}/.librewolf/default";
     cache = "${config.home.homeDirectory}/.cache/librewolf/default";
 
-    preserved = [ ".keep" "user.js" "chrome" "extensions" "search.json.mozlz4" ];
+    declarative = [ ".keep" "user.js" "chrome" "extensions" "search.json.mozlz4" ];
+
+    extensionState = [
+        "prefs.js"
+        "extensions.json"
+        "addons.json"
+        "addonStartup.json.lz4"
+        "extension-preferences.json"
+        "extension-settings.json"
+        "extension-store"
+        "extension-store-menus"
+        "storage"
+        "storage.sqlite"
+        "storage-sync-v2.sqlite"
+        "storage-sync-v2.sqlite-shm"
+        "storage-sync-v2.sqlite-wal"
+    ];
+
+    browserSetup = [
+        "xulstore.json"
+        "containers.json"
+        "handlers.json"
+        "cert9.db"
+        "key4.db"
+        "pkcs11.txt"
+        "times.json"
+        "compatibility.ini"
+        "broadcast-listeners.json"
+        "settings"
+        "security_state"
+    ];
+
+    preserved = declarative ++ extensionState ++ browserSetup;
 
     preserveArgs = lib.concatMapStringsSep " " (n: "! -name ${lib.escapeShellArg n}") preserved;
 
@@ -30,6 +62,12 @@
             wipe() {
                 if [ -d "$profile" ]; then
                     find "$profile" -mindepth 1 -maxdepth 1 ${preserveArgs} -exec rm -rf -- {} +
+                fi
+                if [ -d "$profile/storage" ]; then
+                    find "$profile/storage" -mindepth 1 -maxdepth 1 ! -name default -exec rm -rf -- {} +
+                fi
+                if [ -d "$profile/storage/default" ]; then
+                    find "$profile/storage/default" -mindepth 1 -maxdepth 1 ! -name 'moz-extension+++*' -exec rm -rf -- {} +
                 fi
                 rm -rf -- "$cache/cache2" "$cache/thumbnails"
                 rm -f -- "$cache"/activity-stream.*
