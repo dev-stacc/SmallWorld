@@ -7,7 +7,10 @@
         ./power.nix
     ];
 
-    biggerworld.serve."/" = "http://127.0.0.1:8080";
+    biggerworld.serve = {
+        node."/" = "http://127.0.0.1:8080";
+        services.llama."/" = "http://127.0.0.1:8080";
+    };
 
     boot.loader.grub = {
         enable = true;

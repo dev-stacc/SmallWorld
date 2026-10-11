@@ -1002,7 +1002,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/healthz":
             self.respond(200, b"ok\n", "text/plain; charset=utf-8")
             return
-        if path in ("/", "/flux"):
+        if path == "/flux":
             with LOCK:
                 snapshot = dict(SNAPSHOT)
                 snapshot["updated_at"] = dict(SNAPSHOT.get("updated_at") or {})
@@ -1015,7 +1015,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
             self.respond(200, body, "text/html; charset=utf-8")
             return
-        if path == "/links":
+        if path == "/":
             with LOCK:
                 snapshot = {"apps": list(SNAPSHOT.get("apps") or [])}
             try:

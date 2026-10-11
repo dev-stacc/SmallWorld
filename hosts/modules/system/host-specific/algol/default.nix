@@ -1,7 +1,10 @@
 { ... } : {
     imports = [ ./monitor.nix ];
 
-    biggerworld.serve."/" = "http://127.0.0.1:9847";
+    biggerworld.serve = {
+        node."/" = "http://127.0.0.1:9847";
+        services.home."/" = "http://127.0.0.1:9847";
+    };
 
     boot.loader.grub = {
         enable = true;

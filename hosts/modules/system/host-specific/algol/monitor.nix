@@ -62,11 +62,11 @@ let
 
     clusterApps = auth: roles: lib.mapAttrsToList (clusterApp auth) roles;
 
-    hostSite = name: role: path: {
+    hostPage = name: role: host: path: {
         inherit name role;
         auth = false;
-        url = "https://${name}.${tailnet.domain}${path}";
-        label = "${name}.${tailnet.domain}${lib.optionalString (path != "/") path}";
+        url = "https://${host}.${tailnet.domain}${path}";
+        label = "${host}.${tailnet.domain}${lib.optionalString (path != "/") path}";
         nav = true;
         alert = false;
     };
@@ -78,9 +78,9 @@ let
     };
 
     hostPages = [
-        (hostSite "algol" "fleet" "/")
-        (hostSite "altair" "llm" "/")
-        (hostSite "argus" "dns" "/admin")
+        (hostPage "flux" "fleet" "home" "/flux")
+        (hostPage "llama" "llm" "llama" "/")
+        (hostPage "pihole" "dns" "pihole" "/admin")
     ];
 
     guarded = clusterApps true {
