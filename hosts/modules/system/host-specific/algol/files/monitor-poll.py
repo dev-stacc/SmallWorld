@@ -2,6 +2,7 @@
 import base64
 import concurrent.futures
 import datetime
+import html
 import json
 import os
 import socket
@@ -25,10 +26,16 @@ NTFY_TOKEN = os.environ["NTFY_TOKEN"]
 DEEP_LINK = os.environ["MONITOR_DEEP_LINK"]
 CREDS = os.environ["CREDENTIALS_DIRECTORY"]
 
+with open(os.environ["MONITOR_PAGE"]) as handle:
+    PAGE_TEMPLATE = handle.read()
+
 HOSTS = TARGETS["hosts"]
 APPS = TARGETS["apps"]
 SUPPRESS = set(TARGETS["suppressAlerts"])
 RESTIC_UNIT_QUERY = TARGETS["resticUnitQuery"]
+DRIFT_TIMEOUT = TARGETS["driftTimeout"]
+HISTORY_DEPTH = TARGETS["historyDepth"]
+TIMELINE_DEPTH = TARGETS["timelineDepth"]
 
 FAST_INTERVAL = 30
 SLOW_INTERVAL = 60
@@ -221,8 +228,34 @@ def condition_status(item, wanted="Ready"):
     return "Unknown"
 
 
+def condition_detail(item, wanted="Ready"):
+    for condition in item.get("status", {}).get("conditions", []):
+        if condition.get("type") == wanted:
+            return (
+                condition.get("reason", ""),
+                condition.get("message", ""),
+                condition.get("lastTransitionTime", ""),
+            )
+    return ("", "", "")
+
+
+def short_revision(revision):
+    if not revision:
+        return ""
+    return revision.rsplit(":", 1)[-1][:7]
+
+
+def parse_stamp(stamp):
+    if not stamp:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(stamp.replace("Z", "+00:00")).timestamp()
+    except Exception:
+        return None
+
+
 def cluster_state():
-    state = {"nodes": [], "pods": [], "flux": []}
+    state = {"nodes": [], "pods": []}
     for item in kubectl("get", "nodes", "-o", "json")["items"]:
         state["nodes"].append(
             {
@@ -232,26 +265,206 @@ def cluster_state():
         )
     state["nodes"].sort(key=lambda item: item["name"])
     state["pods"] = problem_pods()
-    flux = kubectl(
+    return state
+
+
+def history_entries(item):
+    entries = []
+    for record in (item.get("status", {}).get("history") or [])[:HISTORY_DEPTH]:
+        if item["kind"] == "HelmRelease":
+            entries.append(
+                {
+                    "revision": record.get("chartVersion", ""),
+                    "status": record.get("status", ""),
+                    "at": record.get("lastDeployed", ""),
+                    "duration": "",
+                    "count": record.get("version"),
+                }
+            )
+        else:
+            entries.append(
+                {
+                    "revision": short_revision(
+                        (record.get("metadata") or {}).get("revision")
+                    ),
+                    "status": record.get("lastReconciledStatus", ""),
+                    "at": record.get("lastReconciled", ""),
+                    "duration": record.get("lastReconciledDuration", ""),
+                    "count": record.get("totalReconciliations"),
+                }
+            )
+    return entries
+
+
+def flux_source(item):
+    artifact = item.get("status", {}).get("artifact") or {}
+    spec = item.get("spec") or {}
+    return {
+        "namespace": item["metadata"]["namespace"],
+        "name": item["metadata"]["name"],
+        "url": spec.get("url", ""),
+        "interval": spec.get("interval", ""),
+        "revision": artifact.get("revision", ""),
+        "short": short_revision(artifact.get("revision", "")),
+        "artifact_at": parse_stamp(artifact.get("lastUpdateTime")),
+        "ready": condition_status(item),
+    }
+
+
+def flux_common(item):
+    status = item.get("status") or {}
+    spec = item.get("spec") or {}
+    reason, message, changed_at = condition_detail(item)
+    return {
+        "kind": item["kind"],
+        "namespace": item["metadata"]["namespace"],
+        "name": item["metadata"]["name"],
+        "ready": condition_status(item),
+        "reason": reason,
+        "message": message[:300],
+        "changed_at": changed_at,
+        "suspended": bool(spec.get("suspend")),
+        "interval": spec.get("interval", ""),
+        "applied": status.get("lastAppliedRevision", ""),
+        "attempted": status.get("lastAttemptedRevision", ""),
+        "history": history_entries(item),
+    }
+
+
+def flux_timeline(kustomizations):
+    merged = {}
+    for entry in kustomizations:
+        for record in entry["history"]:
+            revision = record["revision"]
+            if not revision:
+                continue
+            slot = merged.setdefault(
+                revision,
+                {
+                    "revision": revision,
+                    "at": "",
+                    "status": record["status"],
+                    "resources": [],
+                    "duration": 0.0,
+                },
+            )
+            slot["resources"].append(entry["name"])
+            slot["duration"] += parse_duration(record["duration"])
+            if record["at"] > slot["at"]:
+                slot["at"] = record["at"]
+            if record["status"] != "ReconciliationSucceeded":
+                slot["status"] = record["status"]
+    for slot in merged.values():
+        slot["resources"].sort()
+    timeline = sorted(merged.values(), key=lambda slot: slot["at"], reverse=True)
+    return timeline[:TIMELINE_DEPTH]
+
+
+def flux_state():
+    listing = kubectl(
         "get",
-        "kustomizations.kustomize.toolkit.fluxcd.io,helmreleases.helm.toolkit.fluxcd.io",
+        ",".join(
+            [
+                "gitrepositories.source.toolkit.fluxcd.io",
+                "kustomizations.kustomize.toolkit.fluxcd.io",
+                "helmreleases.helm.toolkit.fluxcd.io",
+            ]
+        ),
         "-A",
         "-o",
         "json",
     )
-    for item in flux["items"]:
-        ready = condition_status(item)
-        if ready != "True":
-            state["flux"].append(
-                {
-                    "kind": item["kind"],
-                    "namespace": item["metadata"]["namespace"],
-                    "name": item["metadata"]["name"],
-                    "ready": ready,
-                }
-            )
-    return state
+    sources = {}
+    kustomizations = []
+    helmreleases = []
+    for item in listing["items"]:
+        if item["kind"] == "GitRepository":
+            source = flux_source(item)
+            sources[f"{source['namespace']}/{source['name']}"] = source
+        elif item["kind"] == "Kustomization":
+            kustomizations.append(item)
+        elif item["kind"] == "HelmRelease":
+            helmreleases.append(item)
 
+    built = []
+    for item in kustomizations:
+        entry = flux_common(item)
+        spec = item.get("spec") or {}
+        source_ref = spec.get("sourceRef") or {}
+        entry["path"] = spec.get("path", "")
+        entry["source"] = (
+            f"{source_ref.get('namespace', entry['namespace'])}/"
+            f"{source_ref.get('name', '')}"
+        )
+        source = sources.get(entry["source"]) or {}
+        entry["source_revision"] = source.get("revision", "")
+        entry["partial"] = bool(
+            entry["attempted"] and entry["attempted"] != entry["applied"]
+        )
+        if entry["suspended"] or not entry["source_revision"] or not entry["applied"]:
+            entry["drifted"] = False
+            entry["drift_age"] = None
+        else:
+            entry["drifted"] = entry["applied"] != entry["source_revision"]
+            artifact_at = source.get("artifact_at")
+            entry["drift_age"] = (
+                max(0.0, time.time() - artifact_at)
+                if entry["drifted"] and artifact_at
+                else None
+            )
+        entry["stuck"] = bool(
+            entry["drift_age"] is not None and entry["drift_age"] > DRIFT_TIMEOUT
+        )
+        built.append(entry)
+    built.sort(key=lambda entry: (entry["namespace"], entry["name"]))
+
+    releases = []
+    for item in helmreleases:
+        entry = flux_common(item)
+        status = item.get("status") or {}
+        spec = item.get("spec") or {}
+        recent = entry["history"][0] if entry["history"] else {}
+        entry["chart"] = ((spec.get("chart") or {}).get("spec") or {}).get("chart", "")
+        entry["wanted"] = ((spec.get("chart") or {}).get("spec") or {}).get(
+            "version", ""
+        )
+        entry["version"] = recent.get("revision", "")
+        entry["release"] = recent.get("count")
+        entry["action"] = status.get("lastAttemptedReleaseAction", "")
+        entry["failures"] = status.get("failures", 0)
+        entry["upgrade_failures"] = status.get("upgradeFailures", 0)
+        releases.append(entry)
+    releases.sort(key=lambda entry: (entry["namespace"], entry["name"]))
+
+    active = [entry for entry in built if not entry["suspended"]]
+    pending = [entry["name"] for entry in active if entry["drifted"]]
+    revisions = {entry["source_revision"] for entry in active}
+    return {
+        "sources": sources,
+        "kustomizations": built,
+        "helmreleases": releases,
+        "timeline": flux_timeline(built),
+        "drift": {
+            "revision": revisions.pop() if len(revisions) == 1 else "",
+            "pending": sorted(pending),
+            "stuck": any(entry["stuck"] for entry in active),
+            "in_sync": not pending,
+        },
+        "counts": {
+            "total": len(built) + len(releases),
+            "failing": len(
+                [
+                    entry
+                    for entry in built + releases
+                    if not entry["suspended"] and entry["ready"] != "True"
+                ]
+            ),
+            "suspended": len(
+                [entry for entry in built + releases if entry["suspended"]]
+            ),
+            "drifted": len(pending),
+        },
+    }
 
 def restic_latest():
     result = subprocess.run(
@@ -410,26 +623,367 @@ def evaluate_slow(apps, cluster):
         save_alerts()
 
 
+def parse_duration(text):
+    if not text:
+        return 0.0
+    try:
+        if text.endswith("ms"):
+            return float(text[:-2]) / 1000
+        if text.endswith("s"):
+            return float(text[:-1])
+    except Exception:
+        return 0.0
+    return 0.0
+
+
+def step_once(key, firing, summary, priority):
+    record = ALERTS.setdefault(key, {"firing": False})
+    if firing and not record["firing"]:
+        notify(summary, priority)
+        record["firing"] = True
+    elif not firing and record["firing"]:
+        notify(summary + " resumed", "low")
+        record["firing"] = False
+
+
+HELM_REASONS = ("UpgradeFailed", "InstallFailed", "TestFailed", "RollbackFailed")
+
+
+def flux_failure(entry):
+    key = f"{entry['kind']}/{entry['namespace']}/{entry['name']}"
+    label = f"{entry['namespace']}/{entry['name']}"
+    helm = entry["kind"] == "HelmRelease" and entry.get("reason") in HELM_REASONS
+    if helm:
+        action = entry.get("action") or "release"
+        return ("fluxhelm:" + key, f"{label} helm {action} failed")
+    reason = entry.get("reason") or "not ready"
+    return ("flux:" + key, f"{label} {reason}")
+
+
+def announce_deploy(flux):
+    drift = flux["drift"]
+    revision = drift["revision"]
+    record = ALERTS.setdefault("flux:applied", {})
+    if not revision or not drift["in_sync"]:
+        return
+    active = [
+        entry for entry in flux["kustomizations"] if not entry["suspended"]
+    ]
+    if not active or any(entry["ready"] != "True" for entry in active):
+        return
+    if record.get("revision") == revision:
+        return
+    seeded = "revision" in record
+    record["revision"] = revision
+    if not seeded:
+        return
+    short = short_revision(revision)
+    elapsed = 0.0
+    for entry in active:
+        for history in entry["history"]:
+            if history["revision"] == short:
+                elapsed += parse_duration(history["duration"])
+                break
+    notify(
+        f"deployed {short} - {len(active)} kustomizations, {elapsed:.1f}s",
+        "low",
+    )
+
+
+def prune_alerts(live):
+    prefixes = ("flux:", "fluxhelm:", "fluxsuspend:", "fluxdrift:")
+    for name in [name for name in ALERTS if name.startswith(prefixes)]:
+        if name != "flux:applied" and name not in live:
+            del ALERTS[name]
+
+
+def evaluate_flux(flux):
+    if not flux or not flux.get("counts"):
+        return
+    resources = flux["kustomizations"] + flux["helmreleases"]
+    with ALERT_LOCK:
+        live = set()
+        for entry in resources:
+            key = f"{entry['kind']}/{entry['namespace']}/{entry['name']}"
+            label = f"{entry['namespace']}/{entry['name']}"
+            suspended = entry["suspended"]
+            step_once(
+                "fluxsuspend:" + key,
+                suspended,
+                f"{label} suspended",
+                "low",
+            )
+            live.add("fluxsuspend:" + key)
+            failure_key, summary = flux_failure(entry)
+            live.add(failure_key)
+            step(
+                failure_key,
+                not suspended and entry["ready"] != "True",
+                summary,
+                SLOW_THRESHOLD,
+            )
+            if entry["kind"] == "Kustomization":
+                live.add("fluxdrift:" + key)
+                step(
+                    "fluxdrift:" + key,
+                    entry["stuck"],
+                    f"{label} stuck on {short_revision(entry['applied'])}",
+                    1,
+                )
+        announce_deploy(flux)
+        prune_alerts(live)
+        save_alerts()
+
+
+def escape(value):
+    if value is None:
+        return "-"
+    return html.escape(str(value), quote=True)
+
+
+def ago(seconds):
+    if seconds is None:
+        return "-"
+    seconds = max(0.0, seconds)
+    if seconds < 90:
+        return f"{int(seconds)}s"
+    if seconds < 5400:
+        return f"{int(seconds / 60)}m"
+    if seconds < 172800:
+        return f"{int(seconds / 3600)}h"
+    return f"{int(seconds / 86400)}d"
+
+
+def since(stamp):
+    moment = parse_stamp(stamp)
+    if moment is None:
+        return "-"
+    return ago(time.time() - moment)
+
+
+def mark(entry):
+    if entry["suspended"]:
+        return ("susp", "warn")
+    if entry["ready"] == "True":
+        return ("ok", "ok")
+    if entry["ready"] == "Unknown":
+        return ("?", "warn")
+    return ("fail", "bad")
+
+
+def pretty_duration(text):
+    seconds = parse_duration(text)
+    if not seconds:
+        return "-"
+    if seconds < 1:
+        return f"{int(seconds * 1000)}ms"
+    return f"{seconds:.1f}s"
+
+
+def span(value, style):
+    return f'<span class="{style}">{escape(value)}</span>'
+
+
+def row(*cells):
+    return "<div>" + "".join(cells) + "</div>"
+
+
+def section(label):
+    return f'<div class="sect">{escape(label)}</div>'
+
+
+def message_row(entry):
+    if entry["suspended"] or entry["ready"] == "True" or not entry["message"]:
+        return ""
+    return f'<div class="msg">{escape(entry["message"])}</div>'
+
+
+def render_source(flux):
+    sources = flux.get("sources") or {}
+    drift = flux["drift"]
+    if not sources:
+        return row(span("no gitrepository found", "bad"))
+    source = list(sources.values())[0]
+    if drift["stuck"]:
+        label, style = "stuck", "bad"
+    elif drift["in_sync"]:
+        label, style = "in sync", "ok"
+    else:
+        label, style = f"{len(drift['pending'])} pending", "warn"
+    artifact = ago(time.time() - source["artifact_at"]) if source["artifact_at"] else None
+    lines = [
+        row(
+            span("flux", "key"),
+            span(source["short"], "rev"),
+            span(label, f"note {style}"),
+            span(artifact, "meta"),
+        ),
+        row(
+            span("", "key"),
+            span(source["url"], "dim"),
+            span(f'every {source["interval"]}', "tail dim"),
+        ),
+    ]
+    if drift["pending"]:
+        lines.append(
+            row(
+                span("", "key"),
+                span("waiting: " + ", ".join(drift["pending"]), "warn"),
+            )
+        )
+    return "".join(lines)
+
+
+def render_kustomizations(flux):
+    if not flux["kustomizations"]:
+        return row(span("none", "dim"))
+    lines = []
+    for entry in flux["kustomizations"]:
+        glyph, style = mark(entry)
+        if entry["drifted"]:
+            note = f"behind {ago(entry['drift_age'])}"
+            note_style = "bad" if entry["stuck"] else "warn"
+        elif entry["suspended"]:
+            note, note_style = "suspended", "warn"
+        else:
+            note, note_style = "in sync", "dim"
+        recent = entry["history"][0] if entry["history"] else {}
+        lines.append(
+            row(
+                span(entry["name"], "key"),
+                span(glyph, f"st {style}"),
+                span(short_revision(entry["applied"]) or "-", "rev"),
+                span(note, f"note {note_style}"),
+                span(since(recent.get("at")), "meta"),
+                span(
+                    f'{pretty_duration(recent.get("duration"))} / {recent.get("count") or "-"}',
+                    "tail dim",
+                ),
+            )
+        )
+        lines.append(message_row(entry))
+    return "".join(lines)
+
+
+def render_helmreleases(flux):
+    if not flux["helmreleases"]:
+        return row(span("none", "dim"))
+    lines = []
+    for entry in flux["helmreleases"]:
+        glyph, style = mark(entry)
+        failures = (entry.get("upgrade_failures") or 0) + (entry.get("failures") or 0)
+        note = f"rel {entry.get('release') or '-'}"
+        note_style = "dim"
+        if entry["suspended"]:
+            note, note_style = "suspended", "warn"
+        elif entry["ready"] != "True" and failures:
+            note, note_style = f"{failures} failures", "bad"
+        lines.append(
+            row(
+                span(f"{entry['namespace']}/{entry['name']}", "key"),
+                span(glyph, f"st {style}"),
+                span(entry.get("version") or "-", "rev"),
+                span(note, f"note {note_style}"),
+                span(since(entry.get("changed_at")), "meta"),
+                span(entry.get("chart") or "-", "tail dim"),
+            )
+        )
+        lines.append(message_row(entry))
+    return "".join(lines)
+
+
+def render_timeline(flux):
+    if not flux["timeline"]:
+        return row(span("no history", "dim"))
+    lines = []
+    for slot in flux["timeline"]:
+        ok = slot["status"] == "ReconciliationSucceeded"
+        lines.append(
+            row(
+                span(slot["revision"], "key"),
+                span("ok" if ok else "fail", "st " + ("ok" if ok else "bad")),
+                span(f'{since(slot["at"])} ago', "rev"),
+                span(f'{slot["duration"]:.1f}s', "note dim"),
+                span(", ".join(slot["resources"]), "tail dim"),
+            )
+        )
+    return "".join(lines)
+
+
+def render_page(snapshot):
+    flux = snapshot.get("flux")
+    errors = snapshot.get("errors") or {}
+    updated = (snapshot.get("updated_at") or {}).get("flux")
+    generated = snapshot.get("generated_at") or 0
+    age = time.time() - generated if generated else None
+    parts = []
+    if age is not None and age > 90:
+        parts.append(row(span(f"collector stale {ago(age)}", "bad")))
+    if errors.get("flux"):
+        parts.append(row(span(f'query failed: {errors["flux"]}', "bad")))
+    if not flux:
+        parts.append(row(span("no flux data yet", "warn")))
+        return PAGE_TEMPLATE.replace("{{body}}", "".join(parts))
+    if updated and time.time() - updated > 210:
+        parts.append(
+            row(span(f"flux data stale {ago(time.time() - updated)}", "bad"))
+        )
+    counts = flux["counts"]
+    parts.append(render_source(flux))
+    parts.append(section("kustomizations"))
+    parts.append(render_kustomizations(flux))
+    parts.append(section("helmreleases"))
+    parts.append(render_helmreleases(flux))
+    parts.append(section("timeline"))
+    parts.append(render_timeline(flux))
+    parts.append(
+        row(
+            span("", "key"),
+            span(
+                f'{counts["total"]} resources, {counts["failing"]} failing, '
+                f'{counts["drifted"]} pending, {counts["suspended"]} suspended',
+                "dim",
+            ),
+        )
+    )
+    return PAGE_TEMPLATE.replace("{{body}}", "".join(parts))
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
-    def do_GET(self):
-        path = urllib.parse.urlparse(self.path).path
-        if path in ("/", "/state.json"):
-            with LOCK:
-                body = json.dumps(SNAPSHOT).encode()
-            content = "application/json"
-        elif path == "/healthz":
-            body = b"ok\n"
-            content = "text/plain"
-        else:
-            self.send_error(404)
-            return
-        self.send_response(200)
+    def respond(self, code, body, content):
+        self.send_response(code)
         self.send_header("Content-Type", content)
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(body)
+
+    def do_GET(self):
+        path = urllib.parse.urlparse(self.path).path
+        if path == "/state.json":
+            with LOCK:
+                body = json.dumps(SNAPSHOT).encode()
+            self.respond(200, body, "application/json")
+            return
+        if path == "/healthz":
+            self.respond(200, b"ok\n", "text/plain; charset=utf-8")
+            return
+        if path in ("/", "/flux"):
+            with LOCK:
+                snapshot = dict(SNAPSHOT)
+                snapshot["updated_at"] = dict(SNAPSHOT.get("updated_at") or {})
+                snapshot["errors"] = dict(SNAPSHOT.get("errors") or {})
+            try:
+                body = render_page(snapshot).encode()
+            except Exception as error:
+                print(f"render failed: {error}", flush=True)
+                self.respond(500, b"render failed\n", "text/plain; charset=utf-8")
+                return
+            self.respond(200, body, "text/html; charset=utf-8")
+            return
+        self.send_error(404)
 
     def log_message(self, fmt, *args):
         return
@@ -451,6 +1005,7 @@ STATE = {
     "apps": [],
     "nodes": {},
     "cluster": None,
+    "flux": None,
     "alerts": None,
     "backups": None,
     "local": {},
@@ -528,8 +1083,9 @@ def slow_tier():
             ("nodes", node_metrics),
             ("alerts", cluster_alerts),
             ("cluster", cluster_state),
+            ("flux", flux_state),
         ],
-        3,
+        4,
     )
     for label, (value, error) in outcomes.items():
         if error is None:
@@ -538,7 +1094,9 @@ def slow_tier():
 
     with LOCK:
         cluster = STATE["cluster"]
+        flux = STATE["flux"]
     evaluate_slow(checked, cluster)
+    evaluate_flux(flux)
 
 
 def lazy_tier():

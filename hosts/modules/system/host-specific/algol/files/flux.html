@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="{{refresh}}">
+    <title>flux</title>
+    <style>
+        html, body {
+            min-height: 100%;
+            margin: 0;
+            background: {{base00}};
+            color: {{base04}};
+            font-family: "{{fontName}}", monospace;
+            font-size: {{fontSize}}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        * {
+            border-radius: 0;
+        }
+        .page {
+            padding: 2em 1em;
+        }
+        .page > div {
+            margin: 0.2em 0;
+            white-space: nowrap;
+        }
+        .sect {
+            color: {{base02}};
+            margin: 1.4em 0 0.4em !important;
+        }
+        .lead {
+            color: {{base03}};
+        }
+        .key {
+            color: {{base02}};
+            display: inline-block;
+            width: 16em;
+        }
+        .st {
+            display: inline-block;
+            width: 4em;
+        }
+        .rev {
+            color: {{base05}};
+            display: inline-block;
+            width: 11em;
+        }
+        .note {
+            display: inline-block;
+            width: 13em;
+        }
+        .meta {
+            color: {{base05}};
+            display: inline-block;
+            width: 7em;
+        }
+        .tail {
+            color: {{base04}};
+        }
+        .msg {
+            color: {{base02}};
+            white-space: normal !important;
+            max-width: 58em;
+            margin-left: 16em !important;
+        }
+        .ok { color: {{base06}}; }
+        .warn { color: {{base04}}; }
+        .bad { color: {{base02}}; }
+        .dim { color: {{base05}}; opacity: 0.45; }
+    </style>
+</head>
+<body>
+    <div class="page">
+{{body}}
+    </div>
+</body>
+</html>

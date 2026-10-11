@@ -1,7 +1,27 @@
-{ config, lib, pkgs, tailnet, ... } :
+{ config, lib, pkgs, tailnet, theme, ... } :
 let
     port = 9847;
     secretsFile = ../../../../../secrets/secrets.yaml;
+    pageRefresh = 15;
+
+    colors = theme.base16;
+
+    colorNames = [
+        "base00" "base01" "base02" "base03" "base04" "base05"
+        "base06" "base07" "base08" "base09" "base0A" "base0B"
+        "base0C" "base0D" "base0E" "base0F"
+    ];
+
+    pageHtml = builtins.replaceStrings
+        (map (n: "{{${n}}}") colorNames ++ [ "{{fontName}}" "{{fontSize}}" "{{refresh}}" ])
+        (map (n: "#${colors.${n}}") colorNames ++ [
+            theme.fonts.monospace
+            (toString theme.fonts.sizes.applications)
+            (toString pageRefresh)
+        ])
+        (builtins.readFile ./files/flux.html);
+
+    page = pkgs.writeText "flux-page.html" pageHtml;
 
     classes = {
         asta      = "critical";
@@ -66,6 +86,10 @@ let
 
         resticUnitQuery = "sum by (host, unit) "
             + ''(count_over_time({job="systemd-journal", unit=~"restic-.*"}[7d]))'';
+
+        driftTimeout = 1200;
+        historyDepth = 3;
+        timelineDepth = 8;
     };
 in {
     sops = {
@@ -100,6 +124,7 @@ in {
             MONITOR_TARGETS = builtins.toJSON targets;
             MONITOR_STATE_PATH = "/run/monitor/state.json";
             MONITOR_ALERT_PATH = "/run/monitor/alerts.json";
+            MONITOR_PAGE = "${page}";
             MONITOR_DEEP_LINK = "https://grafana.${tailnet.domain}/";
             GRAFANA_URL = "https://grafana.${tailnet.domain}";
             LOKI_URL = "http://${tailnet.ips.loki}:3100";

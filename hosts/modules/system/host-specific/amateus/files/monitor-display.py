@@ -137,8 +137,14 @@ SECTION_LIMIT = {
     "apps": 210,
     "nodes": 210,
     "cluster": 210,
+    "flux": 210,
     "alerts": 210,
     "backups": 2700,
+}
+
+FLUX_NAMES = {
+    "apps-config": "A-configs",
+    "flux-system": "flux-sys",
 }
 
 
@@ -232,10 +238,61 @@ def build_cluster(state):
     rows.append((f"  pods bad      {len(pods)}", OK if not pods else BAD))
     for pod in pods[:4]:
         rows.append((f"    {pod['namespace']}/{pod['name'][:24]} {pod['phase']}", BAD))
-    flux = cluster.get("flux", [])
-    rows.append((f"  flux unready  {len(flux)}", OK if not flux else BAD))
-    for item in flux[:4]:
-        rows.append((f"    {item['namespace']}/{item['name'][:24]}", BAD))
+    return rows
+
+
+def build_flux(state):
+    rows = [("", DIM), panel(state, "FLUX", "flux")]
+    flux = (state or {}).get("flux")
+    if not flux:
+        rows.append(("  unavailable", WARN))
+        return rows
+    drift = flux.get("drift") or {}
+    sources = flux.get("sources") or {}
+    source = list(sources.values())[0] if sources else {}
+    pending = drift.get("pending") or []
+    if drift.get("stuck"):
+        label, colour = "STUCK", BAD
+    elif drift.get("in_sync"):
+        label, colour = "in sync", OK
+    else:
+        label, colour = f"{len(pending)} pending", WARN
+    rows.append((f"  source     {source.get('short') or '-':<11} {label}", colour))
+    for entry in flux.get("kustomizations") or []:
+        age = compact(entry.get("drift_age") or 0)
+        note = ""
+        if entry.get("suspended"):
+            mark, colour = "susp", WARN
+        elif entry.get("ready") != "True":
+            mark, colour = "FAIL", BAD
+        elif entry.get("stuck"):
+            mark, colour, note = "ok  ", BAD, f"stuck {age}"
+        elif entry.get("drifted"):
+            mark, colour, note = "ok  ", WARN, f"behind {age}"
+        else:
+            mark, colour = "ok  ", OK
+        applied = (entry.get("applied") or "").rsplit(":", 1)[-1][:7] or "-"
+        rows.append((
+            f"  {FLUX_NAMES.get(entry['name'], entry['name'])[:14]:<14}"
+            f" {mark} {applied:<8} {note}",
+            colour,
+        ))
+    broken = [
+        entry
+        for entry in flux.get("helmreleases") or []
+        if not entry.get("suspended") and entry.get("ready") != "True"
+    ]
+    for entry in broken[:3]:
+        rows.append((f"  {entry['namespace']}/{entry['name'][:22]} FAIL", BAD))
+    for slot in (flux.get("timeline") or [])[:4]:
+        ok = slot.get("status") == "ReconciliationSucceeded"
+        names = ", ".join(
+            FLUX_NAMES.get(name, name) for name in slot.get("resources") or []
+        )[:34]
+        rows.append((
+            f"    {slot['revision']:<8} {slot['duration']:5.1f}s  {names}",
+            DIM if ok else BAD,
+        ))
     return rows
 
 
@@ -284,7 +341,12 @@ def compose(state):
         + build_local(state)
         + build_backups(state)
     )
-    right = build_apps(state) + build_cluster(state) + build_alerts(state)
+    right = (
+        build_apps(state)
+        + build_cluster(state)
+        + build_flux(state)
+        + build_alerts(state)
+    )
     return left, right
 
 
