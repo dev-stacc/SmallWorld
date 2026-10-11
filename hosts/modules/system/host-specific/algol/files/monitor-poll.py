@@ -951,8 +951,11 @@ def link_card(app):
     dot = "ok" if app.get("up") else "bad"
     return (
         f'<a class="card" href="{escape(app["url"])}">'
-        f'<div><span class="dot {dot}">&#9679;</span>'
-        f'{span(app["name"], "name")}</div>'
+        f'<div class="top">'
+        f'<span class="lead"><span class="dot {dot}">&#9679;</span>'
+        f'{span(app["name"], "name")}</span>'
+        f'{span(app.get("role", ""), "role")}'
+        "</div>"
         f'<div class="sub">{escape(app.get("label"))}</div>'
         "</a>"
     )
@@ -1120,6 +1123,7 @@ def slow_tier():
         result["label"] = target.get("label", target["url"])
         result["auth"] = target.get("auth", False)
         result["nav"] = target.get("nav", False)
+        result["role"] = target.get("role", "")
         checked[index] = result
     commit("apps", checked)
 

@@ -53,15 +53,17 @@ let
         port = ports.${name} or 22;
     }) reachable;
 
-    clusterApp = auth: name: {
-        inherit name auth;
+    clusterApp = auth: name: role: {
+        inherit name auth role;
         url = "https://${name}.${tailnet.domain}/";
         label = "${name}.${tailnet.domain}";
         nav = true;
     };
 
-    hostSite = name: path: {
-        inherit name;
+    clusterApps = auth: roles: lib.mapAttrsToList (clusterApp auth) roles;
+
+    hostSite = name: role: path: {
+        inherit name role;
         auth = false;
         url = "https://${name}.${tailnet.domain}${path}";
         label = "${name}.${tailnet.domain}${lib.optionalString (path != "/") path}";
@@ -69,33 +71,34 @@ let
         alert = false;
     };
 
-    unguarded = map (clusterApp false) [
-        "authentik"
-        "vault"
-        "nextcloud"
-    ];
+    unguarded = clusterApps false {
+        authentik = "sso";
+        vault = "secrets";
+        nextcloud = "files";
+    };
 
     hostPages = [
-        (hostSite "algol" "/")
-        (hostSite "altair" "/")
-        (hostSite "argus" "/admin")
+        (hostSite "algol" "fleet" "/")
+        (hostSite "altair" "llm" "/")
+        (hostSite "argus" "dns" "/admin")
     ];
 
-    guarded = map (clusterApp true) [
-        "grafana"
-        "jellyfin"
-        "navidrome"
-        "uptime"
-        "sewing"
-        "marketing"
-        "wikipedia"
-        "chat"
-    ];
+    guarded = clusterApps true {
+        grafana = "metrics";
+        jellyfin = "video";
+        navidrome = "music";
+        uptime = "status";
+        sewing = "assistant";
+        marketing = "tool";
+        wikipedia = "wiki";
+        chat = "webui";
+    };
 
     hidden = [{
         name = "loki";
         url = "http://${tailnet.ips.loki}:3100/nginx-health";
         label = "loki.${tailnet.domain}:3100";
+        role = "logs";
         auth = false;
         nav = false;
     }];
