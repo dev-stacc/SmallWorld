@@ -18,7 +18,7 @@ in {
             color6 = "#${colors.base03}";
             color7 = "#${colors.base02}";
             
-            color8 = "#${colors.base05}";
+            color8 = "#${colors.base00}";
             color9 = "#${colors.base04}";
             color10 = "#${colors.base03}";
             color11 = "#${colors.base03}";
