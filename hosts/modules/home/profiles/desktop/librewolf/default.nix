@@ -1,5 +1,5 @@
 { pkgs, ... } : {
-    imports = [ ./userchrome.nix ./tridactyl.nix ./homepage.nix ];
+    imports = [ ./userchrome.nix ./tridactyl.nix ./homepage.nix ./privacy.nix ./ephemeral.nix ];
 
     programs.librewolf = {
         enable = true;
@@ -15,6 +15,7 @@
                 "browser.newtab.url" = "http://127.0.0.1:12345/homepage.html";
                 "browser.newtabpage.enabled" = false;
                 "privacy.resistFingerprinting.letterboxing" = true;
+                "extensions.autoDisableScopes" = 0;
             };
 
             search = {
@@ -25,7 +26,10 @@
 
             extensions = {
                 force = true;
-                packages = [ pkgs.nur.repos.rycee.firefox-addons.tridactyl ];
+                packages = [
+                    pkgs.nur.repos.rycee.firefox-addons.tridactyl
+                    pkgs.nur.repos.rycee.firefox-addons.ublock-origin
+                ];
             };
         };
     };
