@@ -79,7 +79,6 @@ let
 
     hostPages = [
         (hostPage "flux" "fleet" "home" "/flux")
-        (hostPage "llama" "llm" "llama" "/")
         (hostPage "pihole" "dns" "pihole" "/admin")
     ];
 

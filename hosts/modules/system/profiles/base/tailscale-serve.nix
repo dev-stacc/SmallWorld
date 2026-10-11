@@ -10,7 +10,7 @@
         "${tailscale} serve --bg --https=443${pathFlag path} ${lib.escapeShellArg upstream}";
 
     serviceCommand = name: path: upstream:
-        "${tailscale} serve --service=${lib.escapeShellArg "svc:${name}"}"
+        "-${tailscale} serve --service=${lib.escapeShellArg "svc:${name}"}"
         + " --yes --bg --https=443${pathFlag path} ${lib.escapeShellArg upstream}";
 
     serviceCommands = lib.concatLists (lib.mapAttrsToList
@@ -54,9 +54,20 @@ in {
                 not collide with any device or with a service the Kubernetes
                 operator already advertises.
 
-                Advertising requires the tailnet policy to permit it, which is
-                configured in the Tailscale admin console and is therefore not
-                reproducible from this repository.
+                Advertising requires the node to be a tagged device: Tailscale
+                rejects it on a user-owned node with "service hosts must be
+                tagged nodes". Algol and Argus carry tag:offcluster for this
+                reason; a host without a tag cannot set this option.
+
+                Tagging changes a host's ACL identity, and per the SSH policy in
+                networking.nix every SSH and colmena path rides the tailnet, so
+                confirm the host is still reachable after tagging it.
+
+                These commands are prefixed with "-" so a service that cannot be
+                advertised cannot fail the unit. Without that, the oneshot fails,
+                Restart=on-failure retries every 10s, and each retry runs
+                `serve reset` first - which tears down the working node-level
+                serve on every cycle.
             '';
         };
     };

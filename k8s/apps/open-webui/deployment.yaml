@@ -26,7 +26,10 @@ spec:
             - name: OPENAI_API_BASE_URL
               value: http://altair-egress.tailscale.svc.cluster.local:8080/v1
             - name: OPENAI_API_KEY
-              value: altair
+              valueFrom:
+                secretKeyRef:
+                  name: open-webui-secrets
+                  key: OPENAI_API_KEY
             - name: ENABLE_OPENAI_API
               value: "true"
             - name: ENABLE_OLLAMA_API

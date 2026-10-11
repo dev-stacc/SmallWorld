@@ -1,4 +1,15 @@
-{ lib, pkgs, ... } : {
+{ config, lib, pkgs, ... } : {
+    sops = {
+        secrets.llama-api-key.sopsFile = ../../../../../secrets/secrets.yaml;
+
+        templates."llama.env" = {
+            restartUnits = [ "llama-cpp.service" ];
+            content = ''
+                LLAMA_API_KEY=${config.sops.placeholder.llama-api-key}
+            '';
+        };
+    };
+
     services.llama-cpp = {
         enable = true;
         package = pkgs.llama-cpp-vulkan;
@@ -23,6 +34,7 @@
         serviceConfig = {
             SupplementaryGroups = [ "video" "render" ];
             RestartSec = lib.mkForce 15;
+            EnvironmentFile = config.sops.templates."llama.env".path;
         };
 
         environment.MESA_SHADER_CACHE_DIR = "/var/cache/llama-cpp/mesa";
