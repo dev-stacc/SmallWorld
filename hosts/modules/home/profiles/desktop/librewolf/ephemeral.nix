@@ -2,7 +2,7 @@
     profile = "${config.home.homeDirectory}/.librewolf/default";
     cache = "${config.home.homeDirectory}/.cache/librewolf/default";
 
-    declarative = [ ".keep" "user.js" "chrome" "extensions" "search.json.mozlz4" ];
+    declarative = [ ".keep" "user.js" "chrome" "extensions" ];
 
     extensionState = [
         "prefs.js"

@@ -6,6 +6,16 @@
 
         nativeMessagingHosts = [ pkgs.tridactyl-native ];
 
+        policies.SearchEngines = {
+            Add = [{
+                Name = "searxng";
+                URLTemplate = "http://127.0.0.1:12345/search.html?q={searchTerms}";
+                Alias = "s";
+                Method = "GET";
+            }];
+            Default = "searxng";
+        };
+
         profiles.default = {
             isDefault = true;
 
@@ -16,21 +26,6 @@
                 "browser.newtabpage.enabled" = false;
                 "privacy.resistFingerprinting.letterboxing" = true;
                 "extensions.autoDisableScopes" = 0;
-            };
-
-            search = {
-                force = true;
-                default = "searxng";
-                order = [ "searxng" "ddg" ];
-
-                engines.searxng = {
-                    urls = [{
-                        template = "http://127.0.0.1:12345/search.html?q={searchTerms}";
-                    }];
-                    definedAliases = [ "@s" ];
-                };
-
-                engines.ddg.metaData.alias = "@d";
             };
 
             extensions = {
