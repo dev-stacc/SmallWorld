@@ -34,28 +34,29 @@
         .lead {
             color: {{base03}};
         }
+        .key, .st, .rev, .note, .meta {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: top;
+        }
         .key {
             color: {{base02}};
-            display: inline-block;
-            width: 16em;
+            width: 36ch;
         }
         .st {
-            display: inline-block;
-            width: 4em;
+            width: 6ch;
         }
         .rev {
             color: {{base05}};
-            display: inline-block;
-            width: 11em;
+            width: 12ch;
         }
         .note {
-            display: inline-block;
-            width: 13em;
+            width: 16ch;
         }
         .meta {
             color: {{base05}};
-            display: inline-block;
-            width: 7em;
+            width: 8ch;
         }
         .tail {
             color: {{base04}};
@@ -63,8 +64,8 @@
         .msg {
             color: {{base02}};
             white-space: normal !important;
-            max-width: 58em;
-            margin-left: 16em !important;
+            max-width: 72ch;
+            margin-left: 36ch !important;
         }
         .ok { color: {{base06}}; }
         .warn { color: {{base04}}; }

@@ -302,7 +302,6 @@ def flux_source(item):
     return {
         "namespace": item["metadata"]["namespace"],
         "name": item["metadata"]["name"],
-        "url": spec.get("url", ""),
         "interval": spec.get("interval", ""),
         "revision": artifact.get("revision", ""),
         "short": short_revision(artifact.get("revision", "")),
@@ -817,10 +816,6 @@ def render_source(flux):
             span(source["short"], "rev"),
             span(label, f"note {style}"),
             span(artifact, "meta"),
-        ),
-        row(
-            span("", "key"),
-            span(source["url"], "dim"),
             span(f'every {source["interval"]}', "tail dim"),
         ),
     ]
