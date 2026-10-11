@@ -4,6 +4,7 @@ import json
 import sys
 import urllib.request
 import urllib.error
+import urllib.parse
 
 PRIMARY_URL = os.environ["PRIMARY_URL"].rstrip("/")
 PRIMARY_PASSWORD = os.environ["PRIMARY_PASSWORD"]
@@ -53,8 +54,9 @@ def sync_domains(p_url, p_sid, s_url, s_sid, dtype, dkind):
         print(f"+ {dtype}/{dkind}: {domain}", flush=True)
 
     for domain in set(s_domains) - set(p_domains):
+        quoted = urllib.parse.quote(domain, safe="")
         try:
-            api(s_url, s_sid, "DELETE", f"/api/domains/{dtype}/{dkind}/{domain}")
+            api(s_url, s_sid, "DELETE", f"/api/domains/{dtype}/{dkind}/{quoted}")
             print(f"- {dtype}/{dkind}: {domain}", flush=True)
         except urllib.error.HTTPError as e:
             if e.code != 404:
