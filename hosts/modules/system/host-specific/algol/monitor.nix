@@ -31,10 +31,10 @@ let
         albireo   = "critical";
         argus     = "critical";
         amateus   = "critical";
+        sanctuary = "critical";
         algol     = "watch";
         arcturus  = "watch";
         altair    = "watch";
-        sanctuary = "watch";
         alula     = "ignore";
         atlas     = "ignore";
     };
@@ -72,9 +72,9 @@ let
     };
 
     unguarded = clusterApps false {
-        authentik = "sso";
+        authentik = "login";
         vault = "secrets";
-        nextcloud = "files";
+        nextcloud = "storage";
     };
 
     hostPages = [
@@ -84,13 +84,13 @@ let
 
     guarded = clusterApps true {
         grafana = "metrics";
-        jellyfin = "video";
+        jellyfin = "streaming";
         navidrome = "music";
         uptime = "status";
-        sewing = "assistant";
-        marketing = "tool";
-        wikipedia = "wiki";
-        chat = "webui";
+        sewing = "-";
+        marketing = "-";
+        wikipedia = "-";
+        chat = "local ai";
     };
 
     hidden = [{
