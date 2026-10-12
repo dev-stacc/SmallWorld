@@ -20,4 +20,6 @@ resources:
   - blueprint-open-webui.yaml
   - blueprint-nextcloud-oidc.yaml
   - externalsecret-blueprint-nextcloud-env.yaml
+  - blueprint-immich-oidc.yaml
+  - externalsecret-blueprint-immich-env.yaml
   - dump-cronjob.yaml
