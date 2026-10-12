@@ -17,6 +17,11 @@ data:
       }
       server {
         listen 80;
+
+        location = /nginx-health {
+          return 200 "ok\n";
+        }
+
         location /outpost.goauthentik.io/ {
           proxy_pass http://authentik-server.authentik.svc.cluster.local:80;
           proxy_set_header Host authentik-server.authentik.svc.cluster.local;
@@ -50,6 +55,20 @@ spec:
             - name: config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+          readinessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: "32Mi"
