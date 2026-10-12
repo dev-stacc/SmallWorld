@@ -82,7 +82,7 @@ let
 
     hostPages = [
         (hostPage "flux" "fleet" "home" "/flux")
-        (hostPage "backups" "restic" "home" "/backups")
+        (hostPage "backups" "-" "home" "/backups")
         (hostPage "pihole" "dns" "pihole" "/admin")
     ];
 

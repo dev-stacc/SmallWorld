@@ -13,12 +13,18 @@ This doubles as a CV piece. Built solo while teaching myself the stack.
 - **SOPS + age** for declarative secrets, plus **Vault** + **external-secrets-operator** for runtime secrets
 - **Authentik** for SSO across self-hosted services
 - **CrowdSec** with a Pi-hole bouncer (Suricata deferred - Helm chart schema issue)
+- **GitHub Actions** on every PR: secret hygiene, `nix` evaluation of all ten hosts, `kustomize` + `kubeconform` over every overlay, shellcheck
 - **stylix** for system-wide theming, **nixvim** for declarative Neovim
 
 ## Repo layout
 
 ```
 flake.nix                       Inputs, tailnet IPs, theme; derives nixosConfigurations + colmena
+
+.github/
+├── workflows/ci.yml            Runs on every PR: secret hygiene, Nix eval, manifest validation, shellcheck
+├── scripts/                    The four checks, each runnable locally with no GitHub involved
+└── encrypted-paths             Files that must always be SOPS-encrypted; CI enforces it
 
 hosts/
 ├── default.nix                 THE HOST REGISTRY: hostName, roles, unfree, secrets, deploy
@@ -59,7 +65,7 @@ k8s/
 │   ├── kiwix/                  Offline Wikipedia mirror (kiwix-serve) on aperture
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
-│   ├── nextcloud/              Files + sync; pinned to albireo, data on its ZFS pool
+│   ├── nextcloud/              Files + sync; pinned to albireo, data on its ext4 /bigstorage
 │   ├── nfs-provisioner/        PVs backed by amateus
 │   ├── tailscale/
 │   ├── uptime-kuma/
@@ -136,7 +142,7 @@ colmena apply                                    # remote deploy of all hosts
 
 - Module structure from day one. I started by copying patterns I saw in other repos. That worked at one or two hosts but got hard to navigate at five. With 3+ hosts planned, I'd go straight to the current `modules/{system,home}/{common,host-specific}` split instead of refactoring my way into it.
 - Authentik before the apps. I deployed Jellyfin and Navidrome first and had to refactor both substantially once Authentik landed and they needed SSO wiring. Next time the auth layer goes up first, and every app is wired into it from the start.
-- Branches, PRs, and code review. I worked mostly on `main` because this started as a personal project; the cost is a noisy log and no review trail. Even solo, a branch + PR flow forces a moment of "is this the change I actually want," and another pair of eyes catches what self-review misses.
+- Branches, PRs, and code review. I worked mostly on `main` because this started as a personal project; the cost is a noisy log and no review trail. What I got wrong was treating it as a discipline problem - intending to branch was never the issue, nothing enforced it. The repo is public and Flux reconciles straight from `main`, so a bad commit is deployed and world-readable before I can reconsider it. CI now runs on every PR, which lets `main` require a passing check instead of relying on me to remember.
 - More research before coding. Solo work on my own hardware made me unafraid to break things, which is great for momentum and bad for measuring twice.
 
 ## Future / ongoing

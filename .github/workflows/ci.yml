@@ -1,0 +1,59 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: nixpkgs
+        run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+      - run: .github/scripts/check-encrypted.sh
+      - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#gitleaks' --command gitleaks dir . --no-banner --redact --exit-code 1
+
+  nix:
+    name: nix
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - run: nix flake check --no-build
+      - run: .github/scripts/check-nix.sh
+
+  k8s:
+    name: k8s
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: nixpkgs
+        run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+      - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#kubectl' '${{ steps.nixpkgs.outputs.ref }}#kubeconform' --command .github/scripts/check-k8s.sh
+
+  shell:
+    name: shell
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: nixpkgs
+        run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+      - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#shellcheck' --command .github/scripts/check-shell.sh
+      - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#actionlint' --command actionlint

@@ -1,0 +1,7 @@
+secrets/secrets.yaml
+secrets/vault-init.json
+k8s/apps/crowdsec/bouncer-secret.yaml
+k8s/apps/monitoring/grafana-secret.yaml
+k8s/apps/monitoring/helmrelease.yaml
+k8s/apps/monitoring/loki-auth.yaml
+k8s/apps/vault/unseal-secret.yaml
