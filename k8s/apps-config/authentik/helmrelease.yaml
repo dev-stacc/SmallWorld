@@ -32,12 +32,16 @@ spec:
             name: authentik-secrets
         - secretRef:
             name: authentik-blueprint-grafana-env
+            optional: true
         - secretRef:
             name: authentik-blueprint-jellyfin-env
+            optional: true
         - secretRef:
             name: authentik-blueprint-nextcloud-env
+            optional: true
         - secretRef:
             name: authentik-blueprint-immich-env
+            optional: true
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
