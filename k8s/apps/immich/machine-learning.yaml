@@ -32,16 +32,24 @@ spec:
             - name: model-cache
               mountPath: /cache
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /ping
               port: 3003
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 30
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /ping
               port: 3003
             periodSeconds: 10
             failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: 512Mi
