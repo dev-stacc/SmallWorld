@@ -152,6 +152,25 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: "512Mi"

@@ -36,6 +36,25 @@ spec:
               mountPath: /data
             - name: music
               mountPath: /music
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 4533
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 4533
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 4533
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: "128Mi"

@@ -43,6 +43,20 @@ spec:
                 secretKeyRef:
                   name: marketing-tool-secrets
                   key: BETTER_AUTH_API_KEY
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: "256Mi"
