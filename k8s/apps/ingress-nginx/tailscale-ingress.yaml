@@ -168,3 +168,22 @@ spec:
   tls:
     - hosts:
         - search
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-photos
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: photos
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - photos
