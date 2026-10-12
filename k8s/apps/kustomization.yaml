@@ -12,7 +12,6 @@ resources:
   - sewing-assistant/
   - marketing-tool/
   - prose/
-  - nfs-provisioner/
   - crowdsec/
   - kiwix/
   - nextcloud/

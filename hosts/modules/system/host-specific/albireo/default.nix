@@ -1,7 +1,6 @@
 { ... } : {
     imports = [
         ./storage.nix
-        ./nfs-server.nix
         ./media-sync.nix
         ./backup.nix
         ./k3s-service.nix
