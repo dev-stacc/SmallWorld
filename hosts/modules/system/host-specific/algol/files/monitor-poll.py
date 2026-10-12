@@ -933,6 +933,19 @@ def span(value, style):
     return f'<span class="{style}">{escape(value)}</span>'
 
 
+def span_titled(value, style, title):
+    return (
+        f'<span class="{style}" title="{escape(title)}">{escape(value)}</span>'
+    )
+
+
+def short_paths(paths):
+    names = []
+    for path in paths:
+        names.append(path.rstrip("/").rsplit("/", 1)[-1] or "/")
+    return "+".join(names)
+
+
 def row(*cells):
     return "<div>" + "".join(cells) + "</div>"
 
@@ -1187,12 +1200,13 @@ def render_backups(snapshot):
     parts.append(
         row(
             span("amateus:/srv/restic", "key"),
-            span(
-                f'{repo.get("snapshots") or 0} snaps',
-                "st " + ("ok" if repo else "dim"),
-            ),
+            span("ok" if repo else "-", "st " + ("ok" if repo else "dim")),
             span(human_size(repo.get("size")), "rev"),
-            span(f'{repo.get("ratio") or 1:.2f}x packed', "note dim"),
+            span(
+                f'{repo.get("snapshots") or 0} snaps'
+                f' {repo.get("ratio") or 1:.2f}x',
+                "note dim",
+            ),
         )
     )
 
@@ -1207,11 +1221,15 @@ def render_backups(snapshot):
         hours = group.get("age_hours")
         parts.append(
             row(
-                span(group["host"], "key"),
+                span(group["host"], "host"),
+                span_titled(
+                    short_paths(group["paths"]),
+                    "paths dim",
+                    " ".join(group["paths"]),
+                ),
                 span(label, "st " + style),
                 span(f"{hours:.1f}h ago" if hours is not None else "-", "rev"),
-                span(group.get("short_id") or "-", "note dim"),
-                span(" ".join(group["paths"]), "tail dim"),
+                span(group.get("short_id") or "-", "snapid dim"),
             )
         )
     for entry in EXPECTED_BACKUPS:
@@ -1219,11 +1237,15 @@ def render_backups(snapshot):
             continue
         parts.append(
             row(
-                span(entry["host"], "key"),
+                span(entry["host"], "host"),
+                span_titled(
+                    short_paths(entry["paths"]),
+                    "paths dim",
+                    " ".join(entry["paths"]),
+                ),
                 span("gone", "st bad"),
                 span("never", "rev"),
-                span("-", "note dim"),
-                span(" ".join(entry["paths"]), "tail dim"),
+                span("-", "snapid dim"),
             )
         )
 
@@ -1233,9 +1255,10 @@ def render_backups(snapshot):
         parts.append(row(span("no restic units in journal", "warn")))
     for unit in units:
         ok = unit.get("ok", True)
+        name = unit["unit"].removesuffix(".service")
         parts.append(
             row(
-                span(f'{unit["host"]} {unit["unit"]}', "key"),
+                span(f'{unit["host"]} {name}', "key"),
                 span("ok" if ok else "fail", "st " + ("ok" if ok else "bad")),
                 span(f'{unit.get("lines", 0)} lines', "rev"),
                 span(

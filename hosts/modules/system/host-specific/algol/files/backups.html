@@ -22,6 +22,9 @@
         }
         .page {
             padding: 2em 1em;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: auto;
         }
         .page > div {
             margin: 0.2em 0;
@@ -52,7 +55,7 @@
         .lead {
             color: {{base03}};
         }
-        .key, .st, .rev, .note, .meta {
+        .key, .st, .rev, .note, .host, .snapid, .paths {
             display: inline-block;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -72,18 +75,15 @@
         .note {
             width: 16ch;
         }
-        .meta {
-            color: {{base05}};
-            width: 8ch;
-        }
-        .tail {
-            color: {{base04}};
-        }
-        .msg {
+        .host {
             color: {{base02}};
-            white-space: normal !important;
-            max-width: 72ch;
-            margin-left: 36ch !important;
+            width: 10ch;
+        }
+        .snapid {
+            width: 10ch;
+        }
+        .paths {
+            width: 26ch;
         }
         .ok { color: {{base06}}; }
         .warn { color: {{base04}}; }
