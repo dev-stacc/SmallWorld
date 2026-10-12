@@ -40,3 +40,7 @@ hosts/atlas/utils/tftp/
 hosts/atlas/utils/www/
 hosts/atlas/utils/certs/
 dnsmasq-pxe.*
+
+# Python bytecode (py_compile leaves these beside the monitor scripts)
+__pycache__/
+*.pyc

@@ -17,7 +17,7 @@ let
         ${pkgs.util-linux}/bin/logger -t upsmon "$summary"
 
         if [ -n "${notify}" ]; then
-            NOTIFY_PRIORITY=urgent ${notify} "$summary"
+            NOTIFY_PRIORITY=urgent ${notify} "$summary" || true
         fi
     '';
 

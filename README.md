@@ -13,6 +13,7 @@ This doubles as a CV piece. Built solo while teaching myself the stack.
 - **SOPS + age** for declarative secrets, plus **Vault** + **external-secrets-operator** for runtime secrets
 - **Authentik** for SSO across self-hosted services
 - **CrowdSec** with a Pi-hole bouncer (Suricata deferred - Helm chart schema issue)
+- **ntfy** self-hosted on algol for fleet alerts, reached over the tailnet; the public ntfy.sh stays wired in as a fallback, so an algol outage can still report itself
 - **GitHub Actions** on every PR: secret hygiene, `nix` evaluation of all ten hosts, `kustomize` + `kubeconform` over every overlay, shellcheck
 - **stylix** for system-wide theming, **nixvim** for declarative Neovim
 

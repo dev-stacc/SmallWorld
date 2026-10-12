@@ -1,5 +1,5 @@
 { ... } : {
-    imports = [ ./monitor.nix ];
+    imports = [ ./monitor.nix ./ntfy.nix ];
 
     biggerworld.serve = {
         node."/" = "http://127.0.0.1:9847";

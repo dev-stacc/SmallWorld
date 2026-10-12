@@ -60,6 +60,8 @@ in {
             DISPLAY_STALE_AFTER = "90";
             DISPLAY_DEAD_AFTER = "300";
             DISPLAY_DEEP_LINK = "https://home.${tailnet.domain}/";
+            NTFY_URL = "https://ntfy.${tailnet.domain}";
+            NTFY_FALLBACK_URL = "https://ntfy.sh";
         };
 
         serviceConfig = {
