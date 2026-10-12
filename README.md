@@ -67,7 +67,6 @@ k8s/
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
 │   ├── nextcloud/              Files + sync; pinned to albireo, data on its ext4 /bigstorage
-│   ├── nfs-provisioner/        PVs backed by amateus
 │   ├── tailscale/
 │   ├── uptime-kuma/
 │   ├── vault/
@@ -88,7 +87,7 @@ k8s/
 | Arcturus  | ThinkPad E490, i5 8th gen, 32 GB DDR4, Intel iGPU                 | Daily driver. Hyprland desktop. k3s control client (kubeconfig from SOPS). |
 | Asta      | Toshiba Satellite L-855 board, AMD A8/A10, 16 GB DDR3, tray-mount | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth. Headless. |
 | Aperture  | Dell OptiPlex 3020, i5 4th gen, 12 GB DDR3, SSD + HDD, dGPU       | k3s agent. Headless.                                                       |
-| Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | NFS server backing cluster `PersistentVolume`s. Headless.                  |
+| Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | Append-only restic repository + retention. Fleet monitor on tty1.          |
 | Altair    | LGA1155 board, i5-2500K, DDR3, ex-Antinoos HDD + 1 TB, 2x RX 580  | Local LLM inference (llama.cpp on Vulkan). Wake-on-LAN. Headless.          |
 | Argus     | Acer Aspire 7741, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
 | Alula     | Intel Compute Stick T6, Atom x5-Z8350, 4 GB RAM, 64 GB storage   | Portable niri desktop. Coding + browsing. Future cyberdeck base.           |

@@ -1,6 +1,5 @@
 { ... } : {
     imports = [
-        ./nfs-server.nix
         ./restic-server.nix
         ./restic-retention.nix
         ./monitor-display.nix
