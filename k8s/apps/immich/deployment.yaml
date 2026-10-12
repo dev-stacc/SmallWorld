@@ -18,6 +18,30 @@ spec:
       enableServiceLinks: false
       nodeSelector:
         kubernetes.io/hostname: albireo
+      initContainers:
+        - name: wait-for-postgres
+          image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: immich-secrets
+                  key: DB_USERNAME
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until pg_isready -h immich-postgres -d immich; do
+                echo "waiting for postgres"
+                sleep 2
+              done
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 25m
+            limits:
+              memory: 128Mi
+              cpu: 200m
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:v3.3.1
@@ -52,16 +76,24 @@ spec:
             - name: library
               mountPath: /data
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/server/ping
               port: 2283
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 30
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/server/ping
               port: 2283
             periodSeconds: 10
             failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: 512Mi
