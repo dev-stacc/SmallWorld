@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-machine-learning
+  namespace: immich
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: immich-ml
+  template:
+    metadata:
+      labels:
+        app: immich-ml
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: albireo
+      containers:
+        - name: machine-learning
+          image: ghcr.io/immich-app/immich-machine-learning:v3.3.1
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MACHINE_LEARNING_MODEL_REVISION
+              value: v2
+            - name: TZ
+              value: America/New_York
+          volumeMounts:
+            - name: model-cache
+              mountPath: /cache
+          startupProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 3003
+            periodSeconds: 10
+            failureThreshold: 4
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 100m
+            limits:
+              memory: 3Gi
+              cpu: 2000m
+      volumes:
+        - name: model-cache
+          hostPath:
+            path: /bigstorage/immich/models
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-machine-learning
+  namespace: immich
+spec:
+  selector:
+    app: immich-ml
+  ports:
+    - port: 3003
+      targetPort: 3003
+  type: ClusterIP

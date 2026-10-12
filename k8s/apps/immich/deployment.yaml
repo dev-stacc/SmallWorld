@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-server
+  namespace: immich
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: immich-server
+  template:
+    metadata:
+      labels:
+        app: immich-server
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: albireo
+      containers:
+        - name: immich-server
+          image: ghcr.io/immich-app/immich-server:v3.3.1
+          ports:
+            - containerPort: 2283
+          env:
+            - name: TZ
+              value: America/New_York
+            - name: DB_HOSTNAME
+              value: immich-postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE_NAME
+              value: immich
+            - name: REDIS_HOSTNAME
+              value: immich-redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: IMMICH_MACHINE_LEARNING_URL
+              value: http://immich-machine-learning:3003
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: immich-secrets
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich-secrets
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: library
+              mountPath: /data
+          startupProbe:
+            tcpSocket:
+              port: 2283
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 2283
+            periodSeconds: 10
+            failureThreshold: 4
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+      volumes:
+        - name: library
+          hostPath:
+            path: /bigstorage/immich/library
+            type: Directory

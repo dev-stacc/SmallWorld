@@ -4,11 +4,15 @@ let
         "/bigstorage/nextcloud/html"
         "/bigstorage/nextcloud/dumps"
         "/bigstorage/important"
+        "/bigstorage/immich/library"
+        "/bigstorage/immich/dumps"
     ];
 
     exclude = [
         "/bigstorage/nextcloud/html/data/*/cache"
         "/bigstorage/nextcloud/html/data/appdata_*/preview"
+        "/bigstorage/immich/library/thumbs"
+        "/bigstorage/immich/library/encoded-video"
     ];
 in {
     sops.secrets = {
