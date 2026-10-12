@@ -15,6 +15,7 @@ spec:
       labels:
         app: immich-postgres
     spec:
+      enableServiceLinks: false
       nodeSelector:
         kubernetes.io/hostname: albireo
       securityContext:
