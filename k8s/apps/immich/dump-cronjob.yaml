@@ -17,6 +17,7 @@ spec:
             app: immich-dump
         spec:
           restartPolicy: OnFailure
+          enableServiceLinks: false
           nodeSelector:
             kubernetes.io/hostname: albireo
           securityContext:

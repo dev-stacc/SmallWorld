@@ -15,6 +15,7 @@ spec:
       labels:
         app: immich-server
     spec:
+      enableServiceLinks: false
       nodeSelector:
         kubernetes.io/hostname: albireo
       containers:
