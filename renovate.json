@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/^k8s/.+\\.ya?ml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchFileNames": [
+        "k8s/apps/arr/**"
+      ],
+      "groupName": "arr stack"
+    }
+  ]
+}
