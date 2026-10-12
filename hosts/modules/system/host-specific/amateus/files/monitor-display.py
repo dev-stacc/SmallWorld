@@ -17,6 +17,7 @@ NTFY_TOKEN = os.environ["NTFY_TOKEN"]
 DEEP_LINK = os.environ["DISPLAY_DEEP_LINK"]
 
 COOLDOWN = 1800
+STALE_HOURS = 36
 OK = "ok"
 WARN = "warn"
 BAD = "bad"
@@ -140,6 +141,7 @@ SECTION_LIMIT = {
     "flux": 210,
     "alerts": 210,
     "backups": 2700,
+    "disks": 2700,
 }
 
 FLUX_NAMES = {
@@ -314,23 +316,81 @@ def build_alerts(state):
     return rows
 
 
+def size(value):
+    if value is None:
+        return "-"
+    scaled = float(value)
+    for suffix in ("B", "K", "M", "G", "T"):
+        if scaled < 1024 or suffix == "T":
+            return f"{scaled:.0f}{suffix}"
+        scaled /= 1024
+    return "-"
+
+
 def build_backups(state):
     rows = [("", DIM), panel(state, "BACKUPS", "backups")]
     backups = (state or {}).get("backups")
     if not backups:
         rows.append(("  unavailable", WARN))
         return rows
-    amateus = backups.get("amateus") or {}
-    age = amateus.get("age_hours")
-    if age is None:
-        rows.append(("  no snapshot found", BAD))
-    else:
+
+    groups = backups.get("groups") or []
+    repo = backups.get("repo") or {}
+    if groups:
+        oldest = max(groups, key=lambda group: group["age_hours"])
+        late = [group for group in groups if group["age_hours"] > STALE_HOURS]
+        dead = [group for group in groups if group["age_hours"] > STALE_HOURS * 2]
         rows.append((
-            f"  last snapshot {age:.1f}h ago  ({amateus.get('host', '?')})",
-            OK if age < 36 else (WARN if age < 72 else BAD),
+            f"  sets {len(groups)}  oldest {oldest['age_hours']:.0f}h"
+            f"  {size(repo.get('size'))}",
+            BAD if dead else (WARN if late else OK),
         ))
-    for unit in (backups.get("units") or [])[:4]:
-        rows.append((f"    {unit['host']:<9} {unit['unit'][:40]}", DIM))
+        for group in sorted(late, key=lambda group: -group["age_hours"])[:4]:
+            rows.append((
+                f"    {group['host']:<9} {group['age_hours']:.0f}h stale",
+                BAD if group["age_hours"] > STALE_HOURS * 2 else WARN,
+            ))
+    else:
+        amateus = backups.get("amateus") or {}
+        age = amateus.get("age_hours")
+        if age is None:
+            rows.append(("  no snapshot found", BAD))
+        else:
+            rows.append((
+                f"  last snapshot {age:.1f}h ago  ({amateus.get('host', '?')})",
+                OK if age < STALE_HOURS else (WARN if age < STALE_HOURS * 2 else BAD),
+            ))
+
+    units = backups.get("units") or []
+    failing = [unit for unit in units if not unit.get("ok", True)]
+    if units:
+        rows.append((
+            f"  units {len(units) - len(failing)}/{len(units)} clean",
+            BAD if failing else OK,
+        ))
+        for unit in failing[:4]:
+            rows.append((f"    {unit['host']:<9} {unit['unit'][:16]}", BAD))
+    return rows
+
+
+def build_disks(state):
+    rows = [("", DIM), panel(state, "DISKS", "disks")]
+    disks = (state or {}).get("disks")
+    if not disks:
+        rows.append(("  unavailable", WARN))
+        return rows
+    failing = sorted(
+        name for name, disk in disks.items() if not disk.get("ok", True)
+    )
+    rows.append((
+        f"  {len(disks) - len(failing)}/{len(disks)} hosts clear",
+        BAD if failing else OK,
+    ))
+    for name in failing[:4]:
+        rows.append((
+            f"    {name:<9} {disks[name].get('fails', 0)} warnings 24h",
+            BAD,
+        ))
     return rows
 
 
@@ -340,6 +400,7 @@ def compose(state):
         + build_nodes(state)
         + build_local(state)
         + build_backups(state)
+        + build_disks(state)
     )
     right = (
         build_apps(state)

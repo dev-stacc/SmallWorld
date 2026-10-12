@@ -24,6 +24,7 @@ LOKI_URL = os.environ["LOKI_URL"].rstrip("/")
 NTFY_TOPIC = os.environ["NTFY_TOPIC"]
 NTFY_TOKEN = os.environ["NTFY_TOKEN"]
 DEEP_LINK = os.environ["MONITOR_DEEP_LINK"]
+BACKUPS_LINK = os.environ["MONITOR_BACKUPS_LINK"]
 CREDS = os.environ["CREDENTIALS_DIRECTORY"]
 
 with open(os.environ["MONITOR_PAGE"]) as handle:
@@ -32,10 +33,17 @@ with open(os.environ["MONITOR_PAGE"]) as handle:
 with open(os.environ["MONITOR_LINKS_PAGE"]) as handle:
     LINKS_TEMPLATE = handle.read()
 
+with open(os.environ["MONITOR_BACKUPS_PAGE"]) as handle:
+    BACKUPS_TEMPLATE = handle.read()
+
 HOSTS = TARGETS["hosts"]
 APPS = TARGETS["apps"]
 SUPPRESS = set(TARGETS["suppressAlerts"])
 RESTIC_UNIT_QUERY = TARGETS["resticUnitQuery"]
+RESTIC_FAIL_QUERY = TARGETS["resticFailQuery"]
+SMART_QUERY = TARGETS["smartQuery"]
+EXPECTED_BACKUPS = TARGETS["expectedBackups"]
+BACKUP_STALE_HOURS = TARGETS["backupStaleHours"]
 DRIFT_TIMEOUT = TARGETS["driftTimeout"]
 HISTORY_DEPTH = TARGETS["historyDepth"]
 TIMELINE_DEPTH = TARGETS["timelineDepth"]
@@ -468,12 +476,12 @@ def flux_state():
         },
     }
 
-def restic_latest():
+def restic(*args, timeout=240):
     result = subprocess.run(
-        ["restic", "snapshots", "--json", "--latest", "1", "--no-cache"],
+        ["restic", *args, "--no-cache"],
         capture_output=True,
         text=True,
-        timeout=240,
+        timeout=timeout,
         env=dict(
             os.environ,
             RESTIC_REPOSITORY=RESTIC_REPO,
@@ -482,16 +490,54 @@ def restic_latest():
     )
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip()[:200])
-    snapshots = json.loads(result.stdout)
-    if not snapshots:
-        return {"age_hours": None, "host": ""}
-    latest = snapshots[-1]
-    taken = datetime.datetime.fromisoformat(latest["time"])
+    return json.loads(result.stdout)
+
+
+def snapshot_age(stamp):
+    taken = datetime.datetime.fromisoformat(stamp)
     if taken.tzinfo is None:
         taken = taken.astimezone()
     now = datetime.datetime.now(datetime.timezone.utc)
-    age = (now - taken.astimezone(datetime.timezone.utc)).total_seconds()
-    return {"age_hours": round(age / 3600, 1), "host": latest.get("hostname", "")}
+    return (now - taken.astimezone(datetime.timezone.utc)).total_seconds()
+
+
+def group_id(host, paths):
+    return host.lower() + "|" + ",".join(sorted(paths))
+
+
+def restic_groups():
+    grouped = restic(
+        "snapshots", "--json", "--latest", "1", "--group-by", "host,paths"
+    )
+    groups = []
+    for entry in grouped:
+        key = entry.get("group_key") or {}
+        snapshots = entry.get("snapshots") or []
+        if not snapshots:
+            continue
+        latest = snapshots[-1]
+        host = (key.get("hostname") or latest.get("hostname", "")).lower()
+        paths = key.get("paths") or latest.get("paths") or []
+        groups.append(
+            {
+                "id": group_id(host, paths),
+                "host": host,
+                "paths": paths,
+                "age_hours": round(snapshot_age(latest["time"]) / 3600, 1),
+                "short_id": latest.get("short_id", ""),
+            }
+        )
+    groups.sort(key=lambda item: (item["host"], item["paths"]))
+    return groups
+
+
+def restic_repo():
+    stats = restic("stats", "--json", "--mode", "raw-data")
+    return {
+        "snapshots": stats.get("snapshots_count"),
+        "size": stats.get("total_size"),
+        "ratio": stats.get("compression_ratio"),
+    }
 
 
 def loki_instant(query):
@@ -501,19 +547,46 @@ def loki_instant(query):
         return json.loads(response.read())["data"]["result"]
 
 
+def loki_counts(query, *labels):
+    counts = {}
+    for series in loki_instant(query):
+        metric = series["metric"]
+        key = (metric.get(labels[0], "").lower(),) + tuple(
+            metric.get(label, "") for label in labels[1:]
+        )
+        counts[key] = counts.get(key, 0) + int(float(series["value"][1]))
+    return counts
+
+
 def restic_units():
+    seen = loki_counts(RESTIC_UNIT_QUERY, "host", "unit")
+    failed = loki_counts(RESTIC_FAIL_QUERY, "host", "unit")
     units = []
-    for series in loki_instant(RESTIC_UNIT_QUERY):
-        labels = series["metric"]
+    for (host, unit), lines in seen.items():
+        fails = failed.get((host, unit), 0)
         units.append(
             {
-                "host": labels.get("host", ""),
-                "unit": labels.get("unit", ""),
-                "lines": int(float(series["value"][1])),
+                "host": host,
+                "unit": unit,
+                "lines": lines,
+                "fails": fails,
+                "ok": fails == 0,
             }
         )
-    units.sort(key=lambda item: (item["host"], item["unit"]))
+    units.sort(key=lambda item: (not item["ok"], item["host"], item["unit"]))
     return units
+
+
+def disk_state():
+    failures = loki_counts(SMART_QUERY, "host")
+    disks = {}
+    for name in HOSTS:
+        fails = failures.get((name,), 0)
+        disks[name] = {"fails": fails, "ok": fails == 0}
+    for (name,), fails in failures.items():
+        if name and name not in disks:
+            disks[name] = {"fails": fails, "ok": fails == 0}
+    return disks
 
 
 def local_stats():
@@ -536,7 +609,7 @@ def local_stats():
     }
 
 
-def notify(message, priority):
+def notify(message, priority, click=None):
     request = urllib.request.Request(
         "https://ntfy.sh/" + NTFY_TOPIC,
         data=message.encode(),
@@ -544,7 +617,7 @@ def notify(message, priority):
             "Authorization": "Bearer " + NTFY_TOKEN,
             "Title": "BiggerWorld",
             "Priority": priority,
-            "Click": DEEP_LINK,
+            "Click": click or DEEP_LINK,
         },
         method="POST",
     )
@@ -574,7 +647,7 @@ ALERT_LOCK = threading.Lock()
 ALERTS = load_alerts()
 
 
-def step(key, failing, summary, threshold):
+def step(key, failing, summary, threshold, click=None):
     record = ALERTS.setdefault(key, {"fails": 0, "firing": False, "sent": 0})
     now = time.time()
     if failing:
@@ -582,15 +655,15 @@ def step(key, failing, summary, threshold):
         if record["fails"] < threshold:
             return
         if not record["firing"]:
-            notify(summary, "high")
+            notify(summary, "high", click)
             record["firing"] = True
             record["sent"] = now
         elif now - record["sent"] >= COOLDOWN:
-            notify(summary + " (still)", "default")
+            notify(summary + " (still)", "default", click)
             record["sent"] = now
         return
     if record["firing"]:
-        notify(summary + " recovered", "low")
+        notify(summary + " recovered", "low", click)
     record["fails"] = 0
     record["firing"] = False
 
@@ -737,6 +810,80 @@ def evaluate_flux(flux):
         save_alerts()
 
 
+BACKUP_THRESHOLD = 2
+
+
+def prune_backup_alerts(live):
+    prefixes = ("backup:", "disk:")
+    for name in [name for name in ALERTS if name.startswith(prefixes)]:
+        if name not in live:
+            del ALERTS[name]
+
+
+def evaluate_backups(backups, disks, healthy):
+    with ALERT_LOCK:
+        live = set()
+        groups = {item["id"]: item for item in (backups.get("groups") or [])}
+
+        if "groups" in healthy:
+            for entry in EXPECTED_BACKUPS:
+                key = group_id(entry["host"], entry["paths"])
+                label = entry["host"] + " " + " ".join(entry["paths"])
+                alert = "backup:missing:" + key
+                live.add(alert)
+                step(
+                    alert,
+                    key not in groups,
+                    f"no backup in repo for {label}",
+                    BACKUP_THRESHOLD,
+                    BACKUPS_LINK,
+                )
+
+            for key, group in groups.items():
+                age = group.get("age_hours")
+                if age is None:
+                    continue
+                alert = "backup:stale:" + key
+                live.add(alert)
+                label = group["host"] + " " + " ".join(group["paths"])
+                step(
+                    alert,
+                    age > BACKUP_STALE_HOURS,
+                    f"backup stale for {label} ({age:.0f}h old)",
+                    BACKUP_THRESHOLD,
+                    BACKUPS_LINK,
+                )
+
+        if "units" in healthy:
+            for unit in backups.get("units") or []:
+                alert = f'backup:unit:{unit["host"]}:{unit["unit"]}'
+                live.add(alert)
+                step(
+                    alert,
+                    not unit.get("ok", True),
+                    f'{unit["host"]} {unit["unit"]} logged'
+                    f' {unit.get("fails", 0)} failures',
+                    BACKUP_THRESHOLD,
+                    BACKUPS_LINK,
+                )
+
+        if "disks" in healthy:
+            for name, disk in (disks or {}).items():
+                alert = "disk:" + name
+                live.add(alert)
+                step(
+                    alert,
+                    not disk.get("ok", True),
+                    f'{name} smart warnings ({disk.get("fails", 0)} in 24h)',
+                    BACKUP_THRESHOLD,
+                    BACKUPS_LINK,
+                )
+
+        if {"groups", "units", "disks"} <= healthy:
+            prune_backup_alerts(live)
+        save_alerts()
+
+
 def escape(value):
     if value is None:
         return "-"
@@ -792,6 +939,28 @@ def row(*cells):
 
 def section(label):
     return f'<div class="sect">{escape(label)}</div>'
+
+
+TABS = (("flux", "/flux"), ("backups", "/backups"))
+
+
+def render_tabs(active):
+    links = []
+    for label, href in TABS:
+        style = "tab on" if label == active else "tab"
+        links.append(f'<a class="{style}" href="{href}">{escape(label)}</a>')
+    return '<div class="tabs">' + "".join(links) + "</div>"
+
+
+def human_size(value):
+    if value is None:
+        return "-"
+    size = float(value)
+    for suffix in ("B", "K", "M", "G", "T"):
+        if size < 1024 or suffix == "T":
+            return f"{size:.0f}{suffix}" if suffix == "B" else f"{size:.1f}{suffix}"
+        size /= 1024
+    return "-"
 
 
 def message_row(entry):
@@ -914,7 +1083,7 @@ def render_page(snapshot):
     updated = (snapshot.get("updated_at") or {}).get("flux")
     generated = snapshot.get("generated_at") or 0
     age = time.time() - generated if generated else None
-    parts = []
+    parts = [render_tabs("flux")]
     if age is not None and age > 90:
         parts.append(row(span(f"collector stale {ago(age)}", "bad")))
     if errors.get("flux"):
@@ -981,6 +1150,117 @@ def render_links(snapshot):
     return LINKS_TEMPLATE.replace("{{body}}", "".join(parts))
 
 
+def backup_mark(age):
+    if age is None:
+        return ("?", "warn")
+    if age > BACKUP_STALE_HOURS * 2:
+        return ("old", "bad")
+    if age > BACKUP_STALE_HOURS:
+        return ("late", "warn")
+    return ("ok", "ok")
+
+
+def render_backups(snapshot):
+    backups = snapshot.get("backups") or {}
+    disks = snapshot.get("disks") or {}
+    errors = snapshot.get("errors") or {}
+    updated = (snapshot.get("updated_at") or {}).get("backups")
+    generated = snapshot.get("generated_at") or 0
+    age = time.time() - generated if generated else None
+
+    parts = [render_tabs("backups")]
+    if age is not None and age > 90:
+        parts.append(row(span(f"collector stale {ago(age)}", "bad")))
+    for key in sorted(errors):
+        if key.startswith("restic-") or key == "smart":
+            parts.append(row(span(f"{key}: {errors[key]}", "bad")))
+    if not backups:
+        parts.append(row(span("no backup data yet", "warn")))
+        return BACKUPS_TEMPLATE.replace("{{body}}", "".join(parts))
+    if updated and time.time() - updated > 2700:
+        parts.append(
+            row(span(f"backup data stale {ago(time.time() - updated)}", "bad"))
+        )
+
+    repo = backups.get("repo") or {}
+    parts.append(section("repository"))
+    parts.append(
+        row(
+            span("amateus:/srv/restic", "key"),
+            span(
+                f'{repo.get("snapshots") or 0} snaps',
+                "st " + ("ok" if repo else "dim"),
+            ),
+            span(human_size(repo.get("size")), "rev"),
+            span(f'{repo.get("ratio") or 1:.2f}x packed', "note dim"),
+        )
+    )
+
+    groups = backups.get("groups") or []
+    seen = {group["id"] for group in groups}
+
+    parts.append(section("snapshots"))
+    if not groups:
+        parts.append(row(span("no snapshots in repository", "bad")))
+    for group in groups:
+        label, style = backup_mark(group.get("age_hours"))
+        hours = group.get("age_hours")
+        parts.append(
+            row(
+                span(group["host"], "key"),
+                span(label, "st " + style),
+                span(f"{hours:.1f}h ago" if hours is not None else "-", "rev"),
+                span(group.get("short_id") or "-", "note dim"),
+                span(" ".join(group["paths"]), "tail dim"),
+            )
+        )
+    for entry in EXPECTED_BACKUPS:
+        if group_id(entry["host"], entry["paths"]) in seen:
+            continue
+        parts.append(
+            row(
+                span(entry["host"], "key"),
+                span("gone", "st bad"),
+                span("never", "rev"),
+                span("-", "note dim"),
+                span(" ".join(entry["paths"]), "tail dim"),
+            )
+        )
+
+    parts.append(section("units"))
+    units = backups.get("units") or []
+    if not units:
+        parts.append(row(span("no restic units in journal", "warn")))
+    for unit in units:
+        ok = unit.get("ok", True)
+        parts.append(
+            row(
+                span(f'{unit["host"]} {unit["unit"]}', "key"),
+                span("ok" if ok else "fail", "st " + ("ok" if ok else "bad")),
+                span(f'{unit.get("lines", 0)} lines', "rev"),
+                span(
+                    f'{unit.get("fails", 0)} errors',
+                    "note " + ("dim" if ok else "bad"),
+                ),
+            )
+        )
+
+    parts.append(section("disks"))
+    if not disks:
+        parts.append(row(span("no smartd data", "warn")))
+    for name in sorted(disks):
+        ok = disks[name].get("ok", True)
+        parts.append(
+            row(
+                span(name, "key"),
+                span("ok" if ok else "warn", "st " + ("ok" if ok else "bad")),
+                span(f'{disks[name].get("fails", 0)} in 24h', "rev"),
+            )
+        )
+
+    return BACKUPS_TEMPLATE.replace("{{body}}", "".join(parts))
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
@@ -1011,6 +1291,19 @@ class Handler(BaseHTTPRequestHandler):
                 body = render_page(snapshot).encode()
             except Exception as error:
                 print(f"render failed: {error}", flush=True)
+                self.respond(500, b"render failed\n", "text/plain; charset=utf-8")
+                return
+            self.respond(200, body, "text/html; charset=utf-8")
+            return
+        if path == "/backups":
+            with LOCK:
+                snapshot = dict(SNAPSHOT)
+                snapshot["updated_at"] = dict(SNAPSHOT.get("updated_at") or {})
+                snapshot["errors"] = dict(SNAPSHOT.get("errors") or {})
+            try:
+                body = render_backups(snapshot).encode()
+            except Exception as error:
+                print(f"backups render failed: {error}", flush=True)
                 self.respond(500, b"render failed\n", "text/plain; charset=utf-8")
                 return
             self.respond(200, body, "text/html; charset=utf-8")
@@ -1051,6 +1344,7 @@ STATE = {
     "flux": None,
     "alerts": None,
     "backups": None,
+    "disks": None,
     "local": {},
     "errors": {},
     "updated_at": {},
@@ -1149,13 +1443,43 @@ def slow_tier():
 
 
 def lazy_tier():
-    outcomes = spread([("amateus", restic_latest), ("units", restic_units)], 2)
+    outcomes = spread(
+        [
+            ("groups", restic_groups),
+            ("repo", restic_repo),
+            ("units", restic_units),
+            ("disks", disk_state),
+        ],
+        3,
+    )
+
     backups = dict(STATE["backups"] or {})
-    for label, (value, error) in outcomes.items():
+    healthy = set()
+    for label in ("groups", "repo", "units"):
+        value, error = outcomes[label]
         if error is None:
             backups[label] = value
+            healthy.add(label)
         record_error("restic-" + label, error)
+
+    if "groups" in healthy:
+        groups = backups["groups"]
+        newest = min(groups, key=lambda item: item["age_hours"]) if groups else None
+        backups["amateus"] = {
+            "age_hours": newest["age_hours"] if newest else None,
+            "host": newest["host"] if newest else "",
+        }
     commit("backups", backups)
+
+    disks, disk_error = outcomes["disks"]
+    if disk_error is None:
+        commit("disks", disks)
+        healthy.add("disks")
+    record_error("smart", disk_error)
+
+    with LOCK:
+        current = STATE["disks"]
+    evaluate_backups(backups, current, healthy)
 
 
 def run_tier(label, action, interval):

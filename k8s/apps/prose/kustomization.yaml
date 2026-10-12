@@ -8,4 +8,5 @@ resources:
   - service.yaml
   - networkpolicy.yaml
   - postgres.yaml
+  - dump-cronjob.yaml
   - image-automation.yaml

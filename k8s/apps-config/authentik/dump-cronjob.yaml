@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: authentik-db-dump
+  namespace: authentik
+spec:
+  schedule: "45 0 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: authentik-dump
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: asta
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          containers:
+            - name: pg-dump
+              image: postgres:17
+              env:
+                - name: PGHOST
+                  value: authentik-postgresql
+                - name: PGDATABASE
+                  value: authentik
+                - name: PGUSER
+                  value: authentik
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: authentik-secrets
+                      key: postgresql-password
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  out=/dumps/authentik.sql.gz
+                  pg_dump --clean --if-exists | gzip -9 > "$out.tmp"
+                  mv "$out.tmp" "$out"
+                  echo "wrote $out ($(stat -c %s "$out") bytes)"
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+                limits:
+                  memory: 512Mi
+                  cpu: 500m
+              volumeMounts:
+                - name: dumps
+                  mountPath: /dumps
+          volumes:
+            - name: dumps
+              hostPath:
+                path: /var/lib/cluster-dumps/authentik
+                type: Directory

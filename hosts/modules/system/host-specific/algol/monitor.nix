@@ -25,6 +25,8 @@ let
 
     linksPage = pkgs.writeText "links-page.html" (themed ./files/links.html);
 
+    backupsPage = pkgs.writeText "backups-page.html" (themed ./files/backups.html);
+
     classes = {
         asta      = "critical";
         aperture  = "critical";
@@ -119,6 +121,42 @@ let
         resticUnitQuery = "sum by (host, unit) "
             + ''(count_over_time({job="systemd-journal", unit=~"restic-.*"}[7d]))'';
 
+        resticFailQuery = "sum by (host, unit) (count_over_time("
+            + ''{job="systemd-journal", unit=~"restic-.*"}''
+            + '' |~ "(?i)(fatal|error|failed|cannot|unable)"''
+            + '' !~ "(?i)(no errors were found|0 errors)" [24h]))'';
+
+        smartQuery = "sum by (host) (count_over_time("
+            + ''{job="systemd-journal", unit="smartd.service"}''
+            + " |~ \"(?i)(failed smart|failed attribute|below threshold"
+            + "|unreadable \\\\(pending\\\\)|offline uncorrectable"
+            + "|self-test log error|error count increased)\" [24h]))";
+
+        expectedBackups = [
+            {
+                host = "albireo";
+                paths = [
+                    "/bigstorage/nextcloud/html"
+                    "/bigstorage/nextcloud/dumps"
+                    "/bigstorage/important"
+                ];
+            }
+            {
+                host = "asta";
+                paths = [ "/var/lib/rancher/k3s/storage" "/var/lib/cluster-dumps" ];
+            }
+            {
+                host = "aperture";
+                paths = [ "/var/lib/rancher/k3s/storage" "/var/lib/cluster-dumps" ];
+            }
+            {
+                host = "albireo";
+                paths = [ "/var/lib/rancher/k3s/storage" "/var/lib/cluster-dumps" ];
+            }
+        ];
+
+        backupStaleHours = 36;
+
         driftTimeout = 1200;
         historyDepth = 3;
         timelineDepth = 8;
@@ -158,7 +196,9 @@ in {
             MONITOR_ALERT_PATH = "/run/monitor/alerts.json";
             MONITOR_PAGE = "${page}";
             MONITOR_LINKS_PAGE = "${linksPage}";
+            MONITOR_BACKUPS_PAGE = "${backupsPage}";
             MONITOR_DEEP_LINK = "https://grafana.${tailnet.domain}/";
+            MONITOR_BACKUPS_LINK = "https://home.${tailnet.domain}/backups";
             GRAFANA_URL = "https://grafana.${tailnet.domain}";
             LOKI_URL = "http://${tailnet.ips.loki}:3100";
         };

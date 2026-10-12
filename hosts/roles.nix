@@ -36,6 +36,10 @@
         system = [
             ./modules/system/profiles/server/always-on.nix
             ./modules/system/profiles/server/logging.nix
+            ./modules/system/profiles/server/notify.nix
+            ./modules/system/profiles/server/smart.nix
+            ./modules/system/profiles/server/ups.nix
+            ./modules/system/profiles/server/cluster-backup.nix
         ];
     };
 

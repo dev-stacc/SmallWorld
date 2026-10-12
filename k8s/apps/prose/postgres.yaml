@@ -101,6 +101,9 @@ spec:
         - podSelector:
             matchLabels:
               app: prose
+        - podSelector:
+            matchLabels:
+              app: prose-dump
       ports:
         - protocol: TCP
           port: 5432

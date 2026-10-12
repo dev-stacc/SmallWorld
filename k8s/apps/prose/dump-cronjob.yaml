@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: prose-db-dump
+  namespace: prose
+spec:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: prose-dump
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: asta
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          containers:
+            - name: pg-dump
+              image: postgres:16
+              env:
+                - name: PGHOST
+                  value: postgres
+                - name: PGDATABASE
+                  value: prose
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: prose-secrets
+                      key: PROSE_DB_USERNAME
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: prose-secrets
+                      key: PROSE_DB_PASSWORD
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  out=/dumps/prose.sql.gz
+                  pg_dump --clean --if-exists | gzip -9 > "$out.tmp"
+                  mv "$out.tmp" "$out"
+                  echo "wrote $out ($(stat -c %s "$out") bytes)"
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+                limits:
+                  memory: 512Mi
+                  cpu: 500m
+              volumeMounts:
+                - name: dumps
+                  mountPath: /dumps
+          volumes:
+            - name: dumps
+              hostPath:
+                path: /var/lib/cluster-dumps/prose
+                type: Directory
