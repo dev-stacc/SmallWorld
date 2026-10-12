@@ -21,6 +21,11 @@ spec:
       initContainers:
         - name: wait-for-postgres
           image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: PGUSER
               valueFrom:
@@ -45,6 +50,11 @@ spec:
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:v3.3.1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 2283
           env:
