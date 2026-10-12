@@ -21,6 +21,11 @@ spec:
       containers:
         - name: machine-learning
           image: ghcr.io/immich-app/immich-machine-learning:v3.3.1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 3003
           env:

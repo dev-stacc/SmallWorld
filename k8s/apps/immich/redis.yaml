@@ -16,9 +16,18 @@ spec:
       enableServiceLinks: false
       nodeSelector:
         kubernetes.io/hostname: albireo
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: valkey
           image: docker.io/valkey/valkey:9@sha256:418652cfb58ef879d4978c33553735d7147016032d5aefaa14c828e611eb9dfd
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 6379
           readinessProbe:
