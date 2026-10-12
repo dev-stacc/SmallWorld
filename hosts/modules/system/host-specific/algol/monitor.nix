@@ -64,6 +64,9 @@ let
 
     clusterApps = auth: roles: lib.mapAttrsToList (clusterApp auth) roles;
 
+    titledApp = auth: host: name: role:
+        (clusterApp auth host role) // { inherit name; };
+
     hostPage = name: role: host: path: {
         inherit name role;
         auth = false;
@@ -77,9 +80,10 @@ let
         authentik = "login";
         vault = "secrets";
         nextcloud = "storage";
-        photos = "photos";
         search = "search";
-    };
+    } ++ [
+        (titledApp false "immich" "Immich" "photos")
+    ];
 
     hostPages = [
         (hostPage "flux" "fleet" "home" "/flux")

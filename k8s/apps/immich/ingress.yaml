@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: photos.${TAILNET_DOMAIN}
+    - host: immich.${TAILNET_DOMAIN}
       http:
         paths:
           - path: /
