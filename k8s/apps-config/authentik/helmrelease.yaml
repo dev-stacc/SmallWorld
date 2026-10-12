@@ -55,6 +55,7 @@ spec:
         - authentik-blueprint-kiwix
         - authentik-blueprint-open-webui
         - authentik-blueprint-immich-oidc
+        - authentik-blueprint-arr
     postgresql:
       enabled: true
       auth:

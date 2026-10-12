@@ -21,5 +21,6 @@ resources:
   - blueprint-nextcloud-oidc.yaml
   - externalsecret-blueprint-nextcloud-env.yaml
   - blueprint-immich-oidc.yaml
+  - blueprint-arr.yaml
   - externalsecret-blueprint-immich-env.yaml
   - dump-cronjob.yaml
