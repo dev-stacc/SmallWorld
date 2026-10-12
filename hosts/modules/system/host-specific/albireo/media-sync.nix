@@ -24,6 +24,7 @@
             ExecStart = ''
                 ${pkgs.rsync}/bin/rsync \
                     --archive \
+                    --exclude=downloads/ \
                     --partial \
                     --human-readable \
                     --info=stats2 \
