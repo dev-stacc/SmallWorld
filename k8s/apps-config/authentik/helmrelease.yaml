@@ -36,6 +36,8 @@ spec:
             name: authentik-blueprint-jellyfin-env
         - secretRef:
             name: authentik-blueprint-nextcloud-env
+        - secretRef:
+            name: authentik-blueprint-immich-env
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
@@ -48,6 +50,7 @@ spec:
         - authentik-blueprint-marketing-tool
         - authentik-blueprint-kiwix
         - authentik-blueprint-open-webui
+        - authentik-blueprint-immich-oidc
     postgresql:
       enabled: true
       auth:
