@@ -14,14 +14,13 @@
             font-family: "{{fontName}}", monospace;
             font-size: {{fontSize}}px;
             display: flex;
-            align-items: center;
-            justify-content: center;
         }
         * {
             border-radius: 0;
         }
         .page {
             padding: 2em 1em;
+            margin: auto;
             max-width: 100%;
             box-sizing: border-box;
             overflow-x: auto;
@@ -32,10 +31,11 @@
         }
         .tabs {
             margin: 0 0 1.4em !important;
+            text-align: center;
         }
         .tab {
             display: inline-block;
-            margin-right: 1.5em;
+            margin: 0 0.75em;
             text-decoration: none;
             color: {{base05}};
             opacity: 0.45;
@@ -89,6 +89,29 @@
         .warn { color: {{base04}}; }
         .bad { color: {{base02}}; }
         .dim { color: {{base05}}; opacity: 0.45; }
+        @media (max-width: 48em) {
+            .page {
+                padding: 1.2em 0.8em;
+            }
+            .page > div {
+                margin: 0.7em 0;
+                white-space: normal;
+            }
+            .sect {
+                margin: 1.3em 0 0.3em !important;
+            }
+            .key, .host {
+                display: block;
+                width: auto;
+            }
+            .st, .rev, .note, .paths {
+                width: auto;
+                margin-right: 1.4ch;
+            }
+            .snapid {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>

@@ -59,7 +59,7 @@ in {
             DISPLAY_FETCH_INTERVAL = "15";
             DISPLAY_STALE_AFTER = "90";
             DISPLAY_DEAD_AFTER = "300";
-            DISPLAY_DEEP_LINK = "https://grafana.${tailnet.domain}/";
+            DISPLAY_DEEP_LINK = "https://home.${tailnet.domain}/";
         };
 
         serviceConfig = {

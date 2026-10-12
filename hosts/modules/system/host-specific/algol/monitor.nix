@@ -82,6 +82,7 @@ let
 
     hostPages = [
         (hostPage "flux" "fleet" "home" "/flux")
+        (hostPage "backups" "restic" "home" "/backups")
         (hostPage "pihole" "dns" "pihole" "/admin")
     ];
 
@@ -197,7 +198,7 @@ in {
             MONITOR_PAGE = "${page}";
             MONITOR_LINKS_PAGE = "${linksPage}";
             MONITOR_BACKUPS_PAGE = "${backupsPage}";
-            MONITOR_DEEP_LINK = "https://grafana.${tailnet.domain}/";
+            MONITOR_DEEP_LINK = "https://home.${tailnet.domain}/";
             MONITOR_BACKUPS_LINK = "https://home.${tailnet.domain}/backups";
             GRAFANA_URL = "https://grafana.${tailnet.domain}";
             LOKI_URL = "http://${tailnet.ips.loki}:3100";
