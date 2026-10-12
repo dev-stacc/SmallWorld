@@ -23,6 +23,8 @@ GRAFANA_TOKEN = os.environ["GRAFANA_TOKEN"]
 LOKI_URL = os.environ["LOKI_URL"].rstrip("/")
 NTFY_TOPIC = os.environ["NTFY_TOPIC"]
 NTFY_TOKEN = os.environ["NTFY_TOKEN"]
+NTFY_URL = os.environ["NTFY_URL"]
+NTFY_FALLBACK_URL = os.environ["NTFY_FALLBACK_URL"]
 DEEP_LINK = os.environ["MONITOR_DEEP_LINK"]
 BACKUPS_LINK = os.environ["MONITOR_BACKUPS_LINK"]
 CREDS = os.environ["CREDENTIALS_DIRECTORY"]
@@ -610,22 +612,29 @@ def local_stats():
 
 
 def notify(message, priority, click=None):
-    request = urllib.request.Request(
-        "https://ntfy.sh/" + NTFY_TOPIC,
-        data=message.encode(),
-        headers={
-            "Authorization": "Bearer " + NTFY_TOKEN,
+    for base, token in ((NTFY_URL, None), (NTFY_FALLBACK_URL, NTFY_TOKEN)):
+        headers = {
             "Title": "BiggerWorld",
             "Priority": priority,
             "Click": click or DEEP_LINK,
-        },
-        method="POST",
-    )
-    try:
-        urllib.request.urlopen(request, timeout=15)
-        print(f"notified: {message}", flush=True)
-    except Exception as error:
-        print(f"ntfy failed: {error}", flush=True)
+        }
+
+        if token:
+            headers["Authorization"] = "Bearer " + token
+
+        request = urllib.request.Request(
+            base + "/" + NTFY_TOPIC,
+            data=message.encode(),
+            headers=headers,
+            method="POST",
+        )
+
+        try:
+            urllib.request.urlopen(request, timeout=15)
+            print(f"notified via {base}: {message}", flush=True)
+            return
+        except Exception as error:
+            print(f"ntfy failed at {base}: {error}", flush=True)
 
 
 def load_alerts():

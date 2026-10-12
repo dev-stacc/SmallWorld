@@ -21,11 +21,11 @@ let
         $detail"
         fi
 
-        if [ -n "${notify}" ]; then
-            NOTIFY_PRIORITY=urgent ${notify} "$summary"
-        else
-            printf '%s\n' "$summary" | ${pkgs.util-linux}/bin/wall 2>/dev/null || true
+        if [ -n "${notify}" ] && NOTIFY_PRIORITY=urgent ${notify} "$summary"; then
+            exit 0
         fi
+
+        printf '%s\n' "$summary" | ${pkgs.util-linux}/bin/wall 2>/dev/null || true
     '';
 in {
     services.smartd = {

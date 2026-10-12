@@ -199,6 +199,8 @@ in {
             MONITOR_LINKS_PAGE = "${linksPage}";
             MONITOR_BACKUPS_PAGE = "${backupsPage}";
             MONITOR_DEEP_LINK = "https://home.${tailnet.domain}/";
+            NTFY_URL = "http://127.0.0.1:2586";
+            NTFY_FALLBACK_URL = "https://ntfy.sh";
             MONITOR_BACKUPS_LINK = "https://home.${tailnet.domain}/backups";
             GRAFANA_URL = "https://grafana.${tailnet.domain}";
             LOKI_URL = "http://${tailnet.ips.loki}:3100";

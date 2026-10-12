@@ -14,6 +14,8 @@ STALE_AFTER = int(os.environ["DISPLAY_STALE_AFTER"])
 DEAD_AFTER = int(os.environ["DISPLAY_DEAD_AFTER"])
 NTFY_TOPIC = os.environ["NTFY_TOPIC"]
 NTFY_TOKEN = os.environ["NTFY_TOKEN"]
+NTFY_URL = os.environ["NTFY_URL"]
+NTFY_FALLBACK_URL = os.environ["NTFY_FALLBACK_URL"]
 DEEP_LINK = os.environ["DISPLAY_DEEP_LINK"]
 
 COOLDOWN = 1800
@@ -38,22 +40,29 @@ def fetch_once():
 
 
 def notify(message, priority):
-    request = urllib.request.Request(
-        "https://ntfy.sh/" + NTFY_TOPIC,
-        data=message.encode(),
-        headers={
-            "Authorization": "Bearer " + NTFY_TOKEN,
+    for base, token in ((NTFY_URL, None), (NTFY_FALLBACK_URL, NTFY_TOKEN)):
+        headers = {
             "Title": "BiggerWorld",
             "Priority": priority,
             "Click": DEEP_LINK,
-        },
-        method="POST",
-    )
-    try:
-        urllib.request.urlopen(request, timeout=10)
-        print(f"notified: {message}", file=sys.stderr, flush=True)
-    except Exception as error:
-        print(f"ntfy failed: {error}", file=sys.stderr, flush=True)
+        }
+
+        if token:
+            headers["Authorization"] = "Bearer " + token
+
+        request = urllib.request.Request(
+            base + "/" + NTFY_TOPIC,
+            data=message.encode(),
+            headers=headers,
+            method="POST",
+        )
+
+        try:
+            urllib.request.urlopen(request, timeout=10)
+            print(f"notified via {base}: {message}", file=sys.stderr, flush=True)
+            return
+        except Exception as error:
+            print(f"ntfy failed at {base}: {error}", file=sys.stderr, flush=True)
 
 
 def watchdog(age):
