@@ -77,6 +77,7 @@ let
         authentik = "login";
         vault = "secrets";
         nextcloud = "storage";
+        photos = "photos";
         search = "search";
     };
 
