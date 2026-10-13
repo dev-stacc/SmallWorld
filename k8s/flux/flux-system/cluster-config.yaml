@@ -7,3 +7,4 @@ data:
   TAILNET_DOMAIN: tail789d60.ts.net
   MEDIA_HOST_PATH: /home/anastasia/media
   REMOTE_PIHOLE_URL: http://100.113.161.17
+  ALGOL_TAILNET_IP: 100.79.222.127
