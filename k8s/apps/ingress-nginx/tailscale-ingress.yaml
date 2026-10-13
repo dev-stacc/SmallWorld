@@ -263,3 +263,60 @@ spec:
   tls:
     - hosts:
         - radarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-lidarr
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: lidarr
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - lidarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-bazarr
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: bazarr
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - bazarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-jellyseerr
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: requests
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - requests

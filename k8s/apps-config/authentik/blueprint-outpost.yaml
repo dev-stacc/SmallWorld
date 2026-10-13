@@ -17,8 +17,11 @@ data:
           name: authentik Embedded Outpost
           type: proxy
           providers:
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Bazarr Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Jellyfin Provider]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Jellyseerr Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Kiwix Provider]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Lidarr Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Marketing Tool Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Navidrome Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Open WebUI Provider]]
