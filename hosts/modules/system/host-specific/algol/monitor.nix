@@ -76,31 +76,47 @@ let
         alert = false;
     };
 
-    unguarded = clusterApps false {
+    grouped = group: apps: map (app: app // { inherit group; }) apps;
+
+    monitoring = grouped "monitoring" ([
+        (hostPage "flux" "fleet" "home" "/flux")
+        (hostPage "backups" "-" "home" "/backups")
+    ] ++ clusterApps true {
+        grafana = "metrics";
+        uptime = "status";
+    });
+
+    identity = grouped "identity" (clusterApps false {
         authentik = "login";
         vault = "secrets";
         nextcloud = "storage";
-        search = "search";
     } ++ [
         (titledApp false "immich" "Immich" "photos")
-    ];
+    ]);
 
-    hostPages = [
-        (hostPage "flux" "fleet" "home" "/flux")
-        (hostPage "backups" "-" "home" "/backups")
+    comfort = grouped "comfort" (clusterApps false {
+        search = "search";
+    } ++ [
         (hostPage "pihole" "dns" "pihole" "/admin")
-    ];
-
-    guarded = clusterApps true {
-        grafana = "metrics";
+    ] ++ clusterApps true {
         jellyfin = "streaming";
         navidrome = "music";
-        uptime = "status";
-        sewing = "-";
-        marketing = "-";
         wikipedia = "-";
         chat = "local ai";
-    };
+        sewing = "-";
+        marketing = "-";
+    });
+
+    arr = grouped "arr" (clusterApps true {
+        prowlarr = "indexers";
+        sonarr = "tv";
+        radarr = "movies";
+        lidarr = "albums";
+        bazarr = "subtitles";
+    } ++ [
+        (titledApp true "torrents" "qBittorrent" "downloads")
+        (titledApp true "requests" "Jellyseerr" "requests")
+    ]);
 
     hidden = [{
         name = "loki";
@@ -114,7 +130,7 @@ let
     targets = {
         inherit hosts;
 
-        apps = unguarded ++ hostPages ++ guarded ++ hidden;
+        apps = monitoring ++ identity ++ comfort ++ arr ++ hidden;
 
         suppressAlerts = [
             "Watchdog"

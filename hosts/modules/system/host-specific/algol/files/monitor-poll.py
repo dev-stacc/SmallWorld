@@ -1138,6 +1138,14 @@ def render_page(snapshot):
     return PAGE_TEMPLATE.replace("{{body}}", "".join(parts))
 
 
+LINK_GROUPS = [
+    ("monitoring", "monitoring"),
+    ("identity", "auth and storage"),
+    ("comfort", "quality of life"),
+    ("arr", "arr stack"),
+]
+
+
 def link_card(app):
     dot = "ok" if app.get("up") else "bad"
     return (
@@ -1163,9 +1171,20 @@ def render_links(snapshot):
     apps = [a for a in (snapshot.get("apps") or []) if a and a.get("nav")]
     up = [a for a in apps if a.get("up")]
     down = [a for a in apps if not a.get("up")]
+    known = [key for key, _ in LINK_GROUPS]
+    blocks = []
+    for key, label in LINK_GROUPS:
+        members = [a for a in up if a.get("group") == key]
+        if members:
+            blocks.append(
+                f'<div class="group">{escape(label)}</div>' + link_group(members)
+            )
+    spare = [a for a in up if a.get("group") not in known]
+    if spare:
+        blocks.append('<div class="group">other</div>' + link_group(spare))
     parts = [
         f'<div class="sect">up {span(f"({len(up)})", "count")}</div>',
-        link_group(up),
+        '<hr class="rule">'.join(blocks) if blocks else link_group([]),
         f'<div class="sect">down {span(f"({len(down)})", "count")}</div>',
         link_group(down),
     ]
@@ -1450,6 +1469,7 @@ def slow_tier():
         result["auth"] = target.get("auth", False)
         result["nav"] = target.get("nav", False)
         result["role"] = target.get("role", "")
+        result["group"] = target.get("group", "")
         checked[index] = result
     commit("apps", checked)
 
