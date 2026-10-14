@@ -252,21 +252,7 @@ body.index_endpoint .index {
 }
 
 body.index_endpoint .index .title {
-    margin-bottom: 1.6em;
-}
-
-body.index_endpoint .index .title h1 {
-    font-size: 0;
-    line-height: 1;
-}
-
-body.index_endpoint .index .title h1::after {
-    content: "searxng";
-    display: block;
-    font-family: var(--sxng-chrome);
-    font-size: 2.6rem;
-    letter-spacing: 0.22em;
-    color: ${BASE02};
+    display: none;
 }
 
 body.index_endpoint .index .search_box {
@@ -606,16 +592,13 @@ article.result-videos .thumbnail_length {
     font-family: var(--sxng-chrome);
 }
 
-#search_logo svg,
-#search_logo span {
+#search_logo {
     display: none;
 }
 
-#search_logo::after {
-    content: "searxng";
-    font-family: var(--sxng-chrome);
-    color: ${BASE02};
-    letter-spacing: 0.12em;
+#search_header {
+    grid-template-columns: 1fr;
+    grid-template-areas: "search" "categories";
 }
 
 article.result-map .map {
@@ -732,10 +715,5 @@ kbd {
 
     body.index_endpoint .index {
         padding-top: 3vh;
-    }
-
-    body.index_endpoint .index .title h1::after {
-        font-size: 1.8rem;
-        letter-spacing: 0.16em;
     }
 }

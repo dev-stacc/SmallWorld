@@ -70,6 +70,11 @@
 
         nixosConfigurations = byHostName mkSystem hosts;
 
+        packages.x86_64-linux.searxng-image = import ./k8s/apps/searxng/image.nix {
+            pkgs = nixpkgs.legacyPackages.x86_64-linux;
+            inherit lib theme;
+        };
+
         colmena = {
             meta = {
                 nixpkgs = nixpkgs.legacyPackages.x86_64-linux;
