@@ -31,6 +31,12 @@ in {
         set searchurls.ddg https://duckduckgo.com/?q=%s
         set searchengine search
 
+        setnull searchurls.google
+        setnull searchurls.scholar
+        setnull searchurls.bing
+        setnull searchurls.youtube
+        setnull searchurls.duckduckgo
+
         set editorcmd kitty -e nvim
         set yankto both
         set putfrom clipboard
