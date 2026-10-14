@@ -1,6 +1,6 @@
 use_default_settings: true
 general:
-  instance_name: searxng
+  instance_name: cluster
   donation_url: false
   contact_url: false
 server:
@@ -14,3 +14,8 @@ search:
   autocomplete: duckduckgo
 ui:
   query_in_title: true
+  static_path: /srv/static
+  theme_args:
+    simple_style: dark
+  hotkeys: vim
+  center_alignment: true

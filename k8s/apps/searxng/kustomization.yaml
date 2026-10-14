@@ -11,3 +11,4 @@ configMapGenerator:
     namespace: searxng
     files:
       - settings.yml
+      - searxng.css

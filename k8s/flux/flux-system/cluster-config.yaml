@@ -8,3 +8,11 @@ data:
   MEDIA_HOST_PATH: /home/anastasia/media
   REMOTE_PIHOLE_URL: http://100.113.161.17
   ALGOL_TAILNET_IP: 100.79.222.127
+  BASE00: "#0e0202"
+  BASE01: "#000000"
+  BASE02: "#ff4050"
+  BASE03: "#5ef6ff"
+  BASE04: "#ffe44d"
+  BASE05: "#ffffff"
+  BASE06: "#6abf24"
+  FONT_NAME: Major Mono Display

@@ -13,6 +13,32 @@ spec:
       labels:
         app: searxng
     spec:
+      initContainers:
+        - name: theme
+          image: docker.io/searxng/searxng:2026.10.9-f4822b3fc
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -eu
+              cp -a /usr/local/searxng/searx/static/. /srv/static/
+              for f in sxng-ltr sxng-rtl; do
+                cat /etc/searxng/searxng.css >> /srv/static/themes/simple/$${f}.min.css
+                gzip -9c /srv/static/themes/simple/$${f}.min.css > /srv/static/themes/simple/$${f}.min.css.gz
+                rm -f /srv/static/themes/simple/$${f}.min.css.br
+              done
+          volumeMounts:
+            - name: static
+              mountPath: /srv/static
+            - name: settings
+              mountPath: /etc/searxng
+              readOnly: true
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
       containers:
         - name: searxng
           image: docker.io/searxng/searxng:2026.10.9-f4822b3fc
@@ -31,6 +57,9 @@ spec:
           volumeMounts:
             - name: settings
               mountPath: /etc/searxng
+              readOnly: true
+            - name: static
+              mountPath: /srv/static
               readOnly: true
           readinessProbe:
             httpGet:
@@ -57,3 +86,5 @@ spec:
         - name: settings
           configMap:
             name: searxng-settings
+        - name: static
+          emptyDir: {}
