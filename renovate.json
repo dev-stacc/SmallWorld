@@ -6,6 +6,10 @@
   "schedule": [
     "before 6am on monday"
   ],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "k8s/flux/flux-system/gotk-components.yaml"
+  ],
   "kubernetes": {
     "managerFilePatterns": [
       "/^k8s/.+\\.ya?ml$/"

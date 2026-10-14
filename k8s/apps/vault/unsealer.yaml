@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: unsealer
-          image: hashicorp/vault:latest
+          image: hashicorp/vault:2.1.2
           env:
             - name: VAULT_ADDR
               value: http://vault-0.vault-internal.vault.svc.cluster.local:8200
