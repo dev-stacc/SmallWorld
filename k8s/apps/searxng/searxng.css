@@ -893,6 +893,11 @@ kbd {
         justify-content: space-between;
     }
 
+    #pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
     .search_filters #time_range,
     .search_filters #safesearch {
         text-align: left;
