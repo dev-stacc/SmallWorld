@@ -1,0 +1,5 @@
+the whole page scrolls horizontally when urls overflows, it shouldn't the urls should truncate when overflowing
+the filters are out of bounds, they should have the same vertical alignment as the categories above
+response time and downloads aren't taking full width and aren't aligned properly
+when on full page, it looks like it's taking less space
+I'm guessing we should set min and max width values that are compatible with both mobile, full page desktop and other resolution desktops

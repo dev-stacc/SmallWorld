@@ -41,7 +41,7 @@ in {
                 static_path = "${static}";
                 theme_args.simple_style = "dark";
                 hotkeys = "vim";
-                center_alignment = true;
+                center_alignment = false;
             };
         };
     };

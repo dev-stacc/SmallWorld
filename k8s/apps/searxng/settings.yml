@@ -18,4 +18,4 @@ ui:
   theme_args:
     simple_style: dark
   hotkeys: vim
-  center_alignment: true
+  center_alignment: false

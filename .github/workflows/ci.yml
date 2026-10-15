@@ -57,3 +57,40 @@ jobs:
         run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
       - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#shellcheck' --command .github/scripts/check-shell.sh
       - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#actionlint' --command actionlint
+
+  theme:
+    name: theme
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: nixpkgs
+        run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+      - id: searxng
+        run: echo "path=$(nix build --no-link --print-out-paths '${{ steps.nixpkgs.outputs.ref }}#searxng')" >> "$GITHUB_OUTPUT"
+      - run: .github/scripts/check-searxng-theme.sh '${{ steps.searxng.outputs.path }}'
+
+  image:
+    name: image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [nix, theme]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: nixpkgs
+        run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+      - id: tag
+        run: echo "value=$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+      - run: nix build .#searxng-image
+      - env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY: ghcr.io/${{ github.repository_owner }}/searxng
+          TAG: ${{ steps.tag.outputs.value }}
+        run: nix shell '${{ steps.nixpkgs.outputs.ref }}#skopeo' --command skopeo copy --dest-creds "$REGISTRY_USER:$REGISTRY_TOKEN" "docker-archive:$(readlink -f result)" "docker://$REGISTRY:$TAG"
