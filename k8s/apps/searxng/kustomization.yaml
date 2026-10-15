@@ -6,9 +6,9 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+  - image-automation.yaml
 configMapGenerator:
   - name: searxng-settings
     namespace: searxng
     files:
       - settings.yml
-      - searxng.css

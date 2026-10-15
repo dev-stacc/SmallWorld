@@ -133,6 +133,7 @@ body {
     background: ${BASE00};
     color: ${BASE04};
     font-family: var(--sxng-prose);
+    overscroll-behavior: none contain;
 }
 
 h1, h2, h3, h4,

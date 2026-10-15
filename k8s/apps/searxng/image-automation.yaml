@@ -1,0 +1,47 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: searxng
+  namespace: flux-system
+spec:
+  image: ghcr.io/dev-stacc/searxng
+  interval: 1m
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: searxng
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: searxng
+  policy:
+    alphabetical:
+      order: asc
+  filterTags:
+    pattern: "^\\d{14}-[a-f0-9]+"
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: searxng
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcd
+      messageTemplate: "chore: update searxng image to {{range .Changed.Changes}}{{.NewValue}}{{end}}"
+    push:
+      branch: main
+  update:
+    path: ./k8s/apps/searxng
+    strategy: Setters
