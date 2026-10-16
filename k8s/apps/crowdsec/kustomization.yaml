@@ -8,3 +8,4 @@ resources:
   - externalsecret.yaml
   - bouncer-secret.yaml
   - service.yaml
+  - prune-cronjob.yaml
