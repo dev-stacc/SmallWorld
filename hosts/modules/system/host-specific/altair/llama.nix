@@ -15,10 +15,10 @@
         package = pkgs.llama-cpp-vulkan;
         openFirewall = false;
         settings = {
-            model = "/mnt/models/Qwen3-8B-Q5_K_M.gguf";
+            model = "/mnt/models/Qwen3-14B-Q5_K_M.gguf";
             host = "0.0.0.0";
             port = 8080;
-            alias = "qwen3-8b";
+            alias = "qwen3-14b";
             ctx-size = 8192;
             parallel = 1;
             batch-size = 512;
