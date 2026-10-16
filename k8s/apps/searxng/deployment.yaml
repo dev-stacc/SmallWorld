@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: searxng
-          image: ghcr.io/dev-stacc/searxng:20261016160258-a741e92e69cbf995fbe6649d58be4a226cf1c236 # {"$imagepolicy": "flux-system:searxng"}
+          image: ghcr.io/dev-stacc/searxng:20261016160654-9d2a33dd79d38c0152a8171f8dea6ae4bc8423d1 # {"$imagepolicy": "flux-system:searxng"}
           ports:
             - containerPort: 8080
           env:
