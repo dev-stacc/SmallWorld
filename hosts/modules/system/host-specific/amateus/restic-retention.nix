@@ -11,11 +11,12 @@ let
     verify = pkgs.writeShellScript "restic-verify" ''
         set -euo pipefail
         restic=${pkgs.restic}/bin/restic
+        awk=${pkgs.gawk}/bin/awk
 
         $restic check --read-data-subset=5%
 
         target=$($restic ls --long latest 2>/dev/null \
-            | awk '$1 ~ /^-/ && $4 + 0 > 0 && !found { print $NF; found = 1 }')
+            | $awk '$1 ~ /^-/ && $4 + 0 > 0 && !found { print $NF; found = 1 }')
 
         if [ -z "$target" ]; then
             echo "no regular file found in the latest snapshot"
