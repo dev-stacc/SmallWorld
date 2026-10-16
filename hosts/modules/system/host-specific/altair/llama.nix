@@ -15,14 +15,18 @@
         package = pkgs.llama-cpp-vulkan;
         openFirewall = false;
         settings = {
-            model = "/mnt/models/Qwen3-8B-Q5_K_M.gguf";
+            model = "/mnt/models/gpt-oss-20b-Q4_K_M.gguf";
             host = "0.0.0.0";
             port = 8080;
-            alias = "qwen3-8b";
-            ctx-size = 8192;
+            alias = "gpt-oss-20b";
+            ctx-size = 32768;
             parallel = 1;
             batch-size = 512;
             ubatch-size = 128;
+            flash-attn = "on";
+            cache-type-k = "q8_0";
+            cache-type-v = "q8_0";
+            tensor-split = "0.56,0.44";
             cont-batching = true;
             metrics = true;
         };
