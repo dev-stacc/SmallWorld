@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+SOPS_MARKER='ENC\[AES256_GCM'
+AGE_KEY_PREFIX='AGE-SECRET-KEY'
+PEM_KEY_PREFIX='-----BEGIN (OPENSSH|RSA|EC|DSA|PGP) PRIVATE'
+KEY_MARKER="${AGE_KEY_PREFIX}-1|${PEM_KEY_PREFIX} KEY"
+
+blocked=0
+
+report() {
+    if [ "$blocked" -eq 0 ]; then
+        printf '\nsecret guard blocked this commit:\n\n' >&2
+    fi
+    printf '  %s\n      %s\n' "$1" "$2" >&2
+    blocked=1
+}
+
+staged() {
+    git show ":$1" 2>/dev/null
+}
+
+staged_is_encrypted() {
+    staged "$1" | grep -qa "$SOPS_MARKER"
+}
+
+head_is_encrypted() {
+    git cat-file -e "HEAD:$1" 2>/dev/null || return 1
+    git show "HEAD:$1" 2>/dev/null | grep -qa "$SOPS_MARKER"
+}
+
+check_decryption_regression() {
+    head_is_encrypted "$1" || return 0
+    staged_is_encrypted "$1" && return 0
+    report "$1" "was sops-encrypted in HEAD, plaintext in this commit"
+}
+
+check_secrets_dir() {
+    case $1 in
+        secrets/*) ;;
+        *) return 0 ;;
+    esac
+    staged_is_encrypted "$1" && return 0
+    report "$1" "lives under secrets/ but is not sops-encrypted"
+}
+
+check_private_key_material() {
+    staged "$1" | grep -qaE "$KEY_MARKER" || return 0
+    report "$1" "contains private key material"
+}
+
+check_plaintext_k8s_secret() {
+    case $1 in
+        k8s/*) ;;
+        *) return 0 ;;
+    esac
+    staged_is_encrypted "$1" && return 0
+    staged "$1" | grep -qaE '^kind:[[:space:]]*Secret[[:space:]]*$' || return 0
+    report "$1" "is an unencrypted kind: Secret manifest"
+}
+
+while IFS= read -r -d '' file; do
+    check_decryption_regression "$file"
+    check_secrets_dir "$file"
+    check_private_key_material "$file"
+    check_plaintext_k8s_secret "$file"
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks git --staged --redact --no-banner --exit-code 7 >/dev/null 2>&1
+    case $? in
+        0) ;;
+        7) report "(gitleaks)" "flagged staged content; see: gitleaks git --staged --redact" ;;
+        *) report "(gitleaks)" "failed to run; check the gitleaks installation or config" ;;
+    esac
+fi
+
+if [ "$blocked" -ne 0 ]; then
+    printf '\noverride with: git commit --no-verify\n' >&2
+    exit 1
+fi

@@ -34,14 +34,14 @@ spec:
             - -c
             - |
               while true; do
-                VAULT_CLIENT_TIMEOUT=5 vault status > /dev/null 2>&1
+                VAULT_CLIENT_TIMEOUT=5 timeout 15 vault status > /dev/null 2>&1
                 STATUS=$?
                 if [ $STATUS -eq 2 ]; then
                   echo "Vault sealed, unsealing..."
-                  vault operator unseal "$UNSEAL_KEY_1"
-                  vault operator unseal "$UNSEAL_KEY_2"
-                elif [ $STATUS -eq 1 ]; then
-                  echo "Vault unreachable, will retry..."
+                  VAULT_CLIENT_TIMEOUT=5 timeout 15 vault operator unseal "$UNSEAL_KEY_1"
+                  VAULT_CLIENT_TIMEOUT=5 timeout 15 vault operator unseal "$UNSEAL_KEY_2"
+                elif [ $STATUS -ne 0 ]; then
+                  echo "Vault unreachable (rc=$STATUS), will retry..."
                 fi
                 sleep 10
               done
@@ -50,5 +50,5 @@ spec:
               memory: "16Mi"
               cpu: "5m"
             limits:
-              memory: "32Mi"
+              memory: "64Mi"
               cpu: "50m"
