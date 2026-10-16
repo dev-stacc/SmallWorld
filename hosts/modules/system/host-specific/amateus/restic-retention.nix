@@ -49,6 +49,7 @@ in {
                 CacheDirectory = "restic";
                 Environment = env;
                 ExecStart = "${pkgs.restic}/bin/restic forget --prune "
+                    + "--retry-lock 30m "
                     + "--keep-daily 14 --keep-weekly 8 --keep-monthly 12";
             };
         };
