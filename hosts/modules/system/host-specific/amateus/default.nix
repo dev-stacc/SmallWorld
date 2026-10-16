@@ -5,6 +5,11 @@
         ./monitor-display.nix
     ];
 
+    biggerworld.ups = {
+        role = "slave";
+        master = "algol";
+    };
+
 
     boot.loader.grub = {
         enable = true;

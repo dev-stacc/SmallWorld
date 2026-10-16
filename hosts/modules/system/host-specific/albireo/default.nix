@@ -7,6 +7,11 @@
         ./crowdsec-bouncer.nix
     ];
 
+    biggerworld.ups = {
+        role = "slave";
+        master = "algol";
+    };
+
     boot.loader.grub = {
         enable = true;
         device = "/dev/disk/by-id/ata-SanDisk_SDSSDRC032G_143235415768";
