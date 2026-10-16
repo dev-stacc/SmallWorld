@@ -6,6 +6,12 @@
             "https://huggingface.co/Qwen/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q5_K_M.gguf";
         "Qwen3-8B-Q5_K_M.gguf" =
             "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q5_K_M.gguf";
+        "Qwen3.6-35B-A3B-UD-Q2_K_XL.gguf" =
+            "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/"
+            + "Qwen3.6-35B-A3B-UD-Q2_K_XL.gguf";
+        "gpt-oss-20b-Q4_K_M.gguf" =
+            "https://huggingface.co/unsloth/gpt-oss-20b-GGUF/resolve/main/"
+            + "gpt-oss-20b-Q4_K_M.gguf";
     };
 
     fetch = name: url: ''
