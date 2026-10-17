@@ -41,7 +41,7 @@ spec:
       author:
         email: fluxcdbot@users.noreply.github.com
         name: fluxcd
-      messageTemplate: "chore: update marketing-tool image to {{range .Changed.Changes}}{{.NewValue}}{{end}}"
+      messageTemplate: "chore: update marketing-tool image to {{range .Changed.Changes}}{{.NewValue}}{{end}} [skip ci]"
     push:
       branch: main
   update:
