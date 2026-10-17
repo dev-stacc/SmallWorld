@@ -27,6 +27,7 @@ NTFY_URL = os.environ["NTFY_URL"]
 NTFY_FALLBACK_URL = os.environ["NTFY_FALLBACK_URL"]
 DEEP_LINK = os.environ["MONITOR_DEEP_LINK"]
 BACKUPS_LINK = os.environ["MONITOR_BACKUPS_LINK"]
+K8S_LINK = os.environ["MONITOR_K8S_LINK"]
 CREDS = os.environ["CREDENTIALS_DIRECTORY"]
 
 with open(os.environ["MONITOR_PAGE"]) as handle:
@@ -37,6 +38,9 @@ with open(os.environ["MONITOR_LINKS_PAGE"]) as handle:
 
 with open(os.environ["MONITOR_BACKUPS_PAGE"]) as handle:
     BACKUPS_TEMPLATE = handle.read()
+
+with open(os.environ["MONITOR_K8S_PAGE"]) as handle:
+    K8S_TEMPLATE = handle.read()
 
 HOSTS = TARGETS["hosts"]
 APPS = TARGETS["apps"]
@@ -49,6 +53,9 @@ BACKUP_STALE_HOURS = TARGETS["backupStaleHours"]
 DRIFT_TIMEOUT = TARGETS["driftTimeout"]
 HISTORY_DEPTH = TARGETS["historyDepth"]
 TIMELINE_DEPTH = TARGETS["timelineDepth"]
+RESTART_THRESHOLD = TARGETS["restartThreshold"]
+EVENT_DEPTH = TARGETS["eventDepth"]
+NOTIFY_SEVERITIES = set(TARGETS["notifySeverities"])
 
 FAST_INTERVAL = 30
 SLOW_INTERVAL = 60
@@ -156,6 +163,14 @@ def node_metrics():
     return nodes
 
 
+def alert_target(labels):
+    for key in ("job_name", "pod", "deployment", "statefulset", "daemonset", "instance"):
+        value = labels.get(key)
+        if value:
+            return value
+    return ""
+
+
 def cluster_alerts():
     payload = grafana(
         "/api/datasources/proxy/uid/alertmanager/api/v2/alerts", {"active": "true"}
@@ -173,9 +188,13 @@ def cluster_alerts():
                 "alertname": name,
                 "severity": labels.get("severity", ""),
                 "state": alert.get("status", {}).get("state", ""),
+                "namespace": labels.get("namespace", ""),
+                "target": alert_target(labels),
             }
         )
-    active.sort(key=lambda item: (item["severity"], item["alertname"]))
+    active.sort(
+        key=lambda item: (item["severity"], item["alertname"], item["namespace"])
+    )
     return {"active": active, "suppressed": len(suppressed)}
 
 
@@ -209,17 +228,49 @@ POD_TEMPLATE = (
     "{range .items[*]}{.metadata.namespace}{'\\t'}{.metadata.name}"
     "{'\\t'}{.status.phase}{'\\t'}"
     '{range .status.conditions[?(@.type=="Ready")]}{.status}{end}'
+    "{'\\t'}{.spec.nodeName}{'\\t'}"
+    "{range .status.containerStatuses[*]}"
+    "{.restartCount}{','}{.state.waiting.reason}{';'}{end}"
     "{'\\n'}{end}"
 )
 
 
+def container_summary(blob):
+    restarts = 0
+    reason = ""
+    for entry in blob.split(";"):
+        if not entry:
+            continue
+        count, _, waiting = entry.partition(",")
+        try:
+            restarts += int(count)
+        except ValueError:
+            pass
+        if waiting and not reason:
+            reason = waiting
+    return restarts, reason
+
+
 def problem_pods():
     pods = []
+    restarting = []
+    total = 0
     for line in kubectl_text("get", "pods", "-A", "-o", f"jsonpath={POD_TEMPLATE}").splitlines():
         fields = line.split("\t")
-        if len(fields) < 4:
+        if len(fields) < 6:
             continue
-        namespace, name, phase, ready = fields[0], fields[1], fields[2], fields[3]
+        namespace, name, phase, ready, node, blob = fields[:6]
+        total += 1
+        restarts, reason = container_summary(blob)
+        if restarts >= RESTART_THRESHOLD:
+            restarting.append(
+                {
+                    "namespace": namespace,
+                    "name": name,
+                    "restarts": restarts,
+                    "node": node,
+                }
+            )
         if phase == "Succeeded":
             continue
         if phase == "Running" and ready == "True":
@@ -229,9 +280,13 @@ def problem_pods():
                 "namespace": namespace,
                 "name": name,
                 "phase": phase if phase != "Running" else "NotReady",
+                "reason": reason,
+                "restarts": restarts,
+                "node": node,
             }
         )
-    return pods
+    restarting.sort(key=lambda item: (-item["restarts"], item["namespace"], item["name"]))
+    return pods, restarting, total
 
 
 def condition_status(item, wanted="Ready"):
@@ -267,18 +322,92 @@ def parse_stamp(stamp):
         return None
 
 
+def node_pressure(item):
+    flags = []
+    for condition in item.get("status", {}).get("conditions", []):
+        kind = condition.get("type", "")
+        if kind.endswith("Pressure") and condition.get("status") == "True":
+            flags.append(kind.replace("Pressure", "").lower())
+    return flags
+
+
 def cluster_state():
-    state = {"nodes": [], "pods": []}
+    state = {"nodes": [], "pods": [], "restarting": [], "pod_count": 0}
     for item in kubectl("get", "nodes", "-o", "json")["items"]:
+        info = item.get("status", {}).get("nodeInfo", {})
         state["nodes"].append(
             {
                 "name": item["metadata"]["name"],
                 "ready": condition_status(item) == "True",
+                "pressure": node_pressure(item),
+                "cordoned": bool(item.get("spec", {}).get("unschedulable")),
+                "kubelet": info.get("kubeletVersion", ""),
             }
         )
     state["nodes"].sort(key=lambda item: item["name"])
-    state["pods"] = problem_pods()
+    state["pods"], state["restarting"], state["pod_count"] = problem_pods()
     return state
+
+
+def workload_replicas(item):
+    status = item.get("status", {})
+    if item.get("kind") == "DaemonSet":
+        return (
+            status.get("numberReady", 0),
+            status.get("desiredNumberScheduled", 0),
+        )
+    return status.get("readyReplicas", 0), item.get("spec", {}).get("replicas", 0)
+
+
+def warning_events():
+    payload = kubectl(
+        "get", "events", "-A", "--field-selector", "type=Warning", "-o", "json"
+    )
+    events = []
+    for item in payload.get("items", []):
+        target = item.get("involvedObject", {})
+        name = "/".join(
+            part for part in (target.get("kind", ""), target.get("name", "")) if part
+        )
+        events.append(
+            {
+                "namespace": item.get("metadata", {}).get("namespace", ""),
+                "object": name,
+                "reason": item.get("reason", ""),
+                "message": " ".join((item.get("message") or "").split())[:160],
+                "stamp": item.get("lastTimestamp") or item.get("eventTime") or "",
+                "count": item.get("count", 1),
+            }
+        )
+    events.sort(key=lambda item: parse_stamp(item["stamp"]) or 0, reverse=True)
+    return events[:EVENT_DEPTH]
+
+
+def workload_state():
+    payload = kubectl(
+        "get", "deployments,statefulsets,daemonsets", "-A", "-o", "json"
+    )
+    degraded = []
+    counts = {}
+    for item in payload.get("items", []):
+        kind = item.get("kind", "")
+        ready, desired = workload_replicas(item)
+        bucket = counts.setdefault(kind, {"ready": 0, "total": 0})
+        bucket["total"] += 1
+        if ready == desired:
+            bucket["ready"] += 1
+            continue
+        degraded.append(
+            {
+                "kind": kind,
+                "namespace": item["metadata"]["namespace"],
+                "name": item["metadata"]["name"],
+                "ready": ready,
+                "desired": desired,
+            }
+        )
+    degraded.sort(key=lambda item: (item["kind"], item["namespace"], item["name"]))
+    return {"degraded": degraded, "counts": counts, "events": warning_events()}
 
 
 def history_entries(item):
@@ -720,13 +849,13 @@ def parse_duration(text):
     return 0.0
 
 
-def step_once(key, firing, summary, priority):
+def step_once(key, firing, summary, priority, click=None, cleared="resumed"):
     record = ALERTS.setdefault(key, {"firing": False})
     if firing and not record["firing"]:
-        notify(summary, priority)
+        notify(summary, priority, click)
         record["firing"] = True
     elif not firing and record["firing"]:
-        notify(summary + " resumed", "low")
+        notify(f"{summary} {cleared}", "low", click)
         record["firing"] = False
 
 
@@ -827,6 +956,86 @@ def prune_backup_alerts(live):
     for name in [name for name in ALERTS if name.startswith(prefixes)]:
         if name not in live:
             del ALERTS[name]
+
+
+def prune_prom_alerts(live):
+    for name in [name for name in ALERTS if name.startswith("promalert:")]:
+        if name not in live:
+            del ALERTS[name]
+
+
+def alert_summary(name, namespace, severity, targets):
+    where = namespace or "cluster"
+    detail = ""
+    if targets:
+        shown = ", ".join(targets[:3])
+        extra = len(targets) - 3
+        detail = f" [{shown}" + (f" +{extra}]" if extra > 0 else "]")
+    return f"{severity}: {name} in {where}{detail}"
+
+
+def alert_step(key, firing, summary, severity):
+    if severity == "critical":
+        step(key, firing, summary, SLOW_THRESHOLD, K8S_LINK)
+    else:
+        step_once(key, firing, summary, "default", K8S_LINK, "cleared")
+
+
+def evaluate_alerts(alerts, healthy):
+    if "alerts" not in healthy:
+        return
+
+    groups = {}
+    for alert in (alerts or {}).get("active", []):
+        severity = alert.get("severity", "")
+        if severity not in NOTIFY_SEVERITIES:
+            continue
+        name = alert.get("alertname", "unknown")
+        namespace = alert.get("namespace", "")
+        bucket = groups.setdefault(
+            f"promalert:{severity}:{name}:{namespace}",
+            {
+                "name": name,
+                "namespace": namespace,
+                "severity": severity,
+                "targets": [],
+            },
+        )
+        target = alert.get("target", "")
+        if target and target not in bucket["targets"]:
+            bucket["targets"].append(target)
+
+    with ALERT_LOCK:
+        live = set(groups)
+        for key, group in groups.items():
+            alert_step(
+                key,
+                True,
+                alert_summary(
+                    group["name"],
+                    group["namespace"],
+                    group["severity"],
+                    group["targets"],
+                ),
+                group["severity"],
+            )
+
+        for key in [name for name in ALERTS if name.startswith("promalert:")]:
+            if key in live:
+                continue
+            parts = key.split(":", 3)
+            if len(parts) != 4:
+                continue
+            severity, name, namespace = parts[1], parts[2], parts[3]
+            alert_step(
+                key,
+                False,
+                alert_summary(name, namespace, severity, []),
+                severity,
+            )
+
+        prune_prom_alerts(live)
+        save_alerts()
 
 
 def evaluate_backups(backups, disks, healthy):
@@ -963,7 +1172,7 @@ def section(label):
     return f'<div class="sect">{escape(label)}</div>'
 
 
-TABS = (("flux", "/flux"), ("backups", "/backups"))
+TABS = (("flux", "/flux"), ("backups", "/backups"), ("k8s", "/k8s"))
 
 
 def render_tabs(active):
@@ -1312,6 +1521,201 @@ def render_backups(snapshot):
     return BACKUPS_TEMPLATE.replace("{{body}}", "".join(parts))
 
 
+def node_flags(node):
+    flags = list(node.get("pressure") or [])
+    if node.get("cordoned"):
+        flags.insert(0, "cordoned")
+    return flags
+
+
+def render_nodes(nodes):
+    parts = []
+    if not nodes:
+        parts.append(row(span("no nodes reported", "bad")))
+    for node in nodes:
+        flags = node_flags(node)
+        if not node.get("ready"):
+            label, style = "down", "bad"
+        elif flags:
+            label, style = "warn", "warn"
+        else:
+            label, style = "ready", "ok"
+        parts.append(
+            row(
+                span(node.get("name", "?"), "key"),
+                span(label, "st " + style),
+                span(node.get("kubelet", ""), "rev"),
+                span(", ".join(flags) if flags else "-", "note"),
+            )
+        )
+    return "".join(parts)
+
+
+def render_workloads(workloads):
+    degraded = (workloads or {}).get("degraded") or []
+    if not degraded:
+        return row(span("all workloads at desired replicas", "ok"))
+    parts = []
+    for entry in degraded:
+        parts.append(
+            row(
+                span(f'{entry["namespace"]}/{entry["name"]}', "key"),
+                span("short", "st bad"),
+                span(f'{entry["ready"]}/{entry["desired"]}', "rev"),
+                span(entry["kind"].lower(), "note dim"),
+            )
+        )
+    return "".join(parts)
+
+
+def render_problem_pods(pods):
+    if not pods:
+        return row(span("all pods running and ready", "ok"))
+    parts = []
+    for pod in pods:
+        phase = pod.get("phase", "")
+        style = "warn" if phase in ("Pending", "NotReady") else "bad"
+        restarts = pod.get("restarts", 0)
+        parts.append(
+            row(
+                span(f'{pod["namespace"]}/{pod["name"]}', "key"),
+                span(phase, "st " + style),
+                span(f"{restarts} restarts" if restarts else "-", "rev"),
+                span(pod.get("reason") or "-", "note"),
+                span(pod.get("node") or "-", "meta"),
+            )
+        )
+    return "".join(parts)
+
+
+def render_restarting(pods):
+    if not pods:
+        return row(span(f"no pod above {RESTART_THRESHOLD} restarts", "ok"))
+    parts = []
+    for pod in pods:
+        parts.append(
+            row(
+                span(f'{pod["namespace"]}/{pod["name"]}', "key"),
+                span("churn", "st warn"),
+                span(f'{pod["restarts"]} restarts', "rev"),
+                span("-", "note"),
+                span(pod.get("node") or "-", "meta"),
+            )
+        )
+    return "".join(parts)
+
+
+def render_events(workloads):
+    events = (workloads or {}).get("events") or []
+    if not events:
+        return row(span("no warning events in the last hour", "ok"))
+    parts = []
+    for event in events:
+        count = event.get("count", 1)
+        parts.append(
+            row(
+                span(f'{event["namespace"]}/{event["object"]}', "key"),
+                span(event.get("reason", ""), "st warn"),
+                span(since(event.get("stamp", "")), "rev"),
+                span(f"x{count}" if count > 1 else "-", "note"),
+            )
+        )
+        parts.append(row(span(event.get("message", ""), "msg")))
+    return "".join(parts)
+
+
+def render_alerts(alerts):
+    active = (alerts or {}).get("active") or []
+    if not active:
+        parts = [row(span("no alerts firing", "ok"))]
+    else:
+        parts = []
+        for alert in active:
+            severity = alert.get("severity", "")
+            style = "bad" if severity == "critical" else "warn"
+            notified = severity in NOTIFY_SEVERITIES
+            parts.append(
+                row(
+                    span(alert.get("alertname", "?"), "key"),
+                    span(severity or "none", "st " + style),
+                    span(alert.get("namespace") or "cluster", "rev"),
+                    span(alert.get("target") or "-", "note"),
+                    span("notifies" if notified else "quiet", "meta dim"),
+                )
+            )
+    suppressed = (alerts or {}).get("suppressed", 0)
+    if suppressed:
+        parts.append(row(span(f"{suppressed} suppressed by config", "dim")))
+    return "".join(parts)
+
+
+def render_k8s(snapshot):
+    cluster = snapshot.get("cluster")
+    workloads = snapshot.get("workloads")
+    alerts = snapshot.get("alerts")
+    errors = snapshot.get("errors") or {}
+    updated = snapshot.get("updated_at") or {}
+    generated = snapshot.get("generated_at") or 0
+    age = time.time() - generated if generated else None
+
+    parts = [render_tabs("k8s")]
+    if age is not None and age > 90:
+        parts.append(row(span(f"collector stale {ago(age)}", "bad")))
+    for key in ("cluster", "workloads", "alerts"):
+        if errors.get(key):
+            parts.append(row(span(f"{key} query failed: {errors[key]}", "bad")))
+        stamp = updated.get(key)
+        if stamp and time.time() - stamp > 210:
+            parts.append(
+                row(span(f"{key} data stale {ago(time.time() - stamp)}", "bad"))
+            )
+
+    parts.append(section("nodes"))
+    parts.append(render_nodes((cluster or {}).get("nodes") or []))
+
+    parts.append(section("workloads"))
+    if workloads is None:
+        parts.append(row(span("no workload data yet", "warn")))
+    else:
+        parts.append(render_workloads(workloads))
+
+    parts.append(section("pods"))
+    if cluster is None:
+        parts.append(row(span("no pod data yet", "warn")))
+    else:
+        parts.append(render_problem_pods(cluster.get("pods") or []))
+
+    parts.append(section("restarts"))
+    if cluster is None:
+        parts.append(row(span("no pod data yet", "warn")))
+    else:
+        parts.append(render_restarting(cluster.get("restarting") or []))
+
+    parts.append(section("warning events"))
+    parts.append(render_events(workloads))
+
+    parts.append(section("alerts"))
+    parts.append(render_alerts(alerts))
+
+    counts = (workloads or {}).get("counts") or {}
+    nodes = (cluster or {}).get("nodes") or []
+    ready_nodes = len([node for node in nodes if node.get("ready")])
+    tally = [f"nodes {ready_nodes}/{len(nodes)}"]
+    for kind in ("Deployment", "StatefulSet", "DaemonSet"):
+        bucket = counts.get(kind)
+        if bucket:
+            tally.append(f'{kind.lower()}s {bucket["ready"]}/{bucket["total"]}')
+    if cluster is not None:
+        tally.append(
+            f'pods {cluster.get("pod_count", 0)} '
+            f'({len(cluster.get("pods") or [])} bad)'
+        )
+    parts.append(section("totals"))
+    parts.append(row(span(" · ".join(tally), "lead")))
+
+    return K8S_TEMPLATE.replace("{{body}}", "".join(parts))
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
@@ -1359,6 +1763,19 @@ class Handler(BaseHTTPRequestHandler):
                 return
             self.respond(200, body, "text/html; charset=utf-8")
             return
+        if path == "/k8s":
+            with LOCK:
+                snapshot = dict(SNAPSHOT)
+                snapshot["updated_at"] = dict(SNAPSHOT.get("updated_at") or {})
+                snapshot["errors"] = dict(SNAPSHOT.get("errors") or {})
+            try:
+                body = render_k8s(snapshot).encode()
+            except Exception as error:
+                print(f"k8s render failed: {error}", flush=True)
+                self.respond(500, b"render failed\n", "text/plain; charset=utf-8")
+                return
+            self.respond(200, body, "text/html; charset=utf-8")
+            return
         if path == "/":
             with LOCK:
                 snapshot = {"apps": list(SNAPSHOT.get("apps") or [])}
@@ -1392,6 +1809,7 @@ STATE = {
     "apps": [],
     "nodes": {},
     "cluster": None,
+    "workloads": None,
     "flux": None,
     "alerts": None,
     "backups": None,
@@ -1478,20 +1896,25 @@ def slow_tier():
             ("nodes", node_metrics),
             ("alerts", cluster_alerts),
             ("cluster", cluster_state),
+            ("workloads", workload_state),
             ("flux", flux_state),
         ],
-        4,
+        5,
     )
+    healthy = set()
     for label, (value, error) in outcomes.items():
         if error is None:
             commit(label, value)
+            healthy.add(label)
         record_error(label, error)
 
     with LOCK:
         cluster = STATE["cluster"]
         flux = STATE["flux"]
+        alerts = STATE["alerts"]
     evaluate_slow(checked, cluster)
     evaluate_flux(flux)
+    evaluate_alerts(alerts, healthy)
 
 
 def lazy_tier():

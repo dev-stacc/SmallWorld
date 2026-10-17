@@ -27,6 +27,8 @@ let
 
     backupsPage = pkgs.writeText "backups-page.html" (themed ./files/backups.html);
 
+    k8sPage = pkgs.writeText "k8s-page.html" (themed ./files/k8s.html);
+
     classes = {
         asta      = "critical";
         aperture  = "critical";
@@ -138,7 +140,10 @@ let
             "KubeSchedulerDown"
             "KubeControllerManagerDown"
             "KubeProxyDown"
+            "KubeAPIErrorBudgetBurn"
         ];
+
+        notifySeverities = [ "critical" "warning" ];
 
         resticUnitQuery = "sum by (host, unit) "
             + ''(count_over_time({job="systemd-journal", unit=~"restic-.*"}[7d]))'';
@@ -182,6 +187,8 @@ let
         driftTimeout = 1200;
         historyDepth = 3;
         timelineDepth = 8;
+        restartThreshold = 10;
+        eventDepth = 8;
     };
 in {
     sops = {
@@ -219,10 +226,12 @@ in {
             MONITOR_PAGE = "${page}";
             MONITOR_LINKS_PAGE = "${linksPage}";
             MONITOR_BACKUPS_PAGE = "${backupsPage}";
+            MONITOR_K8S_PAGE = "${k8sPage}";
             MONITOR_DEEP_LINK = "https://home.${tailnet.domain}/";
             NTFY_URL = "http://127.0.0.1:2586";
             NTFY_FALLBACK_URL = "https://ntfy.sh";
             MONITOR_BACKUPS_LINK = "https://home.${tailnet.domain}/backups";
+            MONITOR_K8S_LINK = "https://home.${tailnet.domain}/k8s";
             GRAFANA_URL = "https://grafana.${tailnet.domain}";
             LOKI_URL = "http://${tailnet.ips.loki}:3100";
         };
