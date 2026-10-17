@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="{{refresh}}">
+    <title>k8s</title>
+    <style>
+        html, body {
+            min-height: 100%;
+            margin: 0;
+            background: {{base00}};
+            color: {{base04}};
+            font-family: "{{fontName}}", monospace;
+            font-size: {{fontSize}}px;
+        }
+        body {
+            display: flex;
+            min-height: 100vh;
+        }
+        * {
+            border-radius: 0;
+        }
+        .page {
+            padding: 2em 1em;
+            margin: auto;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: auto;
+        }
+        .page > div {
+            margin: 0.2em 0;
+            white-space: nowrap;
+        }
+        .tabs {
+            margin: 0 0 1.4em !important;
+            text-align: center;
+        }
+        .tab {
+            display: inline-block;
+            margin: 0 0.75em;
+            text-decoration: none;
+            color: {{base05}};
+            opacity: 0.45;
+        }
+        .tab:hover {
+            opacity: 0.8;
+        }
+        .tab.on {
+            color: {{base02}};
+            opacity: 1;
+            text-decoration: underline;
+        }
+        .sect {
+            color: {{base02}};
+            margin: 1.4em 0 0.4em !important;
+        }
+        .lead {
+            color: {{base03}};
+        }
+        .key, .st, .rev, .note, .meta {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: top;
+        }
+        .key {
+            color: {{base02}};
+            width: 36ch;
+        }
+        .st {
+            width: 6ch;
+        }
+        .rev {
+            color: {{base05}};
+            width: 12ch;
+        }
+        .note {
+            width: 16ch;
+        }
+        .meta {
+            color: {{base05}};
+            width: 10ch;
+        }
+        .msg {
+            color: {{base05}};
+            white-space: normal !important;
+            max-width: 72ch;
+            margin-left: 36ch !important;
+        }
+        .ok { color: {{base06}}; }
+        .warn { color: {{base04}}; }
+        .bad { color: {{base02}}; }
+        .dim { color: {{base05}}; opacity: 0.45; }
+        @media (max-width: 48em) {
+            .page {
+                padding: 1.2em 0.8em;
+            }
+            .page > div {
+                margin: 0.7em 0;
+                white-space: normal;
+            }
+            .sect {
+                margin: 1.3em 0 0.3em !important;
+            }
+            .key {
+                display: block;
+                width: auto;
+            }
+            .st, .rev, .note, .meta {
+                width: auto;
+                margin-right: 1.4ch;
+            }
+            .msg {
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+{{body}}
+    </div>
+</body>
+</html>

@@ -146,7 +146,7 @@ SECTION_LIMIT = {
     "hosts": 120,
     "apps": 210,
     "nodes": 210,
-    "cluster": 210,
+    "cluster": 900,
     "flux": 210,
     "alerts": 210,
     "backups": 2700,
@@ -233,6 +233,26 @@ def build_apps(state):
     return rows
 
 
+PHASE_SHORT = {
+    "CrashLoopBackOff": "CrashLoop",
+    "ImagePullBackOff": "ImagePull",
+    "ErrImagePull": "ImageErr",
+    "CreateContainerConfigError": "ConfigErr",
+    "ContainerCreating": "Creating",
+}
+
+
+def short_phase(phase):
+    return PHASE_SHORT.get(phase, phase)[:10]
+
+
+def label_of(entry):
+    label = f"{entry['namespace']}/{entry['name']}"
+    if len(label) <= 24:
+        return label
+    return label[:23] + "~"
+
+
 def build_cluster(state):
     rows = [("", DIM), panel(state, "CLUSTER", "cluster")]
     cluster = (state or {}).get("cluster")
@@ -245,10 +265,51 @@ def build_cluster(state):
         f"  nodes ready   {len(ready)}/{len(total)}",
         OK if len(ready) == len(total) and total else BAD,
     ))
+    for node in total:
+        flags = list(node.get("pressure") or [])
+        if node.get("cordoned"):
+            flags.insert(0, "cordoned")
+        if flags:
+            rows.append((f"    {node['name']} {','.join(flags)}", WARN))
+
+    workloads = (state or {}).get("workloads") or {}
+    counts = workloads.get("counts") or {}
+    for kind, label in (
+        ("Deployment", "deploys"),
+        ("StatefulSet", "stateful"),
+        ("DaemonSet", "daemon"),
+    ):
+        bucket = counts.get(kind)
+        if not bucket:
+            continue
+        rows.append((
+            f"  {label:<13} {bucket['ready']}/{bucket['total']}",
+            OK if bucket["ready"] == bucket["total"] else BAD,
+        ))
+    for entry in (workloads.get("degraded") or [])[:4]:
+        rows.append((
+            f"    {label_of(entry):<24} {entry['ready']}/{entry['desired']}",
+            BAD,
+        ))
+
     pods = cluster.get("pods", [])
-    rows.append((f"  pods bad      {len(pods)}", OK if not pods else BAD))
+    known = cluster.get("pod_count") or 0
+    tally = f"{len(pods)}/{known}" if known else str(len(pods))
+    rows.append((f"  pods bad      {tally}", OK if not pods else BAD))
     for pod in pods[:4]:
-        rows.append((f"    {pod['namespace']}/{pod['name'][:24]} {pod['phase']}", BAD))
+        rows.append((
+            f"    {label_of(pod):<22} {short_phase(pod['phase'])}",
+            BAD,
+        ))
+
+    restarting = cluster.get("restarting") or []
+    if restarting:
+        rows.append((f"  restarting    {len(restarting)}", WARN))
+        for pod in restarting[:3]:
+            rows.append((
+                f"    {label_of(pod):<24} x{pod['restarts']}",
+                WARN,
+            ))
     return rows
 
 
@@ -407,13 +468,13 @@ def compose(state):
     left = (
         build_hosts(state)
         + build_nodes(state)
+        + build_cluster(state)
         + build_local(state)
         + build_backups(state)
         + build_disks(state)
     )
     right = (
         build_apps(state)
-        + build_cluster(state)
         + build_flux(state)
         + build_alerts(state)
     )
