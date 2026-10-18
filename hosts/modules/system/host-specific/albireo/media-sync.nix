@@ -20,12 +20,18 @@
         serviceConfig = {
             Type = "oneshot";
             StateDirectory = "media-sync";
+            IOSchedulingClass = "idle";
+            Nice = 19;
 
             ExecStart = ''
                 ${pkgs.rsync}/bin/rsync \
                     --archive \
+                    --hard-links \
+                    --delete \
                     --exclude=downloads/ \
+                    --exclude=.recyclebin/ \
                     --partial \
+                    --bwlimit=20000 \
                     --human-readable \
                     --info=stats2 \
                     -e '${pkgs.openssh}/bin/ssh -i ${config.sops.templates."media-sync-key".path} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/var/lib/media-sync/known_hosts' \
