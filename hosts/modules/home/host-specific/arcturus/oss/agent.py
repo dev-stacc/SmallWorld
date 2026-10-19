@@ -1,5 +1,6 @@
 import argparse
 import fcntl
+import getpass
 import json
 import os
 import random
@@ -18,6 +19,8 @@ RG = "@rg@"
 JOURNALCTL = "@journalctl@"
 KUBECTL = "@kubectl@"
 GIT = "@git@"
+RUN0 = "@run0@"
+TRUE = "@true@"
 
 ENDPOINT = os.environ.get("OSS_URL", "http://altair:8080/v1")
 KEY_FILE = os.environ.get("OSS_KEY_FILE", "/run/secrets/llama-api-key")
@@ -305,6 +308,18 @@ HANDLERS = {
     "journalctl": tool_journalctl,
     "kubectl": tool_kubectl,
 }
+
+
+def authenticate():
+    sys.stderr.write(
+        "oss agent reads this repository and queries the cluster.\n"
+        "Authenticate as %s to start it.\n" % getpass.getuser())
+    result = subprocess.run(
+        [RUN0, "--user=" + getpass.getuser(), "--", TRUE])
+    if result.returncode != 0:
+        raise SystemExit(
+            "authentication failed or unavailable; oss agent not started "
+            "(it must be run from a terminal)")
 
 
 def load_key():
@@ -635,6 +650,8 @@ def main():
     if options.mode == "chat":
         run_chat(options)
         return
+
+    authenticate()
 
     handle = slot_lock()
     holder = take_lock(handle, options.wait)
