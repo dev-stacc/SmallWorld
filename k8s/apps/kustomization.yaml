@@ -19,3 +19,4 @@ resources:
   - open-webui/
   - searxng/
   - arr/
+  - oss-agent/
