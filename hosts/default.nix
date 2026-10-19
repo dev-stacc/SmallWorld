@@ -34,8 +34,8 @@
         roles = [ "server" "k3s-agent" ];
     };
 
-    atlas = {
-        hostName = "Atlas";
+    avior = {
+        hostName = "Avior";
         roles = [ "server" "k3s-agent" ];
         secrets = false;
     };
