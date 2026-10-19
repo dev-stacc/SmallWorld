@@ -40,7 +40,7 @@ let
         arcturus  = "watch";
         altair    = "watch";
         alula     = "ignore";
-        atlas     = "ignore";
+        avior     = "ignore";
     };
 
     ports = {
