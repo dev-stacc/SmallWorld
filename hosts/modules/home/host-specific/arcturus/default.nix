@@ -5,6 +5,7 @@
         ./hyprland/default.nix
         ./hyprpaper.nix
         ./k3s-control/default.nix
+        ./oss/default.nix
         ./ssh.nix
         ./waybar/default.nix
     ];
