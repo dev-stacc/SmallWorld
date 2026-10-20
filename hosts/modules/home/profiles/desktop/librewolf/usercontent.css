@@ -1,0 +1,17 @@
+@-moz-document domain({{tailnetDomain}}) {
+  * {
+    font-family: "{{fontName}}" !important;
+  }
+}
+
+@-moz-document url-prefix(http://127.0.0.1:12345/) {
+  * {
+    font-family: "{{fontName}}" !important;
+  }
+}
+
+@-moz-document url-prefix(http://localhost:12345/) {
+  * {
+    font-family: "{{fontName}}" !important;
+  }
+}

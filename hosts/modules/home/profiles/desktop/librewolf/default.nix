@@ -1,5 +1,5 @@
 { pkgs, tailnet, ... } : {
-    imports = [ ./userchrome.nix ./tridactyl.nix ./homepage.nix ./privacy.nix ./ephemeral.nix ./bookmarks.nix ];
+    imports = [ ./userchrome.nix ./usercontent.nix ./tridactyl.nix ./homepage.nix ./privacy.nix ./ephemeral.nix ./bookmarks.nix ];
 
     programs.librewolf = {
         enable = true;

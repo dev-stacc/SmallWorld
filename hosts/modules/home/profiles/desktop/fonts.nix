@@ -1,4 +1,4 @@
-{ pkgs, ... } : {
+{ pkgs, theme, ... } : {
     home.packages = with pkgs; [
         major-mono-display
         nerd-fonts.jetbrains-mono
@@ -11,9 +11,9 @@
         enable = true;
 
         defaultFonts = {
-            monospace = [ "JetBrainsMono Nerd Font" "DejaVu Sans Mono" ];
-            sansSerif = [ "DejaVu Sans" "Liberation Sans" ];
-            serif = [ "DejaVu Serif" "Liberation Serif" ];
+            monospace = [ theme.fonts.monospace ];
+            sansSerif = [ theme.fonts.sansSerif ];
+            serif = [ theme.fonts.serif ];
             emoji = [ "Noto Color Emoji" ];
         };
 
