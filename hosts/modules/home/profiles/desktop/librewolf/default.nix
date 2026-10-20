@@ -43,6 +43,8 @@
                 "browser.newtabpage.enabled" = false;
                 "privacy.resistFingerprinting.letterboxing" = true;
                 "extensions.autoDisableScopes" = 0;
+                "browser.translations.enable" = true;
+                "browser.translations.automaticallyPopup" = true;
             };
 
             extensions = {
