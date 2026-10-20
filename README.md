@@ -43,11 +43,20 @@ hosts/
 │   │   ├── profiles/           base (shell, git, ssh), desktop (waybar, librewolf), editor (nixvim)
 │   │   └── host-specific/      WM configs, host-specific waybar (GPU vs CPU thermals), oss (local-LLM CLI)
 │   └── theme/                  Shared colours, fonts, wallpapers
-└── phones/                     ADB debloat scripts - shell, not Nix
-    ├── android.sh              Entrypoint; re-execs into nix-shell for android-tools
-    ├── devices/                Per-device package lists (Algol, A16)
-    ├── modules/                Reusable debloat actions (apps, config, debloat)
-    └── lib/                    adb.sh, keep.sh
+└── non-nixos/                  Config in git for hardware Nix does not manage
+    ├── phones/                 ADB debloat scripts - shell, not Nix
+    │   ├── android.sh          Entrypoint; re-execs into nix-shell for android-tools
+    │   ├── devices/            Per-device package lists (Algol, A16)
+    │   ├── modules/            Reusable debloat actions (apps, config, debloat)
+    │   └── lib/                adb.sh, keep.sh
+    └── windows/                Win 11 slimming + hardening - PowerShell, not Nix
+        ├── ntlite-components.md What to strip from the ISO, and what must stay
+        ├── ntlite-preset.xml   Exported NTLite preset (add after building the ISO)
+        ├── autounattend.xml    Install-time answers (bypasses, local accounts, no MSA)
+        ├── harden.ps1          Telemetry, ads, Copilot/Recall; Defender + Update kept
+        ├── lightweight.ps1     Shell and service trimming for an unaccelerated GPU
+        ├── accounts.ps1        Standard user + "settings" admin, UAC at maximum
+        └── README.md           Install order and the offline-until-passwords-set rule
 
 secrets/
 ├── secrets.yaml                SOPS-encrypted, readable by the hosts in .sops.yaml
@@ -116,7 +125,7 @@ colmena node names are capitalised (`Altair`, not `altair`) - a lowercase name m
 - `hosts/modules/system/host-specific/arcturus/k3s-kubeconfig.nix` - `~/.kube/config` is a `mkOutOfStoreSymlink` to a SOPS-decrypted kubeconfig, so admin cluster credentials are declarative without ending up in the Nix store.
 - `k8s/flux/flux-system/cluster-config.yaml` - the single ConfigMap every workload substitutes against.
 - `hosts/modules/system/host-specific/asta/vault.nix` - Vault unseal driven by SOPS, ordered against `sops-nix.service` so it survives reboots.
-- `hosts/phones/` - bonus: ADB-driven debloat for a Samsung Galaxy A16 5G (40+ packages removed, Knox left alone).
+- `hosts/non-nixos/phones/` - bonus: ADB-driven debloat for a Samsung Galaxy A16 5G (40+ packages removed, Knox left alone).
 
 ## Beyond the code
 
