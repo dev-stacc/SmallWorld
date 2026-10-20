@@ -98,7 +98,7 @@ k8s/
 | Host      | Hardware                                                          | Role                                                                       |
 |-----------|-------------------------------------------------------------------|----------------------------------------------------------------------------|
 | Arcturus  | ThinkPad E490, i5 8th gen, 32 GB DDR4, Intel iGPU                 | Daily driver. Hyprland desktop. k3s control client (kubeconfig from SOPS). |
-| Asta      | Toshiba Satellite L-855 board, AMD A8/A10, 16 GB DDR3, tray-mount | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth. Headless. |
+| Asta      | Lenovo ThinkServer TS140, Xeon E3-1246 v3 (4C/8T), 21 GB, RX 560 4 GB, 1.8 TB HDD | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth. Headless. |
 | Aperture  | Dell OptiPlex 3020, i5 4th gen, 12 GB DDR3, SSD + HDD, dGPU       | k3s agent. Headless.                                                       |
 | Albireo   | Supermicro X9SCI/X9SCA, Xeon E3-1220 v2, 16 GB DDR3, 458 GB root + 2.7 TB /bigstorage | k3s agent. Nextcloud data, restic backup source, media sync, CrowdSec bouncer. Headless. |
 | Avior     | Dell PowerEdge 1950, legacy DRAC + PXE boot          | NFS media server + k3s agent. Not yet installed; k3s is guarded off until its tailnet IP replaces `PLACEHOLDER`. |
