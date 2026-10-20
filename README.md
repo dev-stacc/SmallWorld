@@ -2,13 +2,11 @@
 
 My personal homelab: a NixOS + k3s cluster built from spare hardware while teaching myself what infrastructure actually looks like under the hood. Every host is declared in this flake, every cluster workload is delivered by Flux, every secret is encrypted with SOPS, and every service is reachable only inside my Tailscale tailnet.
 
-This doubles as a CV piece. Built solo while teaching myself the stack.
-
 ## Stack
 
 - **NixOS** flakes for every host config; **home-manager** as a NixOS module
 - **colmena** for remote deploys
-- **k3s** (1 server, 3 agents) on the tailnet; flannel rides the LAN NICs with `--flannel-backend=wireguard-native`
+- **k3s** (1 server, 3 agent roles - Avior pending install) on the tailnet; flannel rides the LAN NICs with `--flannel-backend=wireguard-native`
 - **Flux** for GitOps with SOPS decryption + `postBuild.substituteFrom` for cluster-wide variables
 - **SOPS + age** for declarative secrets, plus **Vault** + **external-secrets-operator** for runtime secrets
 - **Authentik** for SSO across self-hosted services
@@ -37,13 +35,13 @@ hosts/
 │   │   │   ├── base/           Implicit everywhere: nix, networking, tailscale, ssh, users
 │   │   │   ├── server/         always-on.nix (role "server") + k3s-agent.nix (role "k3s-agent")
 │   │   │   ├── desktop/        Shared by desktop hosts (bluetooth, sound, overlays)
-│   │   │   ├── admin/          Heavy CLI tools (kubectl, helm, flux, vault, colmena) - arcturus only
+│   │   │   ├── admin/          Heavy CLI tools (gh, kubectl, helm, flux, vault, colmena) - arcturus only
 │   │   │   ├── gaming/         Steam + gamemode
 │   │   │   └── wireless.nix    iwd, for the two portable hosts
 │   │   └── host-specific/      Per-host: hardware-configuration.nix + overrides
 │   ├── home/                   home-manager modules (mirrors the system/ layout)
 │   │   ├── profiles/           base (shell, git, ssh), desktop (waybar, librewolf), editor (nixvim)
-│   │   └── host-specific/      WM configs, host-specific waybar (GPU vs CPU thermals)
+│   │   └── host-specific/      WM configs, host-specific waybar (GPU vs CPU thermals), oss (local-LLM CLI)
 │   └── theme/                  Shared colours, fonts, wallpapers
 └── phones/                     ADB debloat scripts - shell, not Nix
     ├── android.sh              Entrypoint; re-execs into nix-shell for android-tools
@@ -59,14 +57,20 @@ k8s/
 ├── flux/
 │   └── flux-system/            Flux bootstrap + cluster-config ConfigMap
 ├── apps/                       Workload Kustomizations (one folder per app)
+│   ├── arr/                    Sonarr/Radarr/Lidarr/Bazarr/Prowlarr/qBittorrent behind gluetun,
+│   │                           plus the decluttarr, recyclarr and arr-config reconcilers
 │   ├── crowdsec/               IDS (Pi-hole bouncer now lives on argus as a systemd service)
 │   ├── external-secrets/       Vault-backed runtime secrets
+│   ├── immich/                 Photos
 │   ├── ingress-nginx/
 │   ├── jellyfin/               Media (video)
 │   ├── kiwix/                  Offline Wikipedia mirror (kiwix-serve) on aperture
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
 │   ├── nextcloud/              Files + sync; pinned to albireo, data on its ext4 /bigstorage
+│   ├── open-webui/             Chat UI in front of altair's llama.cpp, via a Tailscale egress proxy
+│   ├── oss-agent/              View-only ServiceAccount for the local-LLM CLI agent
+│   ├── searxng/                Self-hosted metasearch; custom themed image with Flux image automation
 │   ├── tailscale/
 │   ├── uptime-kuma/
 │   ├── vault/
@@ -87,71 +91,38 @@ k8s/
 | Arcturus  | ThinkPad E490, i5 8th gen, 32 GB DDR4, Intel iGPU                 | Daily driver. Hyprland desktop. k3s control client (kubeconfig from SOPS). |
 | Asta      | Toshiba Satellite L-855 board, AMD A8/A10, 16 GB DDR3, tray-mount | k3s server, media (Jellyfin, Navidrome), Vault, Flux source-of-truth. Headless. |
 | Aperture  | Dell OptiPlex 3020, i5 4th gen, 12 GB DDR3, SSD + HDD, dGPU       | k3s agent. Headless.                                                       |
-| Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | Append-only restic repository + retention. Fleet monitor on tty1.          |
-| Altair    | LGA1155 board, i5-2500K, DDR3, ex-Antinoos HDD + 1 TB, 2x RX 580  | Local LLM inference (llama.cpp on Vulkan). Wake-on-LAN. Headless.          |
+| Albireo   | Supermicro X9SCI/X9SCA, Xeon E3-1220 v2, 16 GB DDR3, 458 GB root + 2.7 TB /bigstorage | k3s agent. Nextcloud data, restic backup source, media sync, CrowdSec bouncer. Headless. |
+| Avior     | Dell PowerEdge 1950, legacy DRAC + PXE boot          | NFS media server + k3s agent. Not yet installed; k3s is guarded off until its tailnet IP replaces `PLACEHOLDER`. |
+| Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | Append-only restic repository + retention. Renders the fleet monitor on tty1. |
+| Algol     | Dell Inspiron 5748, i7-4510U, 8 GB DDR3, 915 GB                   | Fleet monitoring collector (Loki + Grafana alerting) and self-hosted ntfy. Off-cluster. Headless. |
+| Altair    | LGA1155 (P8H67-M PRO), i5-2500K, DDR3, ex-Antinoos HDD + 1 TB, RX 580 + RX 570 (8 GB each) | Local LLM inference (llama.cpp on Vulkan). Wake-on-LAN. Headless. |
 | Argus     | Acer Aspire 7741, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
 | Alula     | Intel Compute Stick T6, Atom x5-Z8350, 4 GB RAM, 64 GB storage   | Portable niri desktop. Coding + browsing. Future cyberdeck base.           |
 
 All hosts join via Tailscale. Ingress is tailnet-only. No public DNS, no port-forwarding for now.
 
-## Host stories
-
-<details>
-<summary>The history behind each machine (click to expand)</summary>
-
-Every machine here has a history.
-
-**Arcturus** A ThinkPad E490 (i5 8th gen, Intel iGPU). Bought 2018-19 for the CÉGEP with Windows 10 that auto-promoted itself to 11. The 4 GB Windows baseline made IDEs crawl, so I switched to Linux Mint, then Arch (dependency-conflict hell, dotfile sprawl), then NixOS. Since then: 32 GB RAM, new battery, and a two-heatpipe heatsink swap I had to do twice because the first Amazon seller shipped an E480 part claiming it fit and I found one on Alibaba that actually fit. Stock E490s idles at 50-65 °C, this one usually stays around 40, and the workflow usually fits in 3 GB so the 32 is overkill in the best way.
-
-**Asta** A stripped-down Toshiba Satellite L-855 (socketed AMD A8/A10, ~10+ years old) my brother handed down. I tore off the shell and standoffed the motherboard onto a serving tray with the HDD, RAM, and heatsink. At that point it was literally going to serve things. 16 GB DDR3 upgrade done, CPU swap planned. First node in the cluster.
-
-**Amateus** A refurbished ThinkPad SL500 from eBay, missing a few keys but the seller was honest about it. Cleaned, repasted, +2 GB DDR2. Keyboard feels great even with the gaps. Used to be the k3s agent. Eventual plan is a modern-internals mod in the spirit of the X210AI project (modern CPU, DDR5, NVMe inside the vintage chassis).
-
-**Aperture** A refurbished Dell OptiPlex 3020 from eBay, $80. i5 4th gen, 12 GB DDR3, SSD + HDD, dedicated GPU. Light dust, fresh paste, NixOS, `git pull`, done. That was the fastest a host has ever joined this cluster. Original case kept. It's now the k3s agent, taking over the role Amateus used to fill.
-
-**Altair** The successor to Antinoos, and the reason Antinoos is gone. Antinoos began as a light-gaming desktop on a retired Acer Aspire board of my mom's (i5 6th gen, 16 GB DDR3, 3 TB storage), because the console subscription model was going to cost more than this over time. Its first RX 580 was a defective eBay refurb that mostly worked, then didn't (probably ex-mining); replaced with a sealed, tested card and a new Corsair PSU. It drove 4K@60 over Polaris under Sway, after Hyprland kept dying with `eglDupNativeFenceFDANDROID EGL_BAD_PARAMETER` that `AQ_NO_ATOMIC=1` + `AQ_NO_MODIFIERS=1` couldn't fully fix — `WLR_DRM_NO_ATOMIC=1` + `WLR_NO_HARDWARE_CURSORS=1` on Sway is what finally kept the panel up. Now its root HDD and its RX 580 have moved onto an LGA1155 board (i5-2500K) with two PCIe x16 slots, joined by the RX 580 pulled out of Albireo and a 1 TB model store. Two 8 GB Polaris cards is 16 GB of VRAM, enough for a 14B model at Q5. ROCm dropped gfx803 years ago, so the stack is llama.cpp on Vulkan rather than anything ROCm-based. Normally powered off, woken by a magic packet. Local inference is worth understanding while it's still unrestricted.
-
-**Argus** An Acer Aspire 7741 from ~2010 vintage. The screen and keyboard were broken. Cleaned, repasted, and wiped the HDD. Getting into the BIOS to change the boot order was its own little battle because of windows. Will eventuall strip it down to the motherboard in the spirit of Asta. It's currently running Pi-Hole 24/7.
-
-**Alula** An Intel Compute Stick T6 from eBay. Wanted something portable with real x86 compatibility rather than a Pi, plus the nostalgia factor of a full PC on a stick. 4 GB RAM and 64 GB storage covers nixvim, Brave, and a terminal. Niri made sense over a traditional tiling WM since scrollable columns adapt better to whatever screen is nearby. Long-term plan is a modular cyberdeck build around it.
-
-### Honourable mention
-
-**Sanctuary** A Raspberry Pi Zero 2 W running Pi-hole + unbound on Raspberry Pi OS. Not part of this flake (16 GB of storage rules NixOS out for now), but it's where this whole homelab started. The orbital-sync systemd timers in `modules/system/host-specific/argus/pihole-sync.nix` keep this Pi and Argus's Pi-hole mirroring each other.
-
-</details>
-
----
-
 ## Deploy
 
 ```sh
-sudo nixos-rebuild switch --flake .#<HostName>   # locally on a host
-colmena apply                                    # remote deploy of all hosts
+sudo nixos-rebuild switch --flake .#<HostName>   # on the host itself; Arcturus is deploy = false
+colmena apply --impure --on <HostName>           # remote; --impure is needed on a dirty tree
 ```
+
+colmena node names are capitalised (`Altair`, not `altair`) - a lowercase name matches nothing and still exits 0.
 
 ## Things worth a read
 
-- `modules/system/host-specific/altair/llama.nix` - the upstream `services.llama-cpp` unit is sandboxed with `DynamicUser = true`, which has two consequences worth knowing. `$HOME` becomes `/var/empty`, so Mesa's on-disk shader cache silently disables itself and RADV recompiles every GGML Vulkan pipeline on each start - hence `MESA_SHADER_CACHE_DIR` pointed into the `CacheDirectory` the unit already has. And because the model store is mounted `nofail`, `RequiresMountsFor` has to go in `unitConfig`, not `serviceConfig`: it's a `[Unit]` directive, and systemd silently ignores it under `[Service]`, leaving llama-server to race the HDD spin-up into a restart loop. Serving is tailnet-only on the strength of `trustedInterfaces` alone, with `openFirewall = false`.
-- `modules/system/host-specific/arcturus/k3s-kubeconfig.nix` - `~/.kube/config` is a `mkOutOfStoreSymlink` to a SOPS-decrypted kubeconfig, so admin cluster credentials are declarative without ending up in the Nix store.
+- `hosts/modules/system/host-specific/altair/llama.nix` - the upstream `services.llama-cpp` unit is sandboxed with `DynamicUser = true`, which has two consequences worth knowing. `$HOME` becomes `/var/empty`, so Mesa's on-disk shader cache silently disables itself and RADV recompiles every GGML Vulkan pipeline on each start - hence `MESA_SHADER_CACHE_DIR` pointed into the `CacheDirectory` the unit already has. And because the model store is mounted `nofail`, `RequiresMountsFor` has to go in `unitConfig`, not `serviceConfig`: it's a `[Unit]` directive, and systemd silently ignores it under `[Service]`, leaving llama-server to race the HDD spin-up into a restart loop. Serving is tailnet-only on the strength of `trustedInterfaces` alone, with `openFirewall = false`.
+- `hosts/modules/system/host-specific/arcturus/k3s-kubeconfig.nix` - `~/.kube/config` is a `mkOutOfStoreSymlink` to a SOPS-decrypted kubeconfig, so admin cluster credentials are declarative without ending up in the Nix store.
 - `k8s/flux/flux-system/cluster-config.yaml` - the single ConfigMap every workload substitutes against.
-- `modules/system/host-specific/asta/vault.nix` - Vault unseal driven by SOPS, ordered against `sops-nix.service` so it survives reboots.
+- `hosts/modules/system/host-specific/asta/vault.nix` - Vault unseal driven by SOPS, ordered against `sops-nix.service` so it survives reboots.
 - `hosts/phones/` - bonus: ADB-driven debloat for a Samsung Galaxy A16 5G (40+ packages removed, Knox left alone).
 
-## What I'd do differently
+## Beyond the code
 
-- Module structure from day one. I started by copying patterns I saw in other repos. That worked at one or two hosts but got hard to navigate at five. With 3+ hosts planned, I'd go straight to the current `modules/{system,home}/{common,host-specific}` split instead of refactoring my way into it.
-- Authentik before the apps. I deployed Jellyfin and Navidrome first and had to refactor both substantially once Authentik landed and they needed SSO wiring. Next time the auth layer goes up first, and every app is wired into it from the start.
-- Branches, PRs, and code review. I worked mostly on `main` because this started as a personal project; the cost is a noisy log and no review trail. What I got wrong was treating it as a discipline problem - intending to branch was never the issue, nothing enforced it. The repo is public and Flux reconciles straight from `main`, so a bad commit is deployed and world-readable before I can reconsider it. CI now runs on every PR, which lets `main` require a passing check instead of relying on me to remember.
-- More research before coding. Solo work on my own hardware made me unafraid to break things, which is great for momentum and bad for measuring twice.
-
-## Future / ongoing
-
-- A "Wrapped"-style web app for AO3 reading history (currently in progress).
-- Ongoing tuning of the `hosts/phones/` debloat scripts. Still iterating on what to keep vs drop so the phone has the functionality I need without reintroducing the weight.
-- Cluster nodes in more physical locations so power outages don't take everything down at once. UPS coverage helps but doesn't outlive a long outage. Targeting December 2026.
-- A physical-media ripper of my own, instead of relying on an existing package, for the CDs, DVDs, and Blu-rays I own. Targeting summer 2026.
-- A sync app that pulls my music library into Navidrome automatically. Targeting autumn 2026.
+- [about/host-stories.md](about/host-stories.md) - where each machine came from, what was broken on it, and what it took to get it running
+- [about/retrospective.md](about/retrospective.md) - what I'd do differently, and why
+- [about/roadmap.md](about/roadmap.md) - what's next, and roughly when
 
 ---
 Feedback and corrections welcome!
