@@ -11,6 +11,7 @@ let
         "${storage}/*_monitoring_storage-loki-*"
         "${storage}/*_monitoring_storage-tempo-*"
         "${storage}/*_kiwix_kiwix-data"
+        "${storage}/*_crowdsec_crowdsec-db"
         "${storage}/*_jellyfin_jellyfin-config/cache"
         "${storage}/*_jellyfin_jellyfin-config/transcodes"
     ];
@@ -20,6 +21,9 @@ in {
             sopsFile = ../../../../../secrets/secrets.yaml;
         };
         restic-amateus-repository = {
+            sopsFile = ../../../../../secrets/secrets.yaml;
+        };
+        restic-cluster-repository = {
             sopsFile = ../../../../../secrets/secrets.yaml;
         };
     };
@@ -42,6 +46,20 @@ in {
 
             timerConfig = {
                 OnCalendar = "01:30";
+                RandomizedDelaySec = "30m";
+                Persistent = true;
+            };
+        };
+
+        cluster-smallstorage = {
+            repositoryFile = config.sops.secrets.restic-cluster-repository.path;
+            passwordFile = config.sops.secrets.restic-password.path;
+            initialize = true;
+            paths = [ storage dumps ];
+            inherit exclude;
+
+            timerConfig = {
+                OnCalendar = "02:30";
                 RandomizedDelaySec = "30m";
                 Persistent = true;
             };
