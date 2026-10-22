@@ -3,6 +3,7 @@
         ./storage.nix
         ./media-sync.nix
         ./backup.nix
+        ./restic-cluster-server.nix
         ./k3s-service.nix
         ./crowdsec-bouncer.nix
     ];
