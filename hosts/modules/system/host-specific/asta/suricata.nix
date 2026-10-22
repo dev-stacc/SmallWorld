@@ -1,6 +1,17 @@
 { ... }: {
   services.suricata = {
     enable = true;
+    enabledSources = [
+      "abuse.ch/sslbl-blacklist"
+      "abuse.ch/sslbl-ja3"
+      "et/open"
+      "etnetera/aggressive"
+      "stamus/lateral"
+      "oisf/trafficid"
+      "tgreen/hunting"
+      "pawpatrules"
+      "ptrules/open"
+    ];
     settings = {
       "af-packet" = [{
         interface = "tailscale0";
@@ -24,4 +35,6 @@
       }];
     };
   };
+
+  systemd.services.suricata-update.restartIfChanged = false;
 }
