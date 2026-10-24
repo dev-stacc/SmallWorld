@@ -18,6 +18,11 @@
                 keyword = "gh";
                 url = "https://github.com";
             }
+            {
+                name = "ÉTS Portal";
+                keyword = "ets";
+                url = "https://portail.etsmtl.ca/";
+            }
         ];
     };
 }

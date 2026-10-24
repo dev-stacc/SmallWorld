@@ -22,5 +22,10 @@
       ],
       "groupName": "arr stack"
     }
-  ]
+  ],
+  "flux": {
+    "managerFilePatterns": [
+      "/^k8s/.+\\.ya?ml$/"
+    ]
+  }
 }
