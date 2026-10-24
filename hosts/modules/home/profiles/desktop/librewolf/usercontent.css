@@ -1,5 +1,5 @@
 @-moz-document domain({{tailnetDomain}}) {
-  * {
+  *:not([class*="icon"], [class*="Icon"], [class*="material"], [class*="fa-"], [class*="mdi"], [class*="ri-"], [class*="bi-"], [class*="ph-"], i, svg, svg *) {
     font-family: "{{fontName}}" !important;
   }
 }
