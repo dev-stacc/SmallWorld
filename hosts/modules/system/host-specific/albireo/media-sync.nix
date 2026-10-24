@@ -31,7 +31,8 @@
                     --exclude=downloads/ \
                     --exclude=.recyclebin/ \
                     --partial \
-                    --bwlimit=20000 \
+                    --bwlimit=12000 \
+                    --rsync-path='ionice -c 2 -n 7 nice -n 19 rsync' \
                     --human-readable \
                     --info=stats2 \
                     -e '${pkgs.openssh}/bin/ssh -i ${config.sops.templates."media-sync-key".path} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/var/lib/media-sync/known_hosts' \

@@ -8,6 +8,7 @@
         ./suricata.nix
         ./media-sync-key.nix
         ./cluster-dumps.nix
+        ./disk-io.nix
     ];
 
     biggerworld.ups = {
