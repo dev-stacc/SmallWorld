@@ -4,7 +4,7 @@ metadata:
   name: crowdsec-machines-prune
   namespace: crowdsec
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "17 4 * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 120
   successfulJobsHistoryLimit: 1
@@ -22,7 +22,7 @@ spec:
               command:
                 - sh
                 - -c
-                - ln -s /staging/etc/crowdsec /etc/crowdsec && exec cscli machines prune --duration 10m --force
+                - ln -s /staging/etc/crowdsec /etc/crowdsec && exec cscli machines prune --duration 72h --force
               resources:
                 requests:
                   cpu: 10m

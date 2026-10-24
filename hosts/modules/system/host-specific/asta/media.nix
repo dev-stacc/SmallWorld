@@ -1,6 +1,11 @@
 { username, ... }: {
   boot.kernelModules = [ "tun" ];
 
+  fileSystems."/home/${username}/media" = {
+    device = "/dev/disk/by-uuid/d2851d5a-b860-4a2e-8708-20cdfedc5376";
+    fsType = "ext4";
+  };
+
   systemd.tmpfiles.rules = [
     "d /home/${username}/media 0755 ${username} users -"
     "d /home/${username}/media/movies 0755 ${username} users -"
