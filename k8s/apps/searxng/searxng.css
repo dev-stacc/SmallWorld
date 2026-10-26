@@ -1011,11 +1011,14 @@ kbd {
         font-size: 16px;
     }
 
-    #categories {
-        overflow-x: visible;
+    #main_index #categories,
+    #main_results #categories {
+        overflow: visible;
     }
 
-    #categories_container {
+    #main_index #categories_container,
+    #main_results #categories_container {
+        width: 100%;
         min-width: 0;
         flex-wrap: wrap;
         justify-content: flex-start;
@@ -1035,5 +1038,12 @@ kbd {
     .search_filters select {
         min-width: 0;
         max-width: 100%;
+    }
+}
+
+@media screen and (min-width: 30em) and (max-width: 50em) {
+    #main_index #categories_container,
+    #main_results #categories_container {
+        justify-content: space-between;
     }
 }
