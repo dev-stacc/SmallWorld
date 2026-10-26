@@ -21,7 +21,15 @@
         lib.mapAttrsToList (name: value: "--${name}:#${value}") tridactylVars
     );
 
-    tridactylTheme = ":root{${tridactylDecls};--tridactyl-status-border:1px solid #${colors.base00};}";
+    tridactylFont =
+        "font-family:\"${theme.fonts.monospace}\",monospace !important;"
+        + "font-size:${toString theme.fonts.sizes.applications}pt !important;";
+
+    tridactylTheme =
+        ":root{${tridactylDecls};--tridactyl-status-border:1px solid #${colors.base00};}"
+        + "#command-line-holder,#tridactyl-input,#completions,"
+        + "#completions table,#completions .optionsHeader,"
+        + ".TridactylStatusIndicator{${tridactylFont}}";
 in {
     home.file.".config/tridactyl/tridactylrc".text = ''
         " sensible defaults for a qutebrowser -> tridactyl switch
