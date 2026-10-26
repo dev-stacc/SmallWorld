@@ -4,7 +4,7 @@
 :root.theme-dark,
 :root.theme-black {
     --sxng-chrome: "${FONT_NAME}", monospace;
-    --sxng-prose: monospace;
+    --sxng-prose: var(--sxng-chrome);
     --sxng-edge: 2px;
     --sxng-gutter: clamp(0.8rem, 4vw, 4rem);
     --sxng-width: calc(100% - 2 * var(--sxng-gutter));
@@ -254,6 +254,42 @@ footer,
 #categories .category_button:hover,
 #categories .category label:hover {
     text-decoration: underline;
+}
+
+#categories .category_button[name="category_general"] .category_name,
+#categories .category_button[name="category_images"] .category_name,
+#categories .category_button[name="category_videos"] .category_name,
+#categories .category_button[name="category_science"] .category_name,
+#categories .category_button[name="category_social media"] .category_name {
+    display: none;
+}
+
+#categories .category_button[name="category_general"]::after,
+#categories .category_button[name="category_images"]::after,
+#categories .category_button[name="category_videos"]::after,
+#categories .category_button[name="category_science"]::after,
+#categories .category_button[name="category_social media"]::after {
+    margin: auto 0;
+}
+
+#categories .category_button[name="category_general"]::after {
+    content: "gen";
+}
+
+#categories .category_button[name="category_images"]::after {
+    content: "img";
+}
+
+#categories .category_button[name="category_videos"]::after {
+    content: "vid";
+}
+
+#categories .category_button[name="category_science"]::after {
+    content: "sci";
+}
+
+#categories .category_button[name="category_social media"]::after {
+    content: "soc";
 }
 
 #categories .category_button.selected,
@@ -963,5 +999,41 @@ kbd {
 
     body.index_endpoint .index {
         padding-top: 3vh;
+    }
+
+    #q,
+    #search input,
+    #search select,
+    #search textarea,
+    .search_filters select,
+    #main_preferences input,
+    #main_preferences select {
+        font-size: 16px;
+    }
+
+    #categories {
+        overflow-x: visible;
+    }
+
+    #categories_container {
+        min-width: 0;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        column-gap: 0.4rem;
+    }
+
+    #categories .category_button {
+        padding: 0.6rem 0.4rem !important;
+    }
+
+    .search_filters {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        row-gap: 0.4rem;
+    }
+
+    .search_filters select {
+        min-width: 0;
+        max-width: 100%;
     }
 }
