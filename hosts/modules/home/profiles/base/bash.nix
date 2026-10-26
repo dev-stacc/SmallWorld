@@ -11,7 +11,9 @@
         "${p 0};${p 2};${p 4}";
 
     fg = v: "\\[\\e[38;2;${rgb v}m\\]";
-    off = "\\[\\e[0m\\]";
+    it = "\\[\\e[3m\\]";
+    off = "\\[\\e[39m\\]";
+    reset = "\\[\\e[0m\\]";
 
     c = theme.base16;
 
@@ -115,7 +117,7 @@ in {
                 fi
 
                 if [ -z "$plain" ]; then
-                    PS1="${fg blue}$host ❯ $dirseg${off}\n${fg red}❯${off} "
+                    PS1="${it}${fg blue}$host ▶ $dirseg${off}\n${fg red}▶${reset} "
                     return
                 fi
 
@@ -124,13 +126,13 @@ in {
                 (( snug  = ''${#host} + 1 + ''${#dirseg} + 1 + ''${#plain} ))
 
                 if (( roomy <= cols )); then
-                    PS1="${fg blue}$host ❯ $dirseg${off} ${fg red}❮ $disp\n${fg red}❯${off} "
+                    PS1="${it}${fg blue}$host ▶ $dirseg${off} ${fg red}◀ $disp\n${fg red}▶${reset} "
                 elif (( tight <= cols )); then
-                    PS1="${fg blue}$host❯ $dirseg${off} ${fg red}❮$disp\n${fg red}❯${off} "
+                    PS1="${it}${fg blue}$host▶ $dirseg${off} ${fg red}◀$disp\n${fg red}▶${reset} "
                 elif (( snug <= cols )); then
-                    PS1="${fg blue}$host❯$dirseg${off}${fg red}❮$disp\n${fg red}❯${off} "
+                    PS1="${it}${fg blue}$host▶$dirseg${off}${fg red}◀$disp\n${fg red}▶${reset} "
                 else
-                    PS1="${fg blue}$host ❯ $dirseg${off}\n$disp ${fg red}❯${off} "
+                    PS1="${it}${fg blue}$host ▶ $dirseg${off}\n$disp ${fg red}▶${reset} "
                 fi
             }
 

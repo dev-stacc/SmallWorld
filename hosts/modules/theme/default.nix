@@ -1,6 +1,3 @@
-# Single source of truth for colors, fonts and wallpaper.
-# Plain data: no pkgs, no module system. Reaches desktop/WM hosts via
-# specialArgs/extraSpecialArgs as `theme`; a TTY-only host never sees it.
 {
     base16 = {
         base00 = "0e0202"; #main BACKGROUND
@@ -24,9 +21,14 @@
     };
 
     fonts = {
-        monospace = "Major Mono Display";
-        sansSerif = "Major Mono Display";
-        serif     = "Major Mono Display";
+        customDir = ./fonts;
+
+        monospace = "Neuromax Cool Futuristic Gaming Logo";
+        sansSerif = "Neuromax Cool Futuristic Gaming Logo";
+        serif     = "Neuromax Cool Futuristic Gaming Logo";
+
+        promptFamily     = "Major Mono Display";
+        promptPostscript = "MajorMonoDisplay-Regular";
 
         sizes = {
             terminal     = 11;

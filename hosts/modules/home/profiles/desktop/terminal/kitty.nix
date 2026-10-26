@@ -48,7 +48,9 @@ in {
             font_family = theme.fonts.monospace;
             font_size = theme.fonts.sizes.terminal;
 
-            symbol_map = "U+002C,U+002E,U+003A,U+003B JetBrainsMono Nerd Font Mono";
+            italic_font = "postscript_name=${theme.fonts.promptPostscript}";
+
+            symbol_map = "U+002C,U+002E,U+003A,U+003B,U+25B6,U+25C0 JetBrainsMono Nerd Font Mono";
         };
     };
 }
