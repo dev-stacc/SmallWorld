@@ -28,10 +28,11 @@
         serif     = "Neuromax Cool Futuristic Gaming Logo";
 
         sizes = {
-            terminal     = 11;
-            applications = 11;
-            desktop      = 11;
-            popups       = 11;
+            terminal      = 11;
+            applications  = 11;
+            desktop       = 11;
+            popups        = 11;
+            desktopGlyphs = 7;
         };
     };
 

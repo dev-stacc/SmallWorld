@@ -11,8 +11,10 @@
     ];
 
     styles = builtins.replaceStrings
-        (map (n: "{{${n}}}") colorNames)
-        (map (n: "#${colors.${n}}") colorNames)
+        (map (n: "{{${n}}}") colorNames ++ [ "{{glyphSize}}" ])
+        (map (n: "#${colors.${n}}") colorNames ++ [
+            (toString theme.fonts.sizes.desktopGlyphs)
+        ])
         (builtins.readFile ./style.css);
 
     finalCss = pkgs.writeText "waybar-stylesheet.css" ''
@@ -21,7 +23,7 @@
                 "${theme.fonts.monospace}",
                 "JetBrainsMono Nerd Font",
                 monospace;
-            font-size: 15px;
+            font-size: ${toString theme.fonts.sizes.desktop}pt;
         }
         ${styles}
     '';

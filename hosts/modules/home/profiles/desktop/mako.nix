@@ -19,7 +19,7 @@ in {
             margin = 9;
             padding = 3;
             default-timeout = 6;
-            font = "${theme.fonts.monospace}";
+            font = "${theme.fonts.monospace} ${toString theme.fonts.sizes.popups}";
             icons = false;
             ignore-timeout = false;
             layer = "top";
