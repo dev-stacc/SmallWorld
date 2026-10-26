@@ -1,7 +1,15 @@
 { pkgs, theme, ... } :
 let
-    customFonts = pkgs.runCommandLocal "theme-fonts" { } ''
-        install -Dm444 -t $out/share/fonts/theme ${theme.fonts.customDir}/*
+    fontTools = pkgs.python3.withPackages (ps: [ ps.fonttools ]);
+
+    customFonts = pkgs.runCommandLocal "theme-fonts" {
+        nativeBuildInputs = [ fontTools ];
+    } ''
+        mkdir -p $out/share/fonts/theme
+        for face in ${theme.fonts.customDir}/*; do
+            python3 ${./monospace.py} "$face" "$out/share/fonts/theme/$(basename "$face")"
+        done
+        chmod 444 $out/share/fonts/theme/*
     '';
 in {
     home.packages = [ customFonts ] ++ (with pkgs; [
