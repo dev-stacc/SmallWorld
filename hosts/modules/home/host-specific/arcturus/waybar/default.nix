@@ -14,7 +14,7 @@ in {
 
         "custom/fan" = {
             exec = "${fanScript}";
-            format = "{} 󰵃 ";
+            format = "{}";
             interval = 3;
             tooltip = false;
         };

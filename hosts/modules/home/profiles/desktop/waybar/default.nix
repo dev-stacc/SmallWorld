@@ -109,22 +109,17 @@ in {
 
                 "memory" = {
                     interval = 30;
-                    format = "{used}/{total}  ";
+                    format = "{used}/{total}";
                     tooltip = false;
                 };
 
                 battery = {
                     format = "{capacity}% {icon}";
-                    format-icons = [
-                        "󰁺" "󰁻" "󰁼" "󰁽" "󰁾"
-                        "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"
-                    ];
                 };
 
                 "wireplumber" = {
                     format = "{volume} {icon}";
                     format-muted = "󰝟 muted";
-                    format-icons = ["󰕿 " "󰖀 " "󰕾 " " "];
                     tooltip = false;
                 };
 
@@ -136,12 +131,11 @@ in {
 
                 backlight = {
                     format = "{percent} {icon}";
-                    format-icons = ["󱩎 " "󱩏 " "󱩐 " "󱩐 " "󱩒 " "󱩓 " "󱩔 " "󱩕 " "󱩖 "];
                     tooltip = false;
                 };
 
                 "clock" = {
-                    format = "{0:%d/%m/%Y} 󰃭    {0:%H:%M}  ";
+                    format = "{0:%d/%m/%Y}  {0:%H:%M} ";
                     tooltip = false;
                 };
 
