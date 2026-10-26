@@ -27,9 +27,6 @@
         sansSerif = "Neuromax Cool Futuristic Gaming Logo";
         serif     = "Neuromax Cool Futuristic Gaming Logo";
 
-        promptFamily     = "Major Mono Display";
-        promptPostscript = "MajorMonoDisplay-Regular";
-
         sizes = {
             terminal     = 11;
             applications = 11;
