@@ -181,7 +181,7 @@ spec:
             limits:
               memory: "4Gi"
               cpu: "4"
-              squat.ai/dri: 1
+              devic.es/dri: 1
       volumes:
         - name: config
           persistentVolumeClaim:
