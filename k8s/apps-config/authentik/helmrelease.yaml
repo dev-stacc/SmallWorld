@@ -27,6 +27,13 @@ spec:
     # as env vars from the authentik-secrets ExternalSecret via global.envFrom
     # below, which is what authentik actually reads.
     global:
+      env:
+        - name: AUTHENTIK_DISABLE_UPDATE_CHECK
+          value: "true"
+        - name: AUTHENTIK_DISABLE_STARTUP_ANALYTICS
+          value: "true"
+        - name: AUTHENTIK_ERROR_REPORTING__ENABLED
+          value: "false"
       envFrom:
         - secretRef:
             name: authentik-secrets
