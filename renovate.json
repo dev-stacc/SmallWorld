@@ -6,6 +6,7 @@
   "schedule": [
     "before 6am on monday"
   ],
+  "pinDigests": true,
   "ignorePaths": [
     "**/node_modules/**",
     "k8s/flux/flux-system/gotk-components.yaml"
@@ -21,11 +22,18 @@
         "k8s/apps/arr/**"
       ],
       "groupName": "arr stack"
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/dev-stacc/**"
+      ],
+      "enabled": false
     }
   ],
   "flux": {
     "managerFilePatterns": [
       "/^k8s/.+\\.ya?ml$/"
     ]
-  }
+  },
+  "prHourlyLimit": 0
 }

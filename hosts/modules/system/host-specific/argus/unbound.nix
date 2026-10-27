@@ -18,6 +18,7 @@
                 prefetch = true;
                 num-threads = 1;
                 so-rcvbuf = "1m";
+                tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
                 private-address = [
                     "192.168.0.0/16"
                     "169.254.0.0/16"
@@ -27,6 +28,17 @@
                     "fe80::/10"
                 ];
             };
+            forward-zone = [{
+                name = ".";
+                forward-tls-upstream = true;
+                forward-first = false;
+                forward-addr = [
+                    "9.9.9.9@853#dns.quad9.net"
+                    "149.112.112.112@853#dns.quad9.net"
+                    "1.1.1.1@853#cloudflare-dns.com"
+                    "1.0.0.1@853#cloudflare-dns.com"
+                ];
+            }];
         };
     };
 }

@@ -83,6 +83,7 @@ let
     monitoring = grouped "monitoring" ([
         (hostPage "flux" "fleet" "home" "/flux")
         (hostPage "backups" "-" "home" "/backups")
+        (hostPage "k8s" "cluster" "home" "/k8s")
     ] ++ clusterApps true {
         grafana = "metrics";
         uptime = "status";
@@ -125,6 +126,13 @@ let
         url = "http://${tailnet.ips.loki}:3100/nginx-health";
         label = "loki.${tailnet.domain}:3100";
         role = "logs";
+        auth = false;
+        nav = false;
+    } {
+        name = "crowdsec";
+        url = "http://${tailnet.ips.crowdsec}:8080/health";
+        label = "crowdsec.${tailnet.domain}:8080";
+        role = "security";
         auth = false;
         nav = false;
     }];

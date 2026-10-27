@@ -115,7 +115,7 @@ in {
                 fi
 
                 if [ -z "$plain" ]; then
-                    PS1="${fg blue}$host ❯ $dirseg${off}\n${fg red}❯${off} "
+                    PS1="${fg blue}$host ▶ $dirseg${off}\n${fg red}▶${off} "
                     return
                 fi
 
@@ -124,13 +124,13 @@ in {
                 (( snug  = ''${#host} + 1 + ''${#dirseg} + 1 + ''${#plain} ))
 
                 if (( roomy <= cols )); then
-                    PS1="${fg blue}$host ❯ $dirseg${off} ${fg red}❮ $disp\n${fg red}❯${off} "
+                    PS1="${fg blue}$host ▶ $dirseg${off} ${fg red}◀ $disp\n${fg red}▶${off} "
                 elif (( tight <= cols )); then
-                    PS1="${fg blue}$host❯ $dirseg${off} ${fg red}❮$disp\n${fg red}❯${off} "
+                    PS1="${fg blue}$host▶ $dirseg${off} ${fg red}◀$disp\n${fg red}▶${off} "
                 elif (( snug <= cols )); then
-                    PS1="${fg blue}$host❯$dirseg${off}${fg red}❮$disp\n${fg red}❯${off} "
+                    PS1="${fg blue}$host▶$dirseg${off}${fg red}◀$disp\n${fg red}▶${off} "
                 else
-                    PS1="${fg blue}$host ❯ $dirseg${off}\n$disp ${fg red}❯${off} "
+                    PS1="${fg blue}$host ▶ $dirseg${off}\n$disp ${fg red}▶${off} "
                 fi
             }
 

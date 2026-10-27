@@ -23,7 +23,6 @@
     boot = {
         kernel.sysctl."net.ipv4.ip_forward" = 1;
         kernelModules = [ "br_netfilter"  "overlay" ];
-        supportedFilesystems = [ "nfs" "nfs4" ];
     };
 
     networking.firewall.allowedUDPPorts = [ 51820 ];
