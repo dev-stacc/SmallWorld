@@ -1,5 +1,6 @@
 { username, ... }: {
   boot.kernelModules = [ "tun" ];
+  boot.supportedFilesystems = [ "btrfs" ];
 
   fileSystems."/home/${username}/media" = {
     device = "/dev/disk/by-uuid/d2851d5a-b860-4a2e-8708-20cdfedc5376";

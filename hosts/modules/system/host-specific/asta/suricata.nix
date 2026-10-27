@@ -19,6 +19,12 @@
         "cluster-type" = "cluster_flow";
         defrag = true;
       }];
+      "app-layer".protocols.modbus = {
+        enabled = "yes";
+        "detection-enabled" = "yes";
+        "stream-depth" = 0;
+      };
+
       outputs = [{
         "eve-log" = {
           enabled = true;
