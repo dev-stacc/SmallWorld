@@ -3,6 +3,7 @@ let
 in {
     window = {
         border = borderWidth;
+        gapsIn = 6;
     };
 
     base16 = {
@@ -41,6 +42,12 @@ in {
             popups        = 11;
             desktopGlyphs = 7;
         };
+    };
+
+    bar = {
+        font     = "Departure Mono";
+        fontSize = 10;
+        width    = 18;
     };
 
     tabs = {

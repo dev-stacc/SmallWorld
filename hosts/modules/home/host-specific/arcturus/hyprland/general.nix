@@ -2,7 +2,7 @@
     colors = theme.base16;
 in {
     general = {
-        gaps_in = 6;
+        gaps_in = theme.window.gapsIn;
         gaps_out = theme.tabs.width + theme.tabs.gap + theme.tabs.margin;
         border_size = theme.window.border;
         locale = "en_CA";

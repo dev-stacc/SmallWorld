@@ -3,6 +3,7 @@
 # arcturus). No gh token on disk; no discord.
 { pkgs, ... } : {
     imports = [
+        ../../profiles/desktop/waybar/default.nix
         ./sway/default.nix
         ./waybar/default.nix
     ];

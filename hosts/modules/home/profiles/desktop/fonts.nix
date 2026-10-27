@@ -13,6 +13,7 @@ let
     '';
 in {
     home.packages = [ customFonts ] ++ (with pkgs; [
+        departure-mono
         major-mono-display
         nerd-fonts.jetbrains-mono
         dejavu_fonts

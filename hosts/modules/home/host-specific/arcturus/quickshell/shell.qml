@@ -5,6 +5,11 @@ import Quickshell.Hyprland
 ShellRoot {
     id: shell
 
+    readonly property var tabOverrides: ({
+        "kitty-launcher": { "label": "apps", "scale": 0.5 },
+        "kitty-control": { "label": "net", "scale": 0.5 }
+    })
+
     Timer {
         interval: Theme.refreshMs
         running: true
@@ -57,15 +62,17 @@ ShellRoot {
                     readonly property int ww: (ipc.size ?? [0, 0])[0]
                     readonly property int wh: (ipc.size ?? [0, 0])[1]
 
+                    readonly property var ov: shell.tabOverrides[ipc.title ?? ""] ?? null
+
                     side: (wx + ww / 2) < (panel.hmon.width / 2) ? "left" : "right"
-                    label: (ipc.class ?? "").toLowerCase()
+                    label: ov ? ov.label : (ipc.class ?? "").toLowerCase()
                     active: modelData.activated
 
                     visible: onScreen && !anyFullscreen && ww > 0
                     x: side === "left" ? wx - Theme.tabWidth - Theme.border : wx + ww + Theme.border
                     y: wy - Theme.border + Theme.yOffset
                     width: Theme.tabWidth
-                    height: Math.min(wh + Theme.border * 2, Theme.maxHeight)
+                    height: Math.min((wh + Theme.border * 2) * (ov ? ov.scale : 1), Theme.maxHeight)
                 }
             }
         }
