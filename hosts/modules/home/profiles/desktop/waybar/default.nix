@@ -88,7 +88,7 @@ in {
                 };
                                 
                 cpu = {
-                    format = "{usage}%";
+                    format = "{usage}";
                     interval = 1;
                     tooltip = false;
                 };
@@ -102,7 +102,7 @@ in {
                 
                 "custom/cpu-temp" = {
                     exec = "${cpuTempsScript}";
-                    format = "{}°c";
+                    format = "{}";
                     interval = 2;
                     tooltip = false;
                 };
@@ -114,12 +114,12 @@ in {
                 };
 
                 battery = {
-                    format = "{capacity}% {icon}";
+                    format = "{capacity}";
                 };
 
                 "wireplumber" = {
                     format = "{volume} {icon}";
-                    format-muted = "󰝟 muted";
+                    format-muted = "muted";
                     tooltip = false;
                 };
 
