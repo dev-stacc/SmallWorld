@@ -1,4 +1,10 @@
-{
+let
+    borderWidth = 2;
+in {
+    window = {
+        border = borderWidth;
+    };
+
     base16 = {
         base00 = "0e0202"; #main BACKGROUND
         base01 = "000000"; #BLACK
@@ -9,7 +15,7 @@
         base05 = "ffffff"; #muted FOREGROUND
         base06 = "6abf24"; #special FOREGROUND
 
-        base07 = "000000"; #
+        base07 = "7a1f28"; #DARK RED
         base08 = "000000"; #
         base09 = "000000"; #
         base0A = "000000"; #
@@ -26,6 +32,7 @@
         monospace = "Neuromax Cool Futuristic Gaming Logo";
         sansSerif = "Neuromax Cool Futuristic Gaming Logo";
         serif     = "Neuromax Cool Futuristic Gaming Logo";
+        readable  = "JetBrainsMono Nerd Font";
 
         sizes = {
             terminal      = 11;
@@ -34,6 +41,18 @@
             popups        = 11;
             desktopGlyphs = 7;
         };
+    };
+
+    tabs = {
+        width     = 15;
+        gap       = borderWidth;
+        margin    = 17;
+        maxHeight = 210;
+        slope     = 24;
+        yOffset   = 0;
+        fontSize  = 8;
+        refreshMs = 150;
+        inactiveOpacity = 0.6;
     };
 
     wallpaper = ./wallpapers/cyberpunk-bg.jpg;

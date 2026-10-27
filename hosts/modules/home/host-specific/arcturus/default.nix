@@ -6,6 +6,7 @@
         ./hyprpaper.nix
         ./k3s-control/default.nix
         ./oss/default.nix
+        ./quickshell/default.nix
         ./ssh.nix
         ./waybar/default.nix
     ];

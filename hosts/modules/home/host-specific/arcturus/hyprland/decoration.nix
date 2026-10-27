@@ -1,6 +1,6 @@
 {
     decoration = {
-        rounding = 24;
+        rounding = 0;
         rounding_power = 1.0;
         active_opacity = 0.9;
         inactive_opacity = 0.6;
