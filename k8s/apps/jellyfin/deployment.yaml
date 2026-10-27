@@ -155,8 +155,6 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
-            - name: dri
-              mountPath: /dev/dri
           startupProbe:
             httpGet:
               path: /health
@@ -183,6 +181,7 @@ spec:
             limits:
               memory: "4Gi"
               cpu: "4"
+              squat.ai/dri: 1
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -190,8 +189,4 @@ spec:
         - name: media
           hostPath:
             path: ${MEDIA_HOST_PATH}
-            type: Directory
-        - name: dri
-          hostPath:
-            path: /dev/dri
             type: Directory
