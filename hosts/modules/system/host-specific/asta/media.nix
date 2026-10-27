@@ -3,18 +3,18 @@
   boot.supportedFilesystems = [ "btrfs" ];
 
   fileSystems."/home/${username}/media" = {
-    device = "/dev/disk/by-uuid/d2851d5a-b860-4a2e-8708-20cdfedc5376";
-    fsType = "ext4";
+    device = "/dev/disk/by-uuid/02e853be-d53c-4a43-b419-718097c0417b";
+    fsType = "btrfs";
+    options = [ "subvol=@media" "noatime" "space_cache=v2" ];
+  };
+
+  services.btrfs.autoScrub = {
+    enable = true;
+    fileSystems = [ "/home/${username}/media" ];
+    interval = "Sun *-*-* 09:00:00";
   };
 
   systemd.tmpfiles.rules = [
-    "d /home/${username}/media 0755 ${username} users -"
-    "d /home/${username}/media/movies 0755 ${username} users -"
-    "d /home/${username}/media/shows 0755 ${username} users -"
-    "d /home/${username}/media/music 0755 ${username} users -"
-    "d /home/${username}/media/downloads 0755 ${username} users -"
-    "d /home/${username}/media/downloads/complete 0755 ${username} users -"
-    "d /home/${username}/media/downloads/incomplete 0755 ${username} users -"
     "d /home/${username}/jellyfin/config 0755 ${username} users -"
     "s /home/${username}/navidrome 0755 ${username} users -"
   ];
