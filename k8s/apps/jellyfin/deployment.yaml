@@ -20,6 +20,12 @@ spec:
           hostnames:
             - authentik.${TAILNET_DOMAIN}
       initContainers:
+        - name: wait-for-media
+          image: alpine:3.19
+          command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for media; sleep 2; done"]
+          volumeMounts:
+            - name: media
+              mountPath: /gate
         - name: install-sso-plugin
           image: alpine:3.19
           command:
