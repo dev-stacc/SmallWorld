@@ -146,8 +146,8 @@ in {
                 };
 
                 "network" = {
-                    "format-wifi" = "{bandwidthDownBits} {bandwidthUpBits}";
-                    "format-ethernet" = "{bandwidthDownBits} {bandwidthUpBits}";
+                    "format-wifi" = "{bandwidthDownBits} {bandwidthUpBits}";
+                    "format-ethernet" = "{bandwidthDownBits} {bandwidthUpBits}";
                     "format-disconnected" = "󰤭 ";
                     "format-disabled" = "󰤭 ";
                     "tooltip" = false;
