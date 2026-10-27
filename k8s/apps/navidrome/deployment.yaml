@@ -27,6 +27,8 @@ spec:
               value: /data
             - name: ND_LOGLEVEL
               value: info
+            - name: ND_ENABLEINSIGHTS
+              value: "false"
             - name: ND_REVERSEPROXYUSERHEADER
               value: X-Authentik-Username
             - name: ND_REVERSEPROXYWHITELIST
