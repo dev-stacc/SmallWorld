@@ -8,6 +8,8 @@ ShellRoot {
 
     property var procLabels: ({})
     property var idleStats: ({})
+    property var hudItems: ({})
+    property bool idle: false
 
     Process {
         id: labelProc
@@ -44,6 +46,29 @@ ShellRoot {
         running: true
         repeat: true
         onTriggered: if (!idleProc.running) idleProc.running = true
+    }
+
+    Process {
+        id: itemsProc
+        command: [Theme.itemsScript]
+        running: true
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    shell.hudItems = JSON.parse(this.text);
+                } catch (e) {
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 30000
+        running: shell.idle
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: if (!itemsProc.running) itemsProc.running = true
     }
 
     Timer {
@@ -104,7 +129,9 @@ ShellRoot {
 
             Hud {
                 visible: panel.liveCount === 0
+                onVisibleChanged: shell.idle = visible
                 s: shell.idleStats
+                items: shell.hudItems
                 x: Theme.gapsH
                 y: Theme.gapsV
                 width: panel.width - Theme.gapsH * 2

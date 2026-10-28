@@ -5,6 +5,7 @@ let
     window = theme.window;
 
     labelScript = pkgs.writeShellScript "tab-labels" (builtins.readFile ./scripts/tab-labels.sh);
+    itemsScript = pkgs.writeShellScript "hud-items" (builtins.readFile ./scripts/hud-items.sh);
     idleScript = pkgs.writeShellScript "idle-stats" (builtins.readFile ./scripts/idle-stats.sh);
 
     themeQml = pkgs.writeText "Theme.qml" ''
@@ -19,6 +20,7 @@ let
             readonly property color muted: "#${colors.base07}"
             readonly property color cyan: "#${colors.base03}"
             readonly property string fontFamily: "${theme.fonts.readable}"
+            readonly property string displayFont: "${theme.bar.font}"
             readonly property int fontSize: ${toString tabs.fontSize}
             readonly property int tabWidth: ${toString tabs.width}
             readonly property int tabGap: ${toString tabs.gap}
@@ -28,6 +30,7 @@ let
             readonly property int labelMs: ${toString tabs.labelMs}
             readonly property string labelScript: "${labelScript}"
             readonly property string idleScript: "${idleScript}"
+            readonly property string itemsScript: "${itemsScript}"
             readonly property int gapsH: ${toString window.gapsH}
             readonly property int gapsV: ${toString window.gapsV}
             readonly property real inactiveOpacity: ${toString tabs.inactiveOpacity}
