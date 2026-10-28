@@ -15,7 +15,7 @@ let
     ewwYuck = pkgs.writeText "eww.yuck" ''
         (defpoll stats
             :interval "2s"
-            :initial '{"cpu":"0","temp":"0","fan":"0","bat":0,"batstate":"Unknown","ram":"0","wifi":"0","ts":"--","bt":"--","ws":"-","time":"--:--","vol":"0","bri":"0"}'
+            :initial '{"cpu":"0","temp":"0","fan":"0","bat":0,"batstate":"Unknown","ram":"0","wifi":"0","ts":"--","bt":"--","ws":"-","vol":"0","bri":"0"}'
             "${statsScript}")
 
         (deflisten blink :initial "1"
@@ -54,7 +54,6 @@ let
                  :spacing ${toString theme.bar.spacing}
                  :valign "center"
                 (battery :pct {stats.bat} :state {stats.batstate})
-                (cell :text "''${stats.time}")
                 (cell :text "TS ''${stats.ts}")
                 (cell :text "BT ''${stats.bt}")
                 (cell :text "VOL ''${stats.vol}")
