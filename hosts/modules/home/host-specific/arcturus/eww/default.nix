@@ -51,8 +51,10 @@ let
                 :width ${toString theme.bar.width}
                 :height ${toString barHeight}
                 :anchor "top left")
+            (revealer :transition "crossfade"
+                      :duration "${toString theme.anim.ms}ms"
+                      :reveal {windows != "0"}
             (box :class "bar"
-                 :visible {windows != "0"}
                  :orientation "v"
                  :space-evenly false
                  :spacing ${toString theme.bar.spacing}
@@ -68,7 +70,7 @@ let
                 (cell :text "FAN ''${stats.fan}")
                 (cell :text "''${stats.temp}°")
                 (cell :text "CPU ''${stats.cpu}%")
-                (cell :text "WS ''${stats.ws}")))
+                (cell :text "WS ''${stats.ws}"))))
     '';
 
     ewwScss = pkgs.writeText "eww.scss" ''

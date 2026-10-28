@@ -33,6 +33,7 @@ let
             readonly property string itemsScript: "${itemsScript}"
             readonly property int gapsH: ${toString window.gapsH}
             readonly property int gapsV: ${toString window.gapsV}
+            readonly property int animMs: ${toString theme.anim.ms}
             readonly property real inactiveOpacity: ${toString tabs.inactiveOpacity}
             readonly property int border: ${toString theme.window.border}
             readonly property int maxHeight: ${toString tabs.maxHeight}

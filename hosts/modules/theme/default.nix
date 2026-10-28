@@ -50,6 +50,10 @@ in {
         };
     };
 
+    anim = {
+        ms = 300;
+    };
+
     bar = {
         font     = "Departure Mono";
         fontSize = 10;

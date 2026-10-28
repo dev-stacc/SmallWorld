@@ -128,8 +128,13 @@ ShellRoot {
             }
 
             Hud {
-                visible: panel.liveCount === 0
+                opacity: panel.liveCount === 0 ? 1 : 0
+                visible: opacity > 0
                 onVisibleChanged: shell.idle = visible
+
+                Behavior on opacity {
+                    NumberAnimation { duration: Theme.animMs; easing.type: Easing.InOutQuad }
+                }
                 s: shell.idleStats
                 items: shell.hudItems
                 x: Theme.gapsH
@@ -172,6 +177,10 @@ ShellRoot {
                     y: wy - Theme.border + Theme.yOffset
                     width: Theme.tabWidth
                     height: Math.min((wh + Theme.border * 2) * (ov ? ov.scale : 1), Theme.maxHeight)
+
+                    Behavior on x { NumberAnimation { duration: Theme.animMs; easing.type: Easing.OutQuint } }
+                    Behavior on y { NumberAnimation { duration: Theme.animMs; easing.type: Easing.OutQuint } }
+                    Behavior on height { NumberAnimation { duration: Theme.animMs; easing.type: Easing.OutQuint } }
                 }
             }
         }
