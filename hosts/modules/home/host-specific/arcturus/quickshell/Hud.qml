@@ -195,8 +195,8 @@ Item {
         triggeredOnStart: true
         onTriggered: {
             const d = new Date();
-            root.clockText = Qt.formatDateTime(d, "HH:mm");
-            root.dateText = Qt.formatDateTime(d, "MM-dd-yy");
+            root.clockText = Qt.formatDateTime(d, "HHmm");
+            root.dateText = Qt.formatDateTime(d, "MM dd yy");
         }
     }
 
