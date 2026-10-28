@@ -23,7 +23,7 @@ in {
         base06 = "6abf24"; #special FOREGROUND
 
         base07 = "7a1f28"; #DARK RED
-        base08 = "000000"; #
+        base08 = "8fdf4a"; #LIGHT GREEN
         base09 = "000000"; #
         base0A = "000000"; #
         base0B = "000000"; #
@@ -65,6 +65,7 @@ in {
         yOffset   = 0;
         fontSize  = 8;
         refreshMs = 150;
+        labelMs   = 1000;
         inactiveOpacity = 0.6;
     };
 

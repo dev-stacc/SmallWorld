@@ -1,9 +1,34 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
 
 ShellRoot {
     id: shell
+
+    property var procLabels: ({})
+
+    Process {
+        id: labelProc
+        command: [Theme.labelScript]
+        running: true
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    shell.procLabels = JSON.parse(this.text);
+                } catch (e) {
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: Theme.labelMs
+        running: true
+        repeat: true
+        onTriggered: if (!labelProc.running) labelProc.running = true
+    }
 
     readonly property var tabOverrides: ({
         "kitty-launcher": { "label": "apps", "scale": 0.5 },
@@ -65,7 +90,8 @@ ShellRoot {
                     readonly property var ov: shell.tabOverrides[ipc.title ?? ""] ?? null
 
                     side: (wx + ww / 2) < (panel.hmon.width / 2) ? "left" : "right"
-                    label: ov ? ov.label : (ipc.class ?? "").toLowerCase()
+                    label: ov ? ov.label
+                        : (shell.procLabels[String(ipc.pid)] ?? (ipc.class ?? "").toLowerCase())
                     active: modelData.activated
 
                     visible: onScreen && !anyFullscreen && ww > 0

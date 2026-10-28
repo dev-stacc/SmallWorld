@@ -3,6 +3,8 @@ let
     colors = theme.base16;
     tabs = theme.tabs;
 
+    labelScript = pkgs.writeShellScript "tab-labels" (builtins.readFile ./scripts/tab-labels.sh);
+
     themeQml = pkgs.writeText "Theme.qml" ''
         pragma Singleton
 
@@ -20,6 +22,8 @@ let
             readonly property int slope: ${toString tabs.slope}
             readonly property int yOffset: ${toString tabs.yOffset}
             readonly property int refreshMs: ${toString tabs.refreshMs}
+            readonly property int labelMs: ${toString tabs.labelMs}
+            readonly property string labelScript: "${labelScript}"
             readonly property real inactiveOpacity: ${toString tabs.inactiveOpacity}
             readonly property int border: ${toString theme.window.border}
             readonly property int maxHeight: ${toString tabs.maxHeight}

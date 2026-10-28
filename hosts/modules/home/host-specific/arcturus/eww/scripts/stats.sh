@@ -25,13 +25,28 @@ cpu_usage() {
     printf '%s %s\n' "$total" "$idle" > "$STATE"
 }
 
+hwmon_dir() {
+    local hit
+    hit=$(grep -rl "$1" /sys/class/hwmon/*/name 2>/dev/null | head -1)
+    [ -n "$hit" ] && dirname "$hit"
+}
+
 cpu_temp() {
-    local hwmon raw
-    hwmon=$(grep -rl coretemp /sys/class/hwmon/*/name 2>/dev/null | head -1)
-    [ -z "$hwmon" ] && { echo "--"; return; }
-    raw=$(cat "$(dirname "$hwmon")/temp1_input" 2>/dev/null)
+    local d raw
+    d=$(hwmon_dir coretemp)
+    [ -z "$d" ] && { echo "--"; return; }
+    raw=$(cat "$d/temp1_input" 2>/dev/null)
     [ -z "$raw" ] && { echo "--"; return; }
     echo $((raw / 1000))
+}
+
+fan_speed() {
+    local d raw
+    d=$(hwmon_dir thinkpad)
+    [ -z "$d" ] && { echo "--"; return; }
+    raw=$(cat "$d/fan1_input" 2>/dev/null)
+    [ -z "$raw" ] && { echo "--"; return; }
+    echo "$raw"
 }
 
 ram_used() {
@@ -40,6 +55,36 @@ ram_used() {
     avail=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
     used=$((total - avail))
     awk -v u="$used" 'BEGIN{printf "%.1f", u/1048576}'
+}
+
+tailscale_state() {
+    tailscale status >/dev/null 2>&1 && echo "UP" || echo "DOWN"
+}
+
+bluetooth_state() {
+    case "$(bluetoothctl show 2>/dev/null | awk '/Powered:/ {print $2; exit}')" in
+        yes) echo "ON" ;;
+        *)   echo "OFF" ;;
+    esac
+}
+
+wifi_signal() {
+    local q
+    if rfkill list wifi 2>/dev/null | grep -q 'blocked: yes'; then
+        echo "OFF"
+        return
+    fi
+    q=$(awk '/wlan|wlp/ {gsub(/\./,"",$3); print $3; exit}' /proc/net/wireless 2>/dev/null)
+    [ -z "$q" ] && { echo "OFF"; return; }
+    echo $((q * 100 / 70))
+}
+
+battery() {
+    cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo 0
+}
+
+battery_state() {
+    cat /sys/class/power_supply/BAT0/status 2>/dev/null || echo "Unknown"
 }
 
 volume() {
@@ -52,31 +97,25 @@ brightness() {
     brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%' || echo "--"
 }
 
-tailscale_state() {
-    tailscale status >/dev/null 2>&1 && echo "UP" || echo "DOWN"
+clock() {
+    date +%H:%M
 }
 
-wifi_signal() {
-    local q
-    q=$(awk '/:/ {gsub(/\./,"",$3); print $3; exit}' /proc/net/wireless 2>/dev/null)
-    [ -z "$q" ] && { echo "--"; return; }
-    echo $((q * 100 / 70))
+workspace() {
+    hyprctl -j activeworkspace 2>/dev/null | sed -n 's/.*"id": *\([0-9-]*\).*/\1/p' | head -1
 }
 
-battery() {
-    local cap
-    cap=$(cat /sys/class/power_supply/BAT0/capacity 2>/dev/null)
-    [ -z "$cap" ] && { echo "--"; return; }
-    echo "$cap"
-}
-
-printf '{"cpu":"%s","temp":"%s","ram":"%s","vol":"%s","bri":"%s","time":"%s","ts":"%s","wifi":"%s","bat":"%s"}\n' \
+printf '{"cpu":"%s","temp":"%s","fan":"%s","bat":%s,"batstate":"%s","ram":"%s","wifi":"%s","ts":"%s","bt":"%s","ws":"%s","time":"%s","vol":"%s","bri":"%s"}\n' \
     "$(cpu_usage)" \
     "$(cpu_temp)" \
+    "$(fan_speed)" \
+    "$(battery)" \
+    "$(battery_state)" \
     "$(ram_used)" \
-    "$(volume)" \
-    "$(brightness)" \
-    "$(date +%H:%M)" \
-    "$(tailscale_state)" \
     "$(wifi_signal)" \
-    "$(battery)"
+    "$(tailscale_state)" \
+    "$(bluetooth_state)" \
+    "$(workspace)" \
+    "$(clock)" \
+    "$(volume)" \
+    "$(brightness)"
