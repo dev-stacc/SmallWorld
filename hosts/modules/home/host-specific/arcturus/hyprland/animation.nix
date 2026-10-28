@@ -7,10 +7,12 @@ in {
         bezier = [ "snap, 0.22, 1, 0.3, 1" ];
 
         animation = [
-            "windows, 1, ${ds}, snap, slide"
-            "windowsOut, 1, ${ds}, snap, slide"
-            "border, 1, ${ds}, snap"
-            "fade, 1, ${ds}, snap"
+            "windows, 0"
+            "windowsIn, 0"
+            "windowsOut, 0"
+            "windowsMove, 0"
+            "border, 0"
+            "fade, 0"
             "workspaces, 1, ${ds}, snap, slide"
         ];
     };

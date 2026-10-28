@@ -178,9 +178,6 @@ ShellRoot {
                     width: Theme.tabWidth
                     height: Math.min((wh + Theme.border * 2) * (ov ? ov.scale : 1), Theme.maxHeight)
 
-                    Behavior on x { NumberAnimation { duration: Theme.animMs; easing.type: Easing.OutQuint } }
-                    Behavior on y { NumberAnimation { duration: Theme.animMs; easing.type: Easing.OutQuint } }
-                    Behavior on height { NumberAnimation { duration: Theme.animMs; easing.type: Easing.OutQuint } }
                 }
             }
         }

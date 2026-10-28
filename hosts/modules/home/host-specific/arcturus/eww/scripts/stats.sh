@@ -62,9 +62,9 @@ tailscale_state() {
 }
 
 bluetooth_state() {
-    case "$(bluetoothctl show 2>/dev/null | awk '/Powered:/ {print $2; exit}')" in
-        yes) echo "ON" ;;
-        *)   echo "OFF" ;;
+    case "$(busctl get-property org.bluez /org/bluez/hci0 org.bluez.Adapter1 Powered 2>/dev/null)" in
+        "b true") echo "ON" ;;
+        *)        echo "OFF" ;;
     esac
 }
 
