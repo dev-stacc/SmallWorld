@@ -50,10 +50,15 @@ in {
         };
     };
 
+    anim = {
+        ms = 300;
+    };
+
     bar = {
         font     = "Departure Mono";
         fontSize = 10;
         width    = 18;
+        spacing  = 19;
     };
 
     tabs = {
@@ -69,5 +74,5 @@ in {
         inactiveOpacity = 0.6;
     };
 
-    wallpaper = ./wallpapers/cyberpunk-bg.jpg;
+    wallpaper = ./wallpapers/cyberpunk-ui-bg.png;
 }

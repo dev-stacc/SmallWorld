@@ -7,6 +7,9 @@ ShellRoot {
     id: shell
 
     property var procLabels: ({})
+    property var idleStats: ({})
+    property var hudItems: ({})
+    property bool idle: false
 
     Process {
         id: labelProc
@@ -21,6 +24,51 @@ ShellRoot {
                 }
             }
         }
+    }
+
+    Process {
+        id: idleProc
+        command: [Theme.idleScript]
+        running: true
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    shell.idleStats = JSON.parse(this.text);
+                } catch (e) {
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: if (!idleProc.running) idleProc.running = true
+    }
+
+    Process {
+        id: itemsProc
+        command: [Theme.itemsScript]
+        running: true
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    shell.hudItems = JSON.parse(this.text);
+                } catch (e) {
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 30000
+        running: shell.idle
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: if (!itemsProc.running) itemsProc.running = true
     }
 
     Timer {
@@ -65,6 +113,36 @@ ShellRoot {
 
             readonly property var hmon: Hyprland.monitorFor(modelData)
 
+            readonly property int liveCount: {
+                let n = 0;
+                const vs = Hyprland.toplevels.values;
+                for (let i = 0; i < vs.length; i++) {
+                    const o = vs[i].lastIpcObject ?? ({});
+                    if (o.mapped === true && o.hidden !== true && hmon !== null
+                        && o.monitor === hmon.id && o.workspace !== undefined
+                        && hmon.activeWorkspace !== null
+                        && o.workspace.id === hmon.activeWorkspace.id)
+                        n++;
+                }
+                return n;
+            }
+
+            Hud {
+                opacity: panel.liveCount === 0 ? 1 : 0
+                visible: opacity > 0
+                onVisibleChanged: shell.idle = visible
+
+                Behavior on opacity {
+                    NumberAnimation { duration: Theme.animMs; easing.type: Easing.InOutQuad }
+                }
+                s: shell.idleStats
+                items: shell.hudItems
+                x: Theme.gapsH
+                y: Theme.gapsV
+                width: panel.width - Theme.gapsH * 2
+                height: panel.height - Theme.gapsV * 2
+            }
+
             Repeater {
                 model: Hyprland.toplevels
 
@@ -99,6 +177,7 @@ ShellRoot {
                     y: wy - Theme.border + Theme.yOffset
                     width: Theme.tabWidth
                     height: Math.min((wh + Theme.border * 2) * (ov ? ov.scale : 1), Theme.maxHeight)
+
                 }
             }
         }

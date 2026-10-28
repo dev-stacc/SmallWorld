@@ -1,7 +1,7 @@
 { lib, theme, ... } : let
     bind = import ./bind.nix;
     general = import ./general.nix { inherit theme; };
-    animation = import ./animation.nix;
+    animation = import ./animation.nix { inherit theme; };
     decoration = import ./decoration.nix;
     layerrule = import ./layerrule.nix;
     windowrule = import ./windowrule.nix;
