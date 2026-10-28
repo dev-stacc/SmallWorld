@@ -3,7 +3,7 @@
 in {
     general = {
         gaps_in = theme.window.gapsIn;
-        gaps_out = theme.tabs.width + theme.tabs.gap + theme.tabs.margin;
+        gaps_out = "${toString theme.window.gapsV} ${toString theme.window.gapsH} ${toString theme.window.gapsV} ${toString theme.window.gapsH}";
         border_size = theme.window.border;
         locale = "en_CA";
         layout = "master";

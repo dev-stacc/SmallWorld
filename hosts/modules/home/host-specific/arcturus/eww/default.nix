@@ -6,10 +6,9 @@ let
 
     screenHeight = 1080;
 
-    gapsOut = tabs.width + tabs.gap + tabs.margin;
-    barX = gapsOut - window.border - theme.bar.width;
-    barTop = gapsOut - window.border + tabs.maxHeight + window.gapsIn;
-    barHeight = screenHeight - barTop - gapsOut;
+    barX = window.gapsH - theme.bar.width;
+    barTop = window.gapsV + tabs.maxHeight + window.gapsIn;
+    barHeight = screenHeight - barTop - window.gapsV;
 
     statsScript = pkgs.writeShellScript "eww-stats" (builtins.readFile ./scripts/stats.sh);
 

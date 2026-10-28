@@ -1,9 +1,15 @@
 let
     borderWidth = 2;
+    tabWidth    = 15;
+    tabMargin   = 17;
+    gapsH       = tabWidth + borderWidth + tabMargin;
+    gapsV       = gapsH / 2;
 in {
     window = {
         border = borderWidth;
         gapsIn = 6;
+        gapsH  = gapsH;
+        gapsV  = gapsV;
     };
 
     base16 = {
@@ -51,9 +57,9 @@ in {
     };
 
     tabs = {
-        width     = 15;
+        width     = tabWidth;
         gap       = borderWidth;
-        margin    = 17;
+        margin    = tabMargin;
         maxHeight = 210;
         slope     = 24;
         yOffset   = 0;
