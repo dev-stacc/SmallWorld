@@ -48,19 +48,23 @@ let
                 :width ${toString theme.bar.width}
                 :height ${toString barHeight}
                 :anchor "top left")
-            (box :class "bar" :orientation "v" :space-evenly true
-                (cell :text "WS ''${stats.ws}")
+            (box :class "bar"
+                 :orientation "v"
+                 :space-evenly false
+                 :spacing ${toString theme.bar.spacing}
+                 :valign "center"
+                (battery :pct {stats.bat} :state {stats.batstate})
                 (cell :text "''${stats.time}")
+                (cell :text "TS ''${stats.ts}")
+                (cell :text "BT ''${stats.bt}")
                 (cell :text "VOL ''${stats.vol}")
                 (cell :text "BRI ''${stats.bri}")
-                (cell :text "BT ''${stats.bt}")
-                (cell :text "TS ''${stats.ts}")
                 (cell :text "WIFI ''${stats.wifi}")
                 (cell :text "RAM ''${stats.ram}G")
-                (battery :pct {stats.bat} :state {stats.batstate})
                 (cell :text "FAN ''${stats.fan}")
                 (cell :text "''${stats.temp}°")
-                (cell :text "CPU ''${stats.cpu}%")))
+                (cell :text "CPU ''${stats.cpu}%")
+                (cell :text "WS ''${stats.ws}")))
     '';
 
     ewwScss = pkgs.writeText "eww.scss" ''
