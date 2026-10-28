@@ -7,6 +7,7 @@ ShellRoot {
     id: shell
 
     property var procLabels: ({})
+    property var idleStats: ({})
 
     Process {
         id: labelProc
@@ -21,6 +22,28 @@ ShellRoot {
                 }
             }
         }
+    }
+
+    Process {
+        id: idleProc
+        command: [Theme.idleScript]
+        running: true
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    shell.idleStats = JSON.parse(this.text);
+                } catch (e) {
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: if (!idleProc.running) idleProc.running = true
     }
 
     Timer {
@@ -64,6 +87,29 @@ ShellRoot {
             }
 
             readonly property var hmon: Hyprland.monitorFor(modelData)
+
+            readonly property int liveCount: {
+                let n = 0;
+                const vs = Hyprland.toplevels.values;
+                for (let i = 0; i < vs.length; i++) {
+                    const o = vs[i].lastIpcObject ?? ({});
+                    if (o.mapped === true && o.hidden !== true && hmon !== null
+                        && o.monitor === hmon.id && o.workspace !== undefined
+                        && hmon.activeWorkspace !== null
+                        && o.workspace.id === hmon.activeWorkspace.id)
+                        n++;
+                }
+                return n;
+            }
+
+            Hud {
+                visible: panel.liveCount === 0
+                s: shell.idleStats
+                x: Theme.gapsH
+                y: Theme.gapsV
+                width: panel.width - Theme.gapsH * 2
+                height: panel.height - Theme.gapsV * 2
+            }
 
             Repeater {
                 model: Hyprland.toplevels

@@ -11,6 +11,7 @@ let
     barHeight = screenHeight - barTop - window.gapsV;
 
     statsScript = pkgs.writeShellScript "eww-stats" (builtins.readFile ./scripts/stats.sh);
+    windowScript = pkgs.writeShellScript "eww-windows" (builtins.readFile ./scripts/window-count.sh);
 
     ewwYuck = pkgs.writeText "eww.yuck" ''
         (defpoll stats
@@ -20,6 +21,8 @@ let
 
         (deflisten blink :initial "1"
             "while :; do echo 1; sleep 0.6; echo 0; sleep 0.6; done")
+
+        (deflisten windows :initial "1" "${windowScript}")
 
         (defwidget cell [text]
             (box :class "cell" :halign "center" :valign "center"
@@ -49,6 +52,7 @@ let
                 :height ${toString barHeight}
                 :anchor "top left")
             (box :class "bar"
+                 :visible {windows != "0"}
                  :orientation "v"
                  :space-evenly false
                  :spacing ${toString theme.bar.spacing}
