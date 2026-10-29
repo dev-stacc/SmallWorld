@@ -2,6 +2,6 @@
     networking.interfaces.enp3s0.wakeOnLan.enable = true;
 
     services.udev.extraRules = ''
-        ACTION=="add|bind", SUBSYSTEM=="pci", ATTR{vendor}=="0x1002", ATTR{class}=="0x030000", ATTR{power/autosuspend_delay_ms}="360000"
+        ACTION=="add|bind", SUBSYSTEM=="pci", DRIVERS=="amdgpu", ATTR{vendor}=="0x1002", ATTR{power/autosuspend_delay_ms}="3600000"
     '';
 }

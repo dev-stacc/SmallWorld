@@ -29,8 +29,6 @@
             sha256 = "c27536640e410032865dc68781d80a08b98f8db5e93575919af8ccc0568aeb4f";
             size = "11624759488";
         };
-<<<<<<< Updated upstream
-=======
 
         "huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf" = {
             repo = "bartowski/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-GGUF";
@@ -59,7 +57,6 @@
             sha256 = "3dee4686d756e8842aec638c5725666c76584edce76d71088732b52d2c5d7a45";
             size = "11788590240";
         };
->>>>>>> Stashed changes
     };
 
     fetch = name: { repo, rev, sha256, size }: ''
@@ -84,11 +81,6 @@
 in {
     systemd.services.fetch-models = {
         description = "Download declared GGUF models";
-<<<<<<< Updated upstream
-        wantedBy = [ "multi-user.target" ];
-        before = [ "llama-cpp.service" ];
-=======
->>>>>>> Stashed changes
         after = [ "network-online.target" ];
         wants = [ "network-online.target" ];
         path = with pkgs; [ curl coreutils ];

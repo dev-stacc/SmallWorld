@@ -26,7 +26,7 @@ ENDPOINT = os.environ.get("OSS_URL", "http://altair:8080/v1")
 KEY_FILE = os.environ.get("OSS_KEY_FILE", "/run/secrets/llama-api-key")
 AGENT_KUBECONFIG = os.environ.get(
     "OSS_KUBECONFIG", "/run/secrets/oss-agent-kubeconfig")
-MODEL = "gpt-oss-20b"
+MODEL = os.environ.get("OSS_MODEL", "gpt-oss-20b")
 
 CTX_LIMIT = 30000
 TOOL_CAP = 16384
@@ -420,7 +420,7 @@ def call(messages, key, tools=None, max_tokens=2048, effort="low"):
     delay = 2
     for attempt in range(3):
         try:
-            with urllib.request.urlopen(request, timeout=600) as response:
+            with urllib.request.urlopen(request, timeout=1200) as response:
                 return json.loads(response.read())
         except urllib.error.HTTPError as error:
             detail = error.read().decode(errors="replace")
@@ -630,7 +630,7 @@ def run_chat(options):
 
     messages = []
     used = 0
-    print("gpt-oss-20b on altair. /reset /add <path> /ctx /quit")
+    print("%s on altair. /reset /add <path> /ctx /quit" % MODEL)
 
     while True:
         try:
@@ -710,13 +710,20 @@ def main():
     agent.add_argument("--effort", default="medium",
                        choices=["low", "medium", "high"])
     agent.add_argument("--wait", action="store_true")
+    agent.add_argument("--model", default=None)
 
     chat = sub.add_parser("chat")
     chat.add_argument("--max-tokens", type=int, default=2048)
+    chat.add_argument("--model", default=None)
     chat.add_argument("--effort", default="low",
                       choices=["low", "medium", "high"])
 
+    global MODEL
+
     options = parser.parse_args()
+
+    if options.model:
+        MODEL = options.model
 
     if options.mode == "chat":
         run_chat(options)

@@ -9,6 +9,7 @@ esac
 
 url=${OSS_URL:-http://altair:8080/v1}
 key_file=${OSS_KEY_FILE:-/run/secrets/llama-api-key}
+model=${OSS_MODEL:-gpt-oss-20b}
 max_tokens=2048
 effort=low
 raw=0
@@ -16,16 +17,24 @@ wait_slot=0
 
 usage() {
     cat <<'USAGE'
-oss [-m MAX_TOKENS] [-e low|medium|high] [--json] [--wait] PROMPT
-oss agent [--text] [--max-turns N] TASK
-oss chat
+oss [-M MODEL] [-m MAX_TOKENS] [-e low|medium|high] [--json] [--wait] PROMPT
+oss agent [--model MODEL] [--text] [--max-turns N] TASK
+oss chat [--model MODEL]
+oss models
+oss running
 
 Stdin is appended to PROMPT as context when it is not a terminal.
+OSS_MODEL overrides the default model. Altair serves one model at a time; asking
+for one that is not loaded costs about two minutes. Check with "oss running".
 USAGE
 }
 
 while [ $# -gt 0 ]; do
     case "$1" in
+        -M | --model)
+            model=$2
+            shift 2
+            ;;
         -m)
             max_tokens=$2
             shift 2
@@ -70,6 +79,22 @@ if [ ! -r "$key_file" ]; then
     exit 1
 fi
 
+auth=$(printf 'header = "Authorization: Bearer %s"\n' "$(cat "$key_file")")
+
+case "${1-}" in
+    models)
+        curl -sS --config <(printf '%s\n' "$auth") "$url/models" \
+            | jq -r '.data[] | [.id, (.description // "")] | @tsv'
+        exit 0
+        ;;
+    running)
+        curl -sS --config <(printf '%s\n' "$auth") "${url%/v1}/running" \
+            | jq -r 'if (.running | length) == 0 then "nothing loaded"
+                     else (.running[] | [.model, .state] | @tsv) end'
+        exit 0
+        ;;
+esac
+
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
@@ -83,8 +108,9 @@ jq -n \
     --rawfile c "$tmp/ctx" \
     --argjson m "$max_tokens" \
     --arg e "$effort" \
+    --arg mdl "$model" \
     '{
-        model: "gpt-oss-20b",
+        model: $mdl,
         max_tokens: $m,
         chat_template_kwargs: { reasoning_effort: $e },
         messages: [{
@@ -107,10 +133,10 @@ delay=2
 code=000
 for attempt in 1 2 3; do
     code=$(curl -sS \
-        --config <(printf 'header = "Authorization: Bearer %s"\n' "$(cat "$key_file")") \
+        --config <(printf '%s\n' "$auth") \
         -H 'Content-Type: application/json' \
         --data-binary "@$tmp/payload" \
-        --max-time 600 \
+        --max-time 1200 \
         -o "$tmp/body" \
         -w '%{http_code}' \
         "$url/chat/completions") || code=000
