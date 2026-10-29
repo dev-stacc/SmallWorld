@@ -25,6 +25,30 @@
             rev = "d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4";
             sha256 = "c27536640e410032865dc68781d80a08b98f8db5e93575919af8ccc0568aeb4f";
         };
+
+        "huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf" = {
+            repo = "bartowski/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-GGUF";
+            rev = "119a7449dd895220548fb3b67f55ef60e01b059c";
+            sha256 = "abca50d1bd95c49d71db36aad0f38090ea5465ce148634c496a48bc87030bdd9";
+        };
+
+        "Huihui-Qwen3.6-35B-A3B-abliterated.Q2_K.gguf" = {
+            repo = "mradermacher/Huihui-Qwen3.6-35B-A3B-abliterated-GGUF";
+            rev = "0693fc2b47f66380f4b568b01e05195d22edd3a2";
+            sha256 = "5073fcc761e51afba317bb5af004691ba5f048a4c284d9d2330ef0caea5da224";
+        };
+
+        "Qwen3-Coder-30B-A3B-Instruct-UD-Q3_K_XL.gguf" = {
+            repo = "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF";
+            rev = "b17cb02dd882d5b6ab62fc777ad2995f19668350";
+            sha256 = "69cd7578d77dffc0b17e34bad9ef998d08ae0e20ccceef21bad4e7eb3d8c553b";
+        };
+
+        "Qwen3-Coder-30B-A3B-Instruct-UD-Q2_K_XL.gguf" = {
+            repo = "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF";
+            rev = "b17cb02dd882d5b6ab62fc777ad2995f19668350";
+            sha256 = "3dee4686d756e8842aec638c5725666c76584edce76d71088732b52d2c5d7a45";
+        };
     };
 
     fetch = name: { repo, rev, sha256 }: ''
@@ -47,7 +71,6 @@ in {
     systemd.services.fetch-models = {
         description = "Download declared GGUF models";
         wantedBy = [ "multi-user.target" ];
-        before = [ "llama-cpp.service" ];
         after = [ "network-online.target" ];
         wants = [ "network-online.target" ];
         path = with pkgs; [ curl coreutils ];

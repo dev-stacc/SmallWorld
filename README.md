@@ -77,7 +77,7 @@ k8s/
 │   ├── monitoring/             Grafana stack
 │   ├── navidrome/              Media (music)
 │   ├── nextcloud/              Files + sync; pinned to albireo, data on its ext4 /bigstorage
-│   ├── open-webui/             Chat UI in front of altair's llama.cpp, via a Tailscale egress proxy
+│   ├── open-webui/             Chat UI in front of altair's llama-swap, via a Tailscale egress proxy
 │   ├── oss-agent/              View-only ServiceAccount for the local-LLM CLI agent
 │   ├── searxng/                Self-hosted metasearch; custom themed image with Flux image automation
 │   ├── tailscale/
@@ -104,7 +104,7 @@ k8s/
 | Avior     | Dell PowerEdge 1950, legacy DRAC + PXE boot          | NFS media server + k3s agent. Not yet installed; k3s is guarded off until its tailnet IP replaces `PLACEHOLDER`. |
 | Amateus   | ThinkPad SL500 (refurb), Core 2 Duo, DDR2                         | Append-only restic repository + retention. Renders the fleet monitor on tty1. |
 | Algol     | Dell Inspiron 5748, i7-4510U, 8 GB DDR3, 915 GB                   | Fleet monitoring collector (Loki + Grafana alerting) and self-hosted ntfy. Off-cluster. Headless. |
-| Altair    | LGA1155 (P8H67-M PRO), i5-2500K, DDR3, ex-Antinoos HDD + 1 TB, RX 580 + RX 570 (8 GB each) | Local LLM inference (llama.cpp on Vulkan). Wake-on-LAN. Headless. |
+| Altair    | LGA1155 (P8H67-M PRO), i5-2500K, 24 GB DDR3, 128 GB SSD + 750 GB HDD, RX 580 + RX 570 (8 GB each) | Local LLM inference: llama-swap over llama.cpp/Vulkan, five models swapped on demand across 16 GB VRAM. Wake-on-LAN. Headless. |
 | Argus     | Acer Aspire 7741, i3-380m (2C/4T, ~2010), 8 GB DDR3, BIOS       | Pi-hole + unbound. Tailnet DNS sentinel. Headless.                         |
 | Alula     | Intel Compute Stick T6, Atom x5-Z8350, 4 GB RAM, 64 GB storage   | Portable niri desktop. Coding + browsing. Future cyberdeck base.           |
 
@@ -121,7 +121,7 @@ colmena node names are capitalised (`Altair`, not `altair`) - a lowercase name m
 
 ## Things worth a read
 
-- `hosts/modules/system/host-specific/altair/llama.nix` - the upstream `services.llama-cpp` unit is sandboxed with `DynamicUser = true`, which has two consequences worth knowing. `$HOME` becomes `/var/empty`, so Mesa's on-disk shader cache silently disables itself and RADV recompiles every GGML Vulkan pipeline on each start - hence `MESA_SHADER_CACHE_DIR` pointed into the `CacheDirectory` the unit already has. And because the model store is mounted `nofail`, `RequiresMountsFor` has to go in `unitConfig`, not `serviceConfig`: it's a `[Unit]` directive, and systemd silently ignores it under `[Service]`, leaving llama-server to race the HDD spin-up into a restart loop. Serving is tailnet-only on the strength of `trustedInterfaces` alone, with `openFirewall = false`.
+- `hosts/modules/system/host-specific/altair/llama.nix` - `services.llama-swap` fronts several `llama-server` children on one port, which is what makes `--tensor-split` survivable: the split is per-model and swings +-70% on this hardware, so one global value is wrong for most models. Three details are load-bearing. `apiKeys = [ "${env.LLAMA_API_KEY}" ]` keeps the key out of the Nix store, but llama-swap is *default-allow* when that macro fails to expand, so a typo silently unauthenticates the whole endpoint rather than erroring. The llama-server macro must be `${PORT}` after Nix escaping, not an empty string. And because the model store is mounted `nofail`, `RequiresMountsFor` has to go in `unitConfig`: it's a `[Unit]` directive, systemd ignores it under `[Service]`, and the unit sets `PrivateMounts = true`, so without it the service gets a namespace that never sees the disk. Serving is tailnet-only on the strength of `trustedInterfaces` alone, with `openFirewall = false`; the children bind `127.0.0.1`.
 - `hosts/modules/system/host-specific/arcturus/k3s-kubeconfig.nix` - `~/.kube/config` is a `mkOutOfStoreSymlink` to a SOPS-decrypted kubeconfig, so admin cluster credentials are declarative without ending up in the Nix store.
 - `k8s/flux/flux-system/cluster-config.yaml` - the single ConfigMap every workload substitutes against.
 - `hosts/modules/system/host-specific/asta/vault.nix` - Vault unseal driven by SOPS, ordered against `sops-nix.service` so it survives reboots.
