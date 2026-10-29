@@ -113,6 +113,31 @@ def tcp_probe(address, port, timeout=4):
         return {"up": False, "ms": None, "error": type(error).__name__}
 
 
+def tailnet_online():
+    result = subprocess.run(
+        ["tailscale", "status", "--json"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip()[:200])
+    status = json.loads(result.stdout)
+    peers = list((status.get("Peer") or {}).values())
+    peers.append(status.get("Self") or {})
+    online = {}
+    for peer in peers:
+        for address in peer.get("TailscaleIPs") or []:
+            online[address] = bool(peer.get("Online"))
+    return online
+
+
+def tailnet_probe(online, address):
+    if address not in online:
+        return {"up": False, "ms": None, "error": "NotInTailnet"}
+    return {"up": online[address], "ms": None}
+
+
 def http_probe(url, timeout=12):
     started = time.monotonic()
     try:
@@ -1852,8 +1877,14 @@ def fast_tier():
     active = {
         name: host for name, host in HOSTS.items() if host["class"] != "ignore"
     }
+    online = tailnet_online()
     jobs = [
-        (name, lambda host=host: tcp_probe(host["ip"], host.get("port", 22)))
+        (
+            name,
+            (lambda host=host: tcp_probe(host["ip"], host["port"]))
+            if "port" in host
+            else (lambda host=host: tailnet_probe(online, host["ip"])),
+        )
         for name, host in active.items()
     ]
     probed = {}
