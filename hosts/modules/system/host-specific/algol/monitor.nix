@@ -54,7 +54,8 @@ let
     hosts = lib.mapAttrs (name: class: {
         ip = tailnet.ips.${name};
         class = class;
-        port = ports.${name} or 22;
+    } // lib.optionalAttrs (lib.hasAttr name ports) {
+        port = ports.${name};
     }) reachable;
 
     clusterApp = auth: name: role: {
@@ -224,7 +225,7 @@ in {
         after = [ "network-online.target" "sops-nix.service" "tailscaled.service" ];
         wants = [ "network-online.target" ];
         wantedBy = [ "multi-user.target" ];
-        path = with pkgs; [ kubectl restic ];
+        path = with pkgs; [ kubectl restic tailscale ];
 
         environment = {
             MONITOR_PORT = toString port;
