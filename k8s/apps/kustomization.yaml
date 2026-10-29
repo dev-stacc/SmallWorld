@@ -17,7 +17,7 @@ resources:
   - immich/
   - nextcloud/
   - open-webui/
-  - searxng/
+  - fourget/
   - arr/
   - oss-agent/
   - generic-device-plugin/

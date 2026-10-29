@@ -9,14 +9,14 @@
         policies.SearchEngines = {
             Add = [
                 {
-                    Name = "searxng";
+                    Name = "4get";
                     URLTemplate = "http://127.0.0.1:12345/search.html?q={searchTerms}";
                     Alias = "s";
                     Method = "GET";
                 }
                 {
-                    Name = "searxng-cluster";
-                    URLTemplate = "https://search.${tailnet.domain}/search?q={searchTerms}";
+                    Name = "4get-cluster";
+                    URLTemplate = "https://search.${tailnet.domain}/web?s={searchTerms}";
                     Alias = "sc";
                     Method = "GET";
                 }
@@ -30,7 +30,7 @@
 
             Remove = [ "DuckDuckGo No-AI" "Mojeek" "Startpage" "Wikipedia (en)" ];
 
-            Default = "searxng";
+            Default = "4get";
         };
 
         profiles.default = {

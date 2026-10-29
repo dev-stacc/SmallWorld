@@ -70,6 +70,7 @@ k8s/
 │   │                           plus the decluttarr, recyclarr and arr-config reconcilers
 │   ├── crowdsec/               IDS (Pi-hole bouncer now lives on argus as a systemd service)
 │   ├── external-secrets/       Vault-backed runtime secrets
+│   ├── fourget/                Self-hosted metasearch; upstream image, theme mounted as a ConfigMap
 │   ├── immich/                 Photos
 │   ├── ingress-nginx/
 │   ├── jellyfin/               Media (video)
@@ -79,7 +80,6 @@ k8s/
 │   ├── nextcloud/              Files + sync; pinned to albireo, data on its ext4 /bigstorage
 │   ├── open-webui/             Chat UI in front of altair's llama-swap, via a Tailscale egress proxy
 │   ├── oss-agent/              View-only ServiceAccount for the local-LLM CLI agent
-│   ├── searxng/                Self-hosted metasearch; custom themed image with Flux image automation
 │   ├── tailscale/
 │   ├── uptime-kuma/
 │   ├── vault/

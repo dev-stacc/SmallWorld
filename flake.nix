@@ -70,7 +70,7 @@
 
         nixosConfigurations = byHostName mkSystem hosts;
 
-        packages.x86_64-linux.searxng-image = import ./k8s/apps/searxng/image.nix {
+        packages.x86_64-linux.fourget-root = import ./k8s/apps/fourget/root.nix {
             pkgs = nixpkgs.legacyPackages.x86_64-linux;
             inherit lib theme;
         };

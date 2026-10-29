@@ -6,7 +6,7 @@
         ./llama-key.nix
         ./lid.nix
         ./overlays.nix
-        ./searx.nix
+        ./fourget.nix
         ./virtualisation.nix
     ];
 
