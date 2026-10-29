@@ -22,7 +22,8 @@ flake.nix                       Inputs, tailnet IPs, theme; derives nixosConfigu
 
 .github/
 ├── workflows/ci.yml            Runs on every PR: secret hygiene, Nix eval, manifest validation, shellcheck
-├── scripts/                    The four checks, each runnable locally with no GitHub involved
+├── workflows/tailscale-acl.yml Tests the tailnet policy on PRs, applies it on merge to main
+├── scripts/                    The checks, each runnable locally with no GitHub involved
 └── encrypted-paths             Files that must always be SOPS-encrypted; CI enforces it
 
 hosts/
@@ -60,6 +61,7 @@ hosts/
 
 secrets/
 ├── secrets.yaml                SOPS-encrypted, readable by the hosts in .sops.yaml
+├── tailscale-policy.yaml       SOPS-encrypted tailnet grants policy; applied from CI, not by hand
 └── vault-init.json             SOPS-encrypted Vault unseal keys + root token
 
 k8s/
