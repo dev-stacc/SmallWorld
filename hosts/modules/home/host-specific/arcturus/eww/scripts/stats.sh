@@ -97,15 +97,11 @@ brightness() {
     brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%' || echo "--"
 }
 
-clock() {
-    date +%H:%M
-}
-
 workspace() {
     hyprctl -j activeworkspace 2>/dev/null | sed -n 's/.*"id": *\([0-9-]*\).*/\1/p' | head -1
 }
 
-printf '{"cpu":"%s","temp":"%s","fan":"%s","bat":%s,"batstate":"%s","ram":"%s","wifi":"%s","ts":"%s","bt":"%s","ws":"%s","time":"%s","vol":"%s","bri":"%s"}\n' \
+printf '{"cpu":"%s","temp":"%s","fan":"%s","bat":%s,"batstate":"%s","ram":"%s","wifi":"%s","ts":"%s","bt":"%s","ws":"%s","vol":"%s","bri":"%s"}\n' \
     "$(cpu_usage)" \
     "$(cpu_temp)" \
     "$(fan_speed)" \
@@ -116,6 +112,5 @@ printf '{"cpu":"%s","temp":"%s","fan":"%s","bat":%s,"batstate":"%s","ram":"%s","
     "$(tailscale_state)" \
     "$(bluetooth_state)" \
     "$(workspace)" \
-    "$(clock)" \
     "$(volume)" \
     "$(brightness)"

@@ -11,18 +11,15 @@ let
     barHeight = screenHeight - barTop - window.gapsV;
 
     statsScript = pkgs.writeShellScript "eww-stats" (builtins.readFile ./scripts/stats.sh);
-    windowScript = pkgs.writeShellScript "eww-windows" (builtins.readFile ./scripts/window-count.sh);
 
     ewwYuck = pkgs.writeText "eww.yuck" ''
         (defpoll stats
             :interval "2s"
-            :initial '{"cpu":"0","temp":"0","fan":"0","bat":0,"batstate":"Unknown","ram":"0","wifi":"0","ts":"--","bt":"--","ws":"-","time":"--:--","vol":"0","bri":"0"}'
+            :initial '{"cpu":"0","temp":"0","fan":"0","bat":0,"batstate":"Unknown","ram":"0","wifi":"0","ts":"--","bt":"--","ws":"-","vol":"0","bri":"0"}'
             "${statsScript}")
 
         (deflisten blink :initial "1"
             "while :; do echo 1; sleep 0.6; echo 0; sleep 0.6; done")
-
-        (deflisten windows :initial "1" "${windowScript}")
 
         (defwidget cell [text]
             (box :class "cell" :halign "center" :valign "center"
@@ -51,16 +48,12 @@ let
                 :width ${toString theme.bar.width}
                 :height ${toString barHeight}
                 :anchor "top left")
-            (revealer :transition "crossfade"
-                      :duration "${toString theme.anim.ms}ms"
-                      :reveal {windows != "0"}
             (box :class "bar"
                  :orientation "v"
                  :space-evenly false
                  :spacing ${toString theme.bar.spacing}
                  :valign "center"
                 (battery :pct {stats.bat} :state {stats.batstate})
-                (cell :text "''${stats.time}")
                 (cell :text "TS ''${stats.ts}")
                 (cell :text "BT ''${stats.bt}")
                 (cell :text "VOL ''${stats.vol}")
@@ -70,7 +63,7 @@ let
                 (cell :text "FAN ''${stats.fan}")
                 (cell :text "''${stats.temp}°")
                 (cell :text "CPU ''${stats.cpu}%")
-                (cell :text "WS ''${stats.ws}"))))
+                (cell :text "WS ''${stats.ws}")))
     '';
 
     ewwScss = pkgs.writeText "eww.scss" ''

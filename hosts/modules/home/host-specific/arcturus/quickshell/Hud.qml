@@ -195,8 +195,8 @@ Item {
         triggeredOnStart: true
         onTriggered: {
             const d = new Date();
-            root.clockText = Qt.formatDateTime(d, "HH:mm");
-            root.dateText = Qt.formatDateTime(d, "MM-dd-yy");
+            root.clockText = Qt.formatDateTime(d, "HHmm");
+            root.dateText = Qt.formatDateTime(d, "MM dd yy");
         }
     }
 
@@ -351,20 +351,8 @@ Item {
         toLeft: true
     }
 
-    Row {
-        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom }
-        spacing: 26
-
-        Readout { k: "SUPER ↵"; v: "terminal"; tint: root.cyan }
-        Readout { k: "SUPER D"; v: "apps"; tint: root.cyan }
-        Readout { k: "SUPER T"; v: "browser"; tint: root.cyan }
-        Readout { k: "SUPER E"; v: "files"; tint: root.cyan }
-        Readout { k: "SUPER N"; v: "network"; tint: root.cyan }
-        Readout { k: "SUPER Q"; v: "close"; tint: root.cyan }
-    }
-
     Column {
-        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 40 }
+        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom }
         spacing: 5
 
         Readout { k: "UPTIME"; v: root.s.uptime ?? "--" }
