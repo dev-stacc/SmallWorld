@@ -18,6 +18,7 @@ resources:
   - nextcloud/
   - open-webui/
   - fourget/
+  - algol-monitor/
   - arr/
   - oss-agent/
   - generic-device-plugin/

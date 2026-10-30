@@ -2,7 +2,8 @@
 let
     guard = pkgs.writeShellScript "media-sync-guard" ''
         case "$SSH_ORIGINAL_COMMAND" in
-            "rsync --server --sender "*" . /home/${username}/media/")
+            "rsync --server --sender "*" . /home/${username}/media/" | \
+            "ionice -c 2 -n 7 nice -n 19 rsync --server --sender "*" . /home/${username}/media/")
                 exec $SSH_ORIGINAL_COMMAND
                 ;;
         esac
