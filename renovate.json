@@ -35,5 +35,5 @@
       "/^k8s/.+\\.ya?ml$/"
     ]
   },
-  "prHourlyLimit": 0
+  "prHourlyLimit": 3
 }
