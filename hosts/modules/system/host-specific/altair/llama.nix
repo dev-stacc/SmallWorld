@@ -46,23 +46,12 @@ in {
             globalTTL = 0;
             sendLoadingState = true;
 
-            hooks.on_startup.preload = [ "gpt-oss-20b" ];
+            hooks.on_startup.preload = [ "gpt-oss-20b-uncensored" ];
 
             models = {
-                "gpt-oss-20b" = {
-                    name = "gpt-oss 20B";
-                    description = "Default. MoE, 3.6B active, fastest here at 43 tok/s";
-                    cmd = cmd [
-                        "--model ${modelDir}/gpt-oss-20b-Q4_K_M.gguf"
-                        "--alias gpt-oss-20b"
-                        "--ctx-size 32768"
-                        "--tensor-split 0.56,0.44"
-                    ];
-                };
-
                 "gpt-oss-20b-uncensored" = {
                     name = "gpt-oss 20B abliterated";
-                    description = "Uncensored. Native MXFP4 experts, same shape as the default";
+                    description = "Default. Uncensored MoE, 3.6B active, fastest here at 43 tok/s";
                     cmd = cmd [
                         "--model ${modelDir}/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf"
                         "--alias gpt-oss-20b-uncensored"

@@ -9,7 +9,7 @@ esac
 
 url=${OSS_URL:-http://altair:8080/v1}
 key_file=${OSS_KEY_FILE:-/run/secrets/llama-api-key}
-model=${OSS_MODEL:-gpt-oss-20b}
+model=${OSS_MODEL:-gpt-oss-20b-uncensored}
 max_tokens=2048
 effort=low
 raw=0

@@ -26,7 +26,7 @@ ENDPOINT = os.environ.get("OSS_URL", "http://altair:8080/v1")
 KEY_FILE = os.environ.get("OSS_KEY_FILE", "/run/secrets/llama-api-key")
 AGENT_KUBECONFIG = os.environ.get(
     "OSS_KUBECONFIG", "/run/secrets/oss-agent-kubeconfig")
-MODEL = os.environ.get("OSS_MODEL", "gpt-oss-20b")
+MODEL = os.environ.get("OSS_MODEL", "gpt-oss-20b-uncensored")
 
 CTX_LIMIT = 30000
 TOOL_CAP = 16384
