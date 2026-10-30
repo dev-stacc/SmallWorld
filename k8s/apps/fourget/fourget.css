@@ -96,6 +96,9 @@ h1, h2, h3, h4 {
 }
 
 .navigation {
+    left: 0;
+    right: 0;
+    text-align: center;
     font-size: 0.85rem;
     line-height: 2.2;
 }
@@ -130,6 +133,8 @@ h1, h2, h3, h4 {
 
 .searchbox input[type="text"] {
     padding-left: 0;
+    text-align: center;
+    width: 100%;
     color: ${BASE05};
     caret-color: ${BASE02};
 }
@@ -161,6 +166,7 @@ body.home {
 
 body.home #center {
     display: block;
+    text-align: center;
     width: 100%;
     max-width: 64ch;
     margin: 0 auto;
@@ -168,7 +174,7 @@ body.home #center {
 }
 
 body.home .searchbox {
-    text-align: left;
+    text-align: center;
     margin-bottom: 1.2em;
 }
 
@@ -178,10 +184,6 @@ body.home #center > a {
     text-decoration: none;
     font-family: var(--fg-chrome);
     font-size: 0.85rem;
-}
-
-body.home #center > a:hover {
-    text-decoration: underline;
 }
 
 .tabs {
@@ -196,13 +198,16 @@ body.home #center > a:hover {
 
 .tabs .tab {
     color: ${BASE02};
+    flex: 0 0 auto;
+    white-space: nowrap;
     padding: 0;
     margin: 0;
-    font-size: 0;
+    font-size: 1rem;
     text-transform: lowercase;
 }
 
 .tabs .tab::after {
+    display: none;
     font-family: var(--fg-chrome);
     font-size: 1rem;
 }
@@ -227,10 +232,6 @@ body.home #center > a:hover {
     content: "mus";
 }
 
-.tabs .tab:hover {
-    text-decoration: underline;
-}
-
 .tabs .tab.selected {
     color: ${BASE04};
     border-bottom: 0;
@@ -239,15 +240,20 @@ body.home #center > a:hover {
 
 .filters {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 0 1.5ch;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 0 2ch;
     margin-bottom: 0.9em;
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .filters .filter {
     margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0 0.7ch;
+    flex: 0 0 auto;
 }
 
 .filters .filter .title {
@@ -255,6 +261,7 @@ body.home #center > a:hover {
     font-size: 0.8rem;
     margin: 0;
     text-transform: lowercase;
+    white-space: nowrap;
 }
 
 .filters .filter select,
@@ -292,18 +299,12 @@ body.home #center > a:hover {
     order: 0;
     float: none;
     width: auto;
-    flex: 1 1 55%;
+    flex: 1 1 100%;
     min-width: 0;
 }
 
 .web .right-wrapper {
-    order: 1;
-    float: none;
-    width: auto;
-    flex: 1 1 45%;
-    min-width: 0;
-    padding-left: 0;
-    overflow: visible;
+    display: none;
 }
 
 .web .right-right,
@@ -409,6 +410,14 @@ body.home #center > a:hover {
     color: ${BASE05};
     opacity: 0.45;
     font-size: 0.8rem;
+}
+
+.web .text-result .sublinks {
+    display: none;
+}
+
+.web .text-result b {
+    color: ${BASE03};
 }
 
 .thumb-wrap {
@@ -696,4 +705,106 @@ table th {
         white-space: normal;
         word-break: break-word;
     }
+}
+
+.web .left h3,
+.web .left table.related {
+    display: none;
+}
+
+.web.has-answer .left::before {
+    display: none;
+}
+
+@media only screen and (max-width: 34rem) {
+    .tabs .tab {
+        font-size: 0;
+    }
+
+    .tabs .tab::after {
+        display: inline;
+    }
+}
+
+.tabs,
+.filters,
+.code,
+.instances .popup-wrapper {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.tabs::-webkit-scrollbar,
+.filters::-webkit-scrollbar,
+.code::-webkit-scrollbar,
+.instances .popup-wrapper::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+.tabs .tab.selected {
+    background: ${BASE04};
+    color: ${BASE00};
+    padding: 0 1ch;
+    text-decoration: none;
+    clip-path: polygon(0 0, calc(100% - 0.5em) 0, 100% 0.5em, 100% 100%, 0.5em 100%, 0 calc(100% - 0.5em));
+}
+
+.searchbox {
+    position: relative;
+}
+
+.searchbox::before,
+.searchbox::after {
+    content: "";
+    position: absolute;
+    width: 0.6em;
+    height: 0.6em;
+    border-color: ${BASE02};
+    border-style: solid;
+    pointer-events: none;
+}
+
+.searchbox::before {
+    top: 0;
+    left: 0;
+    border-width: 1px 0 0 1px;
+}
+
+.searchbox::after {
+    bottom: -1px;
+    right: 0;
+    border-width: 0 1px 1px 0;
+}
+
+.filters .filter .title::before {
+    content: "[";
+    opacity: 0.45;
+    margin-right: 0.35ch;
+}
+
+.filters .filter .title::after {
+    content: "]";
+    opacity: 0.45;
+    margin-left: 0.35ch;
+}
+
+.timetaken::before {
+    content: "// ";
+}
+
+a:hover,
+.navigation a:hover,
+.searchbox input[type="submit"]:hover,
+.tabs .tab:hover,
+.infobox a:hover,
+.web .part:hover,
+.web .text-result .hover:hover .title,
+.favicon-dropdown a:hover,
+.nextpage:hover,
+.related a:hover,
+.web .answer-title a:hover,
+body.home #center > a:hover {
+    text-decoration: none;
 }
