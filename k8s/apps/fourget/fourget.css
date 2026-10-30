@@ -186,10 +186,6 @@ body.home #center > a {
     font-size: 0.85rem;
 }
 
-body.home #center > a:hover {
-    text-decoration: underline;
-}
-
 .tabs {
     display: flex;
     justify-content: space-between;
@@ -234,10 +230,6 @@ body.home #center > a:hover {
 
 .tabs .tab[href^="/music"]::after {
     content: "mus";
-}
-
-.tabs .tab:hover {
-    text-decoration: underline;
 }
 
 .tabs .tab.selected {
@@ -749,4 +741,70 @@ table th {
     width: 0;
     height: 0;
     display: none;
+}
+
+.tabs .tab.selected {
+    background: ${BASE04};
+    color: ${BASE00};
+    padding: 0 1ch;
+    text-decoration: none;
+    clip-path: polygon(0 0, calc(100% - 0.5em) 0, 100% 0.5em, 100% 100%, 0.5em 100%, 0 calc(100% - 0.5em));
+}
+
+.searchbox {
+    position: relative;
+}
+
+.searchbox::before,
+.searchbox::after {
+    content: "";
+    position: absolute;
+    width: 0.6em;
+    height: 0.6em;
+    border-color: ${BASE02};
+    border-style: solid;
+    pointer-events: none;
+}
+
+.searchbox::before {
+    top: 0;
+    left: 0;
+    border-width: 1px 0 0 1px;
+}
+
+.searchbox::after {
+    bottom: -1px;
+    right: 0;
+    border-width: 0 1px 1px 0;
+}
+
+.filters .filter .title::before {
+    content: "[";
+    opacity: 0.45;
+    margin-right: 0.35ch;
+}
+
+.filters .filter .title::after {
+    content: "]";
+    opacity: 0.45;
+    margin-left: 0.35ch;
+}
+
+.timetaken::before {
+    content: "// ";
+}
+
+a:hover,
+.navigation a:hover,
+.searchbox input[type="submit"]:hover,
+.tabs .tab:hover,
+.infobox a:hover,
+.web .part:hover,
+.web .text-result .hover:hover .title,
+.favicon-dropdown a:hover,
+.nextpage:hover,
+.related a:hover,
+.web .answer-title a:hover,
+body.home #center > a:hover {
+    text-decoration: none;
 }
