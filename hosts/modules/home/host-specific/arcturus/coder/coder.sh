@@ -61,6 +61,7 @@ exec aider \
     --no-auto-commits \
     --no-gitignore \
     --no-show-model-warnings \
+    --no-show-release-notes \
     --no-check-update \
     --no-analytics \
     "$@"
