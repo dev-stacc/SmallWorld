@@ -46,27 +46,6 @@ spec:
       labels:
         app: loki-proxy
     spec:
-      initContainers:
-        - name: htpasswd
-          image: alpine:3.19
-          env:
-            - name: LOKI_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: loki-auth
-                  key: password
-          command:
-            - sh
-            - -c
-            - |
-              set -e
-              apk add --no-cache apache2-utils
-              htpasswd -cbB /auth/htpasswd alloy "$$LOKI_PASSWORD"
-              chmod 0644 /auth/htpasswd
-              echo "htpasswd generated for user alloy"
-          volumeMounts:
-            - name: auth
-              mountPath: /auth
       containers:
         - name: nginx
           image: nginx:1.27-alpine
@@ -96,4 +75,8 @@ spec:
           configMap:
             name: loki-proxy
         - name: auth
-          emptyDir: {}
+          secret:
+            secretName: loki-auth
+            items:
+              - key: htpasswd
+                path: htpasswd
