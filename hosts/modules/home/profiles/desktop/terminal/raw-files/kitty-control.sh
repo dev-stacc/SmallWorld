@@ -38,8 +38,8 @@ vpn_menu() {
         
         case "$SELECTION" in
             "turn on") sudo tailscale up --exit-node= ;;
-            "exit at sanctuary") sudo tailscale up --exit-node=100.103.107.52 ;;
-            "exit at argus") sudo tailscale up --exit-node=100.92.77.2 ;;
+            "exit at sanctuary") sudo tailscale up --exit-node={{sanctuaryIp}} ;;
+            "exit at argus") sudo tailscale up --exit-node={{argusIp}} ;;
             "turn off") sudo tailscale down ;;
             *) return ;;
         esac

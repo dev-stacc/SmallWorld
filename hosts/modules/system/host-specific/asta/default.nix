@@ -6,7 +6,6 @@
         ./media.nix
         ./vault.nix
         ./suricata.nix
-        ./media-sync-key.nix
         ./cluster-dumps.nix
         ./disk-io.nix
     ];

@@ -1,6 +1,10 @@
-{ pkgs, ... } : let
+{ pkgs, tailnet, ... } : let
     kittyLauncher = pkgs.writeShellScript "kitty-launcher" (builtins.readFile ./raw-files/kitty-launcher.sh);
-    kittyControl = pkgs.writeShellScript "kitty-control" (builtins.readFile ./raw-files/kitty-control.sh);
+
+    kittyControl = pkgs.writeShellScript "kitty-control" (builtins.replaceStrings
+        [ "{{sanctuaryIp}}" "{{argusIp}}" ]
+        [ tailnet.ips.sanctuary tailnet.ips.argus ]
+        (builtins.readFile ./raw-files/kitty-control.sh));
 in { 
     home.file = {
         ".local/bin/kitty-launcher" = {

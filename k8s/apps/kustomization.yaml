@@ -12,6 +12,7 @@ resources:
   - sewing-assistant/
   - marketing-tool/
   - prose/
+  - coredns-custom/
   - crowdsec/
   - kiwix/
   - immich/
