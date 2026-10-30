@@ -23,6 +23,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: ENABLE_PERSISTENT_CONFIG
+              value: "false"
             - name: OPENAI_API_BASE_URL
               value: http://altair-egress.tailscale.svc.cluster.local:8080/v1
             - name: OPENAI_API_KEY

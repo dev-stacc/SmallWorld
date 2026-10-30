@@ -38,8 +38,13 @@ spec:
                 STATUS=$?
                 if [ $STATUS -eq 2 ]; then
                   echo "Vault sealed, unsealing..."
-                  VAULT_CLIENT_TIMEOUT=5 timeout 15 vault operator unseal "$UNSEAL_KEY_1"
-                  VAULT_CLIENT_TIMEOUT=5 timeout 15 vault operator unseal "$UNSEAL_KEY_2"
+                  VAULT_CLIENT_TIMEOUT=30 timeout 60 vault operator unseal "$UNSEAL_KEY_1"
+                  VAULT_CLIENT_TIMEOUT=30 timeout 60 vault operator unseal "$UNSEAL_KEY_2"
+                  if VAULT_CLIENT_TIMEOUT=10 timeout 30 vault status > /dev/null 2>&1; then
+                    echo "Unseal succeeded"
+                  else
+                    echo "Unseal FAILED, will retry"
+                  fi
                 elif [ $STATUS -ne 0 ]; then
                   echo "Vault unreachable (rc=$STATUS), will retry..."
                 fi
