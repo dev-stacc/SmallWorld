@@ -33,7 +33,10 @@ jobs:
       - id: policy
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+          TS_TAILNET: ${{ vars.TS_TAILNET }}
         run: |
+          : "${SOPS_AGE_KEY:?repo secret SOPS_AGE_KEY is not set}"
+          : "${TS_TAILNET:?repo variable TS_TAILNET is not set}"
           nix shell '${{ steps.nixpkgs.outputs.ref }}#sops' --command \
             sops -d --output-type binary secrets/tailscale-policy.yaml > "$RUNNER_TEMP/policy.hujson"
           echo "path=$RUNNER_TEMP/policy.hujson" >> "$GITHUB_OUTPUT"

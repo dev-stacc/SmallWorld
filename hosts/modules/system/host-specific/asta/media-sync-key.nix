@@ -11,6 +11,6 @@ let
     '';
 in {
     users.users.${username}.openssh.authorizedKeys.keys = [
-        ''restrict,command="${guard}" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBSe0gcOazQdx5kC/90LYSkA/q5i2/H4oHOtPA2LK14x albireo-media-sync''
+        ''restrict,command="${guard}" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKaTKQfou1pNWyNPsH4GQa/ow+54uh4LXMjk4p7aItp6 albireo-media-sync''
     ];
 }
