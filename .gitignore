@@ -44,3 +44,6 @@ dnsmasq-pxe.*
 # Python bytecode (py_compile leaves these beside the monitor scripts)
 __pycache__/
 *.pyc
+
+# Aider session files
+.aider*

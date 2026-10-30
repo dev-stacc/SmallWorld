@@ -23,13 +23,6 @@
             size = "12290628576";
         };
 
-        "gpt-oss-20b-Q4_K_M.gguf" = {
-            repo = "unsloth/gpt-oss-20b-GGUF";
-            rev = "d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4";
-            sha256 = "c27536640e410032865dc68781d80a08b98f8db5e93575919af8ccc0568aeb4f";
-            size = "11624759488";
-        };
-
         "huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf" = {
             repo = "bartowski/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-GGUF";
             rev = "119a7449dd895220548fb3b67f55ef60e01b059c";

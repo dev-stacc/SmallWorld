@@ -6,6 +6,7 @@
         ./eww/default.nix
         ./hyprpaper.nix
         ./k3s-control/default.nix
+        ./coder/default.nix
         ./oss/default.nix
         ./quickshell/default.nix
         ./ssh.nix
