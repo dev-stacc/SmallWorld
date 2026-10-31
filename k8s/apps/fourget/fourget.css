@@ -651,11 +651,7 @@ table th {
     .filters .filter input {
         font-size: 16px;
     }
-
-    .tabs .tab::after {
-        font-size: 16px;
-    }
-
+    
     .navigation a,
     .nextpage {
         display: inline-block;
@@ -691,16 +687,6 @@ table th {
 
 .web.has-answer .left::before {
     display: none;
-}
-
-@media only screen and (max-width: 34rem) {
-    .tabs .tab {
-        font-size: 0;
-    }
-
-    .tabs .tab::after {
-        display: inline;
-    }
 }
 
 .tabs,
