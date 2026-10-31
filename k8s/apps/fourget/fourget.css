@@ -731,6 +731,8 @@ table th {
 
 .description {
     text-align: justify;
+    text-justify: inter-word;
+
 }
 
 .searchbox {
