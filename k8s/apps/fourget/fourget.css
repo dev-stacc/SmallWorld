@@ -729,6 +729,10 @@ table th {
     clip-path: polygon(0 0, calc(100% - 0.5em) 0, 100% 0.5em, 100% 100%, 0.5em 100%, 0 calc(100% - 0.5em));
 }
 
+.description {
+    text-align: justify;
+}
+
 .searchbox {
     position: relative;
 }
