@@ -232,12 +232,6 @@ body.home #center > a {
     content: "mus";
 }
 
-.tabs .tab.selected {
-    color: ${BASE04};
-    border-bottom: 0;
-    text-decoration: underline;
-}
-
 .filters {
     display: flex;
     flex-wrap: nowrap;
@@ -647,13 +641,6 @@ table th {
     }
     
 
-    .tabs {
-        flex-wrap: wrap;
-        justify-content: space-between;
-        column-gap: 1.2rem;
-        overflow-x: visible;
-    }
-
     .filters {
         flex-wrap: wrap;
         row-gap: 0.4rem;
@@ -669,7 +656,6 @@ table th {
         font-size: 16px;
     }
 
-    .tabs .tab,
     .navigation a,
     .nextpage {
         display: inline-block;
@@ -737,6 +723,7 @@ table th {
 .tabs .tab.selected {
     background: ${BASE04};
     color: ${BASE00};
+    border-bottom: 0;
     padding: 0 1ch;
     text-decoration: none;
     clip-path: polygon(0 0, calc(100% - 0.5em) 0, 100% 0.5em, 100% 100%, 0.5em 100%, 0 calc(100% - 0.5em));
