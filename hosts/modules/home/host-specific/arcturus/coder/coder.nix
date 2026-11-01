@@ -32,8 +32,8 @@
     settings = pkgs.writeText "aider-model-settings.json" (builtins.toJSON
         (lib.mapAttrsToList (n: _: {
             name = "openai/${n}";
-            edit_format = "diff";
-            editor_edit_format = "editor-diff";
+            edit_format = "whole";
+            editor_edit_format = "editor-whole";
             use_repo_map = true;
         }) contexts));
 in pkgs.writeShellApplication {
