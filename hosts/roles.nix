@@ -44,6 +44,9 @@
     };
 
     k3s-agent = {
-        system = [ ./modules/system/profiles/server/k3s-agent.nix ];
+        system = [
+            ./modules/system/profiles/server/k3s-agent.nix
+            ./modules/system/profiles/server/k3s-node.nix
+        ];
     };
 }

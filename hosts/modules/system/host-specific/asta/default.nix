@@ -2,6 +2,7 @@
     imports = [
         ./graphics.nix
         ./k3s-server.nix
+        ../../profiles/server/k3s-node.nix
         ./flux.nix
         ./media.nix
         ./vault.nix

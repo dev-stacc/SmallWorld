@@ -17,6 +17,7 @@
             "--tls-san=asta"
             "--tls-san=${tailnet.ips.asta}"
             "--flannel-backend=wireguard-native"
+            "--kube-controller-manager-arg=terminated-pod-gc-threshold=20"
         ];
     };
 
