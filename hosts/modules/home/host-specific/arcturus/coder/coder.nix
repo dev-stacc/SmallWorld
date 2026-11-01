@@ -1,4 +1,10 @@
-{ pkgs } : let
+{ pkgs, theme } : let
+    lib = pkgs.lib;
+
+    colors = theme.base16;
+
+    codeTheme = "ansi_dark";
+
     contexts = {
         "qwen3-coder" = 24576;
         "qwen3-coder-fast" = 32768;
@@ -20,15 +26,45 @@
     };
 
     metadata = pkgs.writeText "aider-model-metadata.json" (builtins.toJSON
-        (pkgs.lib.mapAttrs' (n: ctx: pkgs.lib.nameValuePair "openai/${n}" (entry ctx))
+        (lib.mapAttrs' (n: ctx: lib.nameValuePair "openai/${n}" (entry ctx))
             contexts));
+
+    settings = pkgs.writeText "aider-model-settings.json" (builtins.toJSON
+        (lib.mapAttrsToList (n: _: {
+            name = "openai/${n}";
+            edit_format = "diff";
+            editor_edit_format = "editor-diff";
+            use_repo_map = true;
+        }) contexts));
 in pkgs.writeShellApplication {
     name = "coder";
 
     runtimeInputs = with pkgs; [ aider-chat coreutils curl jq util-linux ];
 
     text = builtins.replaceStrings
-        [ "@metadata@" ]
-        [ "${metadata}" ]
+        [
+            "@metadata@"
+            "@settings@"
+            "@codeTheme@"
+            "@base00@"
+            "@base07@"
+            "@base02@"
+            "@base03@"
+            "@base04@"
+            "@base05@"
+            "@base06@"
+        ]
+        [
+            "${metadata}"
+            "${settings}"
+            codeTheme
+            colors.base00
+            colors.base07
+            colors.base02
+            colors.base03
+            colors.base04
+            colors.base05
+            colors.base06
+        ]
         (builtins.readFile ./coder.sh);
 }
