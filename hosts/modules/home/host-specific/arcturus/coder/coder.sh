@@ -6,13 +6,14 @@ key_file=${CODER_KEY_FILE:-/run/secrets/llama-api-key}
 model=${CODER_MODEL:-qwen3-coder}
 
 bg=${CODER_BG:-@base00@}
-dim=${CODER_DIM:-@base07@}
-error=${CODER_ERROR:-@base02@}
-input=${CODER_INPUT:-@base03@}
+dim=${CODER_DIM:-@base00@}
+error=${CODER_ERROR:-@base03@}
+input=${CODER_INPUT:-@base02@}
 warn=${CODER_WARN:-@base04@}
 output=${CODER_OUTPUT:-@base05@}
-tool=${CODER_TOOL:-@base06@}
+tool=${CODER_TOOL:-@base02@}
 code_theme=${CODER_CODE_THEME:-@codeTheme@}
+py_style_path=@pyStylePath@
 
 paint() {
     printf '\033[38;2;%d;%d;%dm%s\033[0m\n' \
@@ -72,6 +73,9 @@ paint "$dim" "$model on $url, ask mode; /code to let it edit"
 OPENAI_API_KEY=$(cat "$key_file")
 export OPENAI_API_KEY
 
+PYTHONPATH="$py_style_path${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH
+
 exec aider \
     --model "openai/$model" \
     --openai-api-base "$url/v1" \
@@ -92,7 +96,7 @@ exec aider \
     --tool-output-color "#$tool" \
     --tool-warning-color "#$warn" \
     --tool-error-color "#$error" \
-    --completion-menu-color "#$output" \
+    --completion-menu-color "#$input" \
     --completion-menu-bg-color "#$bg" \
     --completion-menu-current-color "#$bg" \
     --completion-menu-current-bg-color "#$error" \

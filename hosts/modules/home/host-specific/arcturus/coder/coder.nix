@@ -3,7 +3,19 @@
 
     colors = theme.base16;
 
-    codeTheme = "ansi_dark";
+    pyStyleName = "aider_pygarnment";
+    pyStyleClass = "AiderPygarnment";
+    codeTheme = pyStyleName;
+
+    baseNames = [
+        "base00" "base01" "base02" "base03"
+        "base04" "base05" "base06" "base07"
+        "base08" "base09" "base0A" "base0B"
+        "base0C" "base0D" "base0E" "base0F"
+    ];
+
+    basePlaceholders = map (n: "@${n}@") baseNames;
+    baseValues = map (n: colors.${n}) baseNames;
 
     contexts = {
         "qwen3-coder" = 24576;
@@ -36,35 +48,45 @@
             editor_edit_format = "editor-whole";
             use_repo_map = true;
         }) contexts));
+
+    themedPyStyle = pkgs.writeTextFile {
+        name = "${pyStyleName}.py";
+        text = builtins.replaceStrings basePlaceholders baseValues
+            (builtins.readFile ./aider_pygarnment.py);
+    };
+
+    pyStylePlugin = pkgs.runCommand "${pyStyleName}-pygments-plugin" { } ''
+        mkdir -p "$out/${pyStyleName}-1.0.0.dist-info"
+        cp ${themedPyStyle} "$out/${pyStyleName}.py"
+
+        cat > "$out/${pyStyleName}-1.0.0.dist-info/METADATA" <<EOF
+        Metadata-Version: 2.1
+        Name: ${pyStyleName}
+        Version: 1.0.0
+        EOF
+
+        cat > "$out/${pyStyleName}-1.0.0.dist-info/entry_points.txt" <<EOF
+        [pygments.styles]
+        ${pyStyleName} = ${pyStyleName}:${pyStyleClass}
+        EOF
+    '';
 in pkgs.writeShellApplication {
     name = "coder";
 
     runtimeInputs = with pkgs; [ aider-chat coreutils curl jq util-linux ];
 
     text = builtins.replaceStrings
-        [
+        ([
             "@metadata@"
             "@settings@"
             "@codeTheme@"
-            "@base00@"
-            "@base07@"
-            "@base02@"
-            "@base03@"
-            "@base04@"
-            "@base05@"
-            "@base06@"
-        ]
-        [
+            "@pyStylePath@"
+        ] ++ basePlaceholders)
+        ([
             "${metadata}"
             "${settings}"
             codeTheme
-            colors.base00
-            colors.base07
-            colors.base02
-            colors.base03
-            colors.base04
-            colors.base05
-            colors.base06
-        ]
+            "${pyStylePlugin}"
+        ] ++ baseValues)
         (builtins.readFile ./coder.sh);
 }
