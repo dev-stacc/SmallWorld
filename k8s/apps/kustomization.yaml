@@ -23,3 +23,5 @@ resources:
   - arr/
   - oss-agent/
   - generic-device-plugin/
+  - audiobookshelf/
+  - forgejo/
