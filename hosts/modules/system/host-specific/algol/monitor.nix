@@ -100,6 +100,8 @@ let
 
     comfort = grouped "comfort" (clusterApps false {
         search = "search";
+        audiobooks = "books";
+        forge = "git";
     } ++ [
         (hostPage "pihole" "dns" "pihole" "/admin")
     ] ++ clusterApps true {

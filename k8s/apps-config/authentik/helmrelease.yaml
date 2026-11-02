@@ -49,6 +49,12 @@ spec:
         - secretRef:
             name: authentik-blueprint-immich-env
             optional: true
+        - secretRef:
+            name: authentik-blueprint-forgejo-env
+            optional: true
+        - secretRef:
+            name: authentik-blueprint-audiobookshelf-env
+            optional: true
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
@@ -63,6 +69,8 @@ spec:
         - authentik-blueprint-open-webui
         - authentik-blueprint-immich-oidc
         - authentik-blueprint-arr
+        - authentik-blueprint-forgejo-oidc
+        - authentik-blueprint-audiobookshelf-oidc
     postgresql:
       enabled: true
       auth:

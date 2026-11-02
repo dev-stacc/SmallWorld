@@ -320,3 +320,41 @@ spec:
   tls:
     - hosts:
         - requests
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-audiobookshelf
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: audiobooks
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - audiobooks
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ts-forgejo
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: forge
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - forge

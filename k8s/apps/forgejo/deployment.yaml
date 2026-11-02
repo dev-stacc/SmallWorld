@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: forgejo
+  template:
+    metadata:
+      labels:
+        app: forgejo
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: asta
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: forgejo
+          image: codeberg.org/forgejo/forgejo:17.0.1-rootless
+          ports:
+            - containerPort: 3000
+          env:
+            - name: FORGEJO__database__DB_TYPE
+              value: postgres
+            - name: FORGEJO__database__HOST
+              value: postgres:5432
+            - name: FORGEJO__database__NAME
+              value: forgejo
+            - name: FORGEJO__database__USER
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: FORGEJO_DB_USERNAME
+            - name: FORGEJO__database__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: FORGEJO_DB_PASSWORD
+            - name: FORGEJO__security__SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: FORGEJO__security__SECRET_KEY
+            - name: FORGEJO__security__INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: FORGEJO__security__INTERNAL_TOKEN
+            - name: FORGEJO__security__INSTALL_LOCK
+              value: "true"
+            - name: FORGEJO__server__DOMAIN
+              value: forge.${TAILNET_DOMAIN}
+            - name: FORGEJO__server__ROOT_URL
+              value: https://forge.${TAILNET_DOMAIN}/
+            - name: FORGEJO__server__HTTP_PORT
+              value: "3000"
+            - name: FORGEJO__server__DISABLE_SSH
+              value: "true"
+            - name: FORGEJO__server__START_SSH_SERVER
+              value: "false"
+            - name: FORGEJO__server__OFFLINE_MODE
+              value: "true"
+            - name: FORGEJO__service__DISABLE_REGISTRATION
+              value: "true"
+            - name: FORGEJO__service__REQUIRE_SIGNIN_VIEW
+              value: "true"
+            - name: FORGEJO__repository__DEFAULT_BRANCH
+              value: main
+            - name: FORGEJO__repository__DEFAULT_PRIVATE
+              value: private
+            - name: FORGEJO__actions__ENABLED
+              value: "true"
+            - name: FORGEJO__cron__ENABLED
+              value: "true"
+            - name: FORGEJO__mailer__ENABLED
+              value: "false"
+            - name: FORGEJO__log__LEVEL
+              value: Info
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/gitea
+              subPath: data
+            - name: data
+              mountPath: /etc/gitea
+              subPath: config
+            - name: tmp
+              mountPath: /tmp
+          startupProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: forgejo-data
+        - name: tmp
+          emptyDir: {}

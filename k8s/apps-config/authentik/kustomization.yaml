@@ -23,4 +23,8 @@ resources:
   - blueprint-immich-oidc.yaml
   - blueprint-arr.yaml
   - externalsecret-blueprint-immich-env.yaml
+  - blueprint-forgejo-oidc.yaml
+  - externalsecret-blueprint-forgejo-env.yaml
+  - blueprint-audiobookshelf-oidc.yaml
+  - externalsecret-blueprint-audiobookshelf-env.yaml
   - dump-cronjob.yaml
