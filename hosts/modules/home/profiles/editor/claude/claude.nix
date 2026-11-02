@@ -7,7 +7,7 @@
 
     postBuild = ''
         wrapProgram $out/bin/claude \
-            --add-flags "--tools Bash,Read,Write,Edit,Agent,AskUserQuestion,ToolSearch" \
+            --add-flags "--tools Bash,Read,Write,Edit,Agent,AskUserQuestion,ToolSearch,EnterPlanMode,ExitPlanMode,WebSearch,WebFetch,Monitor" \
             --add-flags "--strict-mcp-config"
     '';
 }
