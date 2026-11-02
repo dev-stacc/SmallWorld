@@ -13,7 +13,6 @@
     ];
     
     home.packages = with pkgs; [
-        claude-code
         libreoffice
     ];
 
