@@ -44,6 +44,10 @@ spec:
         - protocol: TCP
           port: 9000
     - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: tailscale
+    - to:
         - ipBlock:
             cidr: 0.0.0.0/0
             except:
