@@ -6,7 +6,7 @@ key_file=${CODER_KEY_FILE:-/run/secrets/llama-api-key}
 model=${CODER_MODEL:-qwen3-coder}
 
 bg=${CODER_BG:-@base00@}
-dim=${CODER_DIM:-@base00@}
+dim=${CODER_DIM:-@base02@}
 error=${CODER_ERROR:-@base03@}
 input=${CODER_INPUT:-@base02@}
 warn=${CODER_WARN:-@base04@}

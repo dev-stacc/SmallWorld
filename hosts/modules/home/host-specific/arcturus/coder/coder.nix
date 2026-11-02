@@ -3,8 +3,8 @@
 
     colors = theme.base16;
 
-    pyStyleName = "aider_pygarnment";
-    pyStyleClass = "AiderPygarnment";
+    pyStyleName = "pygarnment";
+    pyStyleClass = "Pygarnment";
     codeTheme = pyStyleName;
 
     baseNames = [
@@ -52,12 +52,19 @@
     themedPyStyle = pkgs.writeTextFile {
         name = "${pyStyleName}.py";
         text = builtins.replaceStrings basePlaceholders baseValues
-            (builtins.readFile ./aider_pygarnment.py);
+            (builtins.readFile ./colors/pygarnment.py);
+    };
+
+    themedSitecustomize = pkgs.writeTextFile {
+        name = "sitecustomize.py";
+        text = builtins.replaceStrings basePlaceholders baseValues
+            (builtins.readFile ./colors/sitecustomize.py);
     };
 
     pyStylePlugin = pkgs.runCommand "${pyStyleName}-pygments-plugin" { } ''
         mkdir -p "$out/${pyStyleName}-1.0.0.dist-info"
         cp ${themedPyStyle} "$out/${pyStyleName}.py"
+        cp ${themedSitecustomize} "$out/sitecustomize.py"
 
         cat > "$out/${pyStyleName}-1.0.0.dist-info/METADATA" <<EOF
         Metadata-Version: 2.1
