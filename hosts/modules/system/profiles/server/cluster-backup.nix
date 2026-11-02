@@ -34,6 +34,7 @@ in {
         "d ${dumps}/k3s        0750 root root -"
         "d ${dumps}/authentik  0750 999  999  -"
         "d ${dumps}/prose      0750 999  999  -"
+        "d ${dumps}/forgejo    0750 999  999  -"
     ];
 
     services.restic.backups = lib.mkIf active {
