@@ -10,7 +10,6 @@
       "oisf/trafficid"
       "tgreen/hunting"
       "pawpatrules"
-      "ptrules/open"
     ];
     settings = {
       "af-packet" = [{
