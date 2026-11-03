@@ -18,6 +18,7 @@ data:
           type: proxy
           providers:
             - !Find [authentik_providers_proxy.proxyprovider, [name, Bazarr Provider]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Chaptarr Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Jellyfin Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Jellyseerr Provider]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Kiwix Provider]]
