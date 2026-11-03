@@ -2,8 +2,20 @@ name: renovate
 
 on:
   schedule:
-    - cron: "0 5 * * 1"
+    - cron: "23 5 * * 1"
   workflow_dispatch:
+    inputs:
+      logLevel:
+        description: renovate log level
+        type: choice
+        default: info
+        options:
+          - info
+          - debug
+      dryRun:
+        description: run without creating branches or PRs
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -21,3 +33,5 @@ jobs:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || 'null' }}

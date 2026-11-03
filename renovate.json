@@ -3,9 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "schedule": [
-    "before 6am on monday"
-  ],
+  "gitAuthor": "Renovate Bot <renovate@biggerworld.invalid>",
   "pinDigests": true,
   "ignorePaths": [
     "**/node_modules/**",
