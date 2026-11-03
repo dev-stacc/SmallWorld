@@ -115,6 +115,7 @@ let
 
     arr = grouped "arr" (clusterApps true {
         prowlarr = "indexers";
+        chaptarr = "audiobooks";
         sonarr = "tv";
         radarr = "movies";
         lidarr = "albums";
