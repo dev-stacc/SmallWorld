@@ -46,7 +46,7 @@ jobs:
       - uses: tailscale/gitops-acl-action@5a4a17f5708e9bf96f4ee915a95e9f83c2eebe1a
         with:
           tailnet: ${{ vars.TS_TAILNET }}
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          oauth-client-id: ${{ secrets.TS_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_CLIENT_SECRET }}
           policy-file: ${{ steps.policy.outputs.path }}
           action: ${{ github.event_name == 'push' && 'apply' || 'test' }}
