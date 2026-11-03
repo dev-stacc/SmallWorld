@@ -286,6 +286,25 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: ts-chaptarr
+  namespace: ingress-nginx
+  annotations:
+    tailscale.com/hostname: chaptarr
+    tailscale.com/proxy-group: ingress
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: ingress-nginx-controller
+      port:
+        number: 80
+  tls:
+    - hosts:
+        - chaptarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
   name: ts-bazarr
   namespace: ingress-nginx
   annotations:
