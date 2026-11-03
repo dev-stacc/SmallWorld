@@ -42,4 +42,5 @@
   };
 
   systemd.services.suricata-update.restartIfChanged = false;
+  systemd.timers.suricata-update.wantedBy = [ "timers.target" ];
 }
