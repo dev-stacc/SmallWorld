@@ -9,13 +9,12 @@
         fd
         ripgrep
         tdf
-        nnn
     ];
 
     programs.nnn = {
         enable = true;
         package = pkgs.nnn;
-        settings = {
+        options = {
             # Basic settings for nnn
             NNN_BMS = "";
             NNN_FIFO = "/tmp/nnn.fifo";
