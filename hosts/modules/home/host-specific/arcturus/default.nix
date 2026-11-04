@@ -8,6 +8,7 @@
         ./k3s-control/default.nix
         ./coder/default.nix
         ./oss/default.nix
+        ./qwen/default.nix
         ./quickshell/default.nix
         ./ssh.nix
     ];
