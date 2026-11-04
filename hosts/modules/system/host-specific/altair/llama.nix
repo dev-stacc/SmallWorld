@@ -114,24 +114,6 @@ in {
 
 
 
-                "probe-draft" = {
-                    name = "probe 0.6B draft speculation";
-                    description = "Benchmark probe. Delete after measuring.";
-                    filters.stripParams = "chat_template_kwargs";
-                    cmd = cmd [
-                        coderModel
-                        "--alias probe-draft"
-                        "--ctx-size 32768"
-                        kv4
-                        "--spec-type draft-simple"
-                        "--spec-draft-model ${modelDir}/Qwen3-0.6B-Q8_0.gguf"
-                        "--spec-draft-ngl 99"
-                        "--spec-draft-n-max 8"
-                        "--spec-draft-type-k q8_0"
-                        "--spec-draft-type-v q8_0"
-                        qwenSampling
-                    ];
-                };
 
                 "qwen3-coder-max" = {
                     name = "Qwen3-Coder 30B-A3B (overnight)";
@@ -142,7 +124,8 @@ in {
                         "--alias qwen3-coder-max"
                         "--ctx-size 32768"
                         kv4
-                        "--n-cpu-moe 18"
+                        "--tensor-split 0.50,0.50"
+                        "--n-cpu-moe 16"
                         "--spec-type ngram-simple"
                         qwenSampling
                     ];

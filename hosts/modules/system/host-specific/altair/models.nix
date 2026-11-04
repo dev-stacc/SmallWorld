@@ -51,12 +51,6 @@
             size = "21740305568";
         };
 
-        "Qwen3-0.6B-Q8_0.gguf" = {
-            repo = "Qwen/Qwen3-0.6B-GGUF";
-            rev = "23749fefcc72300e3a2ad315e1317431b06b590a";
-            sha256 = "9465e63a22add5354d9bb4b99e90117043c7124007664907259bd16d043bb031";
-            size = "639446688";
-        };
 
         "Qwen3-Coder-30B-A3B-Instruct-UD-Q2_K_XL.gguf" = {
             repo = "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF";
