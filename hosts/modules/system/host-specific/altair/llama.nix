@@ -78,7 +78,7 @@ in {
                     cmd = cmd [
                         "--model ${modelDir}/Qwen3-Coder-30B-A3B-Instruct-UD-Q3_K_XL.gguf"
                         "--alias qwen3-coder"
-                        "--ctx-size 24576"
+                        "--ctx-size 32768"
                         qwenSampling
                     ];
                 };

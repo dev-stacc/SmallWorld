@@ -218,7 +218,7 @@ in pkgs.writeText "qwen-system-defaults.json" (builtins.toJSON {
 
     model = {
         name = "qwen3-coder";
-        generationConfig.contextWindowSize = 24576;
+        generationConfig.contextWindowSize = 32768;
         chatCompression.contextPercentageThreshold = 0.6;
     };
 
