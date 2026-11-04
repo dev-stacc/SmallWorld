@@ -63,6 +63,7 @@ in {
                         "--ctx-size 32768"
                         kv8
                         "--tensor-split 0.56,0.44"
+                        "--spec-type ngram-simple"
                     ];
                 };
 
@@ -112,30 +113,7 @@ in {
 
 
 
-                "probe-gpt-5050" = {
-                    name = "probe gpt-oss tensor-split 0.50/0.50";
-                    description = "Benchmark probe. Delete after measuring.";
-                    cmd = cmd [
-                        "--model ${modelDir}/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf"
-                        "--alias probe-gpt-5050"
-                        "--ctx-size 32768"
-                        kv8
-                        "--tensor-split 0.50,0.50"
-                    ];
-                };
 
-                "probe-gpt-ngram" = {
-                    name = "probe gpt-oss ngram speculation";
-                    description = "Benchmark probe. Delete after measuring.";
-                    cmd = cmd [
-                        "--model ${modelDir}/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf"
-                        "--alias probe-gpt-ngram"
-                        "--ctx-size 32768"
-                        kv8
-                        "--tensor-split 0.56,0.44"
-                        "--spec-type ngram-simple"
-                    ];
-                };
                 "probe-draft" = {
                     name = "probe 0.6B draft speculation";
                     description = "Benchmark probe. Delete after measuring.";
