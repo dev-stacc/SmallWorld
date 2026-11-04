@@ -94,6 +94,20 @@ in {
                     ];
                 };
 
+
+                "probe-nospec" = {
+                    name = "probe qwen3-coder without speculation";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [
+                        coderModel
+                        "--alias probe-nospec"
+                        "--ctx-size 32768"
+                        kv8
+                        "--tensor-split 0.50,0.50"
+                        qwenSampling
+                    ];
+                };
                 "qwen3-coder-fast" = {
                     name = "Qwen3-Coder 30B-A3B (small)";
                     description = "Coding. UD-Q2_K_XL, full context, lower quality";
