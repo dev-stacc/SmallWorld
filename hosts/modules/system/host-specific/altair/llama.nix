@@ -124,7 +124,7 @@ in {
                         "--alias qwen3-coder-max"
                         "--ctx-size 32768"
                         kv4
-                        "--tensor-split 0.50,0.50"
+                        "--tensor-split 0.67,0.33"
                         "--n-cpu-moe 16"
                         "--spec-type ngram-simple"
                         qwenSampling
