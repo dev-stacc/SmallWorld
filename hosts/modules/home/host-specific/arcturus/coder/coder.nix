@@ -19,6 +19,7 @@
 
     contexts = {
         "qwen3-coder" = 32768;
+        "qwen3-coder-max" = 32768;
         "qwen3-coder-fast" = 32768;
         "gpt-oss-20b-uncensored" = 32768;
         "qwen3.6-uncensored" = 32768;

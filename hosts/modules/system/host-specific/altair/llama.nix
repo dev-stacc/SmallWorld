@@ -13,12 +13,17 @@
         "--batch-size 512"
         "--ubatch-size 128"
         "--flash-attn on"
-        "--cache-type-k q8_0"
-        "--cache-type-v q8_0"
         "--cache-reuse 256"
+        "--slot-save-path /var/cache/llama-swap/slots"
     ];
 
     qwenSampling = "--temp 0.7 --top-p 0.8 --top-k 20 --repeat-penalty 1.05";
+
+    coderModel = "--model ${modelDir}/Qwen3-Coder-30B-A3B-Instruct-UD-Q3_K_XL.gguf";
+
+    kv8 = "--cache-type-k q8_0 --cache-type-v q8_0";
+
+    kv4 = "--cache-type-k q4_0 --cache-type-v q4_0";
 
     cmd = parts: lib.concatStringsSep " " ([ common ] ++ parts);
 in {
@@ -42,11 +47,11 @@ in {
 
         settings = {
             apiKeys = [ "\${env.LLAMA_API_KEY}" ];
-            healthCheckTimeout = 500;
+            healthCheckTimeout = 900;
             globalTTL = 0;
             sendLoadingState = true;
 
-            hooks.on_startup.preload = [ "gpt-oss-20b-uncensored" ];
+            hooks.on_startup.preload = [ "qwen3-coder" ];
 
             models = {
                 "gpt-oss-20b-uncensored" = {
@@ -56,6 +61,7 @@ in {
                         "--model ${modelDir}/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf"
                         "--alias gpt-oss-20b-uncensored"
                         "--ctx-size 32768"
+                        kv8
                         "--tensor-split 0.56,0.44"
                     ];
                 };
@@ -68,6 +74,7 @@ in {
                         "--model ${modelDir}/Huihui-Qwen3.6-35B-A3B-abliterated.Q2_K.gguf"
                         "--alias qwen3.6-uncensored"
                         "--ctx-size 32768"
+                        kv8
                     ];
                 };
 
@@ -79,6 +86,7 @@ in {
                         "--model ${modelDir}/Qwen3-Coder-30B-A3B-Instruct-UD-Q3_K_XL.gguf"
                         "--alias qwen3-coder"
                         "--ctx-size 32768"
+                        kv8
                         qwenSampling
                     ];
                 };
@@ -91,6 +99,76 @@ in {
                         "--model ${modelDir}/Qwen3-Coder-30B-A3B-Instruct-UD-Q2_K_XL.gguf"
                         "--alias qwen3-coder-fast"
                         "--ctx-size 32768"
+                        kv8
+                        qwenSampling
+                    ];
+                };
+
+                "probe-ts-5644" = {
+                    name = "probe tensor-split 0.56/0.44";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [ coderModel "--alias probe-ts-5644" "--ctx-size 32768" "--tensor-split 0.56,0.44" kv8 qwenSampling ];
+                };
+
+                "probe-ts-6535" = {
+                    name = "probe tensor-split 0.65/0.35";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [ coderModel "--alias probe-ts-6535" "--ctx-size 32768" "--tensor-split 0.65,0.35" kv8 qwenSampling ];
+                };
+
+                "probe-ts-5050" = {
+                    name = "probe tensor-split 0.50/0.50";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [ coderModel "--alias probe-ts-5050" "--ctx-size 32768" "--tensor-split 0.50,0.50" kv8 qwenSampling ];
+                };
+
+                "probe-kv4" = {
+                    name = "probe q4_0 KV";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [ coderModel "--alias probe-kv4" "--ctx-size 32768" kv4 qwenSampling ];
+                };
+
+                "probe-ngram" = {
+                    name = "probe ngram speculation";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [ coderModel "--alias probe-ngram" "--ctx-size 32768" "--spec-type ngram-simple" kv8 qwenSampling ];
+                };
+
+                "probe-draft" = {
+                    name = "probe 0.6B draft speculation";
+                    description = "Benchmark probe. Delete after measuring.";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [
+                        coderModel
+                        "--alias probe-draft"
+                        "--ctx-size 32768"
+                        kv4
+                        "--spec-type draft-simple"
+                        "--spec-draft-model ${modelDir}/Qwen3-0.6B-Q8_0.gguf"
+                        "--spec-draft-ngl 99"
+                        "--spec-draft-n-max 8"
+                        "--spec-draft-type-k q8_0"
+                        "--spec-draft-type-v q8_0"
+                        qwenSampling
+                    ];
+                };
+
+                "qwen3-coder-max" = {
+                    name = "Qwen3-Coder 30B-A3B (overnight)";
+                    description = "Overnight. UD-Q5_K_XL with experts in RAM, ~10 tok/s, best quality here";
+                    filters.stripParams = "chat_template_kwargs";
+                    cmd = cmd [
+                        "--model ${modelDir}/Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL.gguf"
+                        "--alias qwen3-coder-max"
+                        "--ctx-size 32768"
+                        kv4
+                        "--n-cpu-moe 18"
+                        "--spec-type ngram-simple"
                         qwenSampling
                     ];
                 };
@@ -101,7 +179,11 @@ in {
     systemd.services.llama-swap = {
         unitConfig.RequiresMountsFor = [ modelDir ];
 
-        serviceConfig.EnvironmentFile = config.sops.templates."llama.env".path;
+        serviceConfig = {
+            EnvironmentFile = config.sops.templates."llama.env".path;
+
+            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /var/cache/llama-swap/slots";
+        };
 
         environment.MESA_SHADER_CACHE_DIR = "/var/cache/llama-swap/mesa";
     };
