@@ -399,7 +399,55 @@ def take_lock(handle, wait):
     return None
 
 
-def call(messages, key, tools=None, max_tokens=2048, effort="low"):
+BEGIN_KEY = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")
+END_KEY = re.compile(r"-----END [A-Z ]*PRIVATE KEY-----")
+
+
+class Emitter:
+    def __init__(self, think):
+        self.think = think
+        self.pending = ""
+        self.holding = False
+        self.emitted = False
+
+    def content(self, piece):
+        self.pending += piece
+        while "\n" in self.pending:
+            line, self.pending = self.pending.split("\n", 1)
+            self.write(line + "\n")
+
+    def reasoning(self, piece):
+        if self.think:
+            sys.stderr.write(piece)
+            sys.stderr.flush()
+
+    def write(self, text):
+        if BEGIN_KEY.search(text):
+            self.holding = True
+        if self.holding:
+            if END_KEY.search(text):
+                self.holding = False
+                sys.stdout.write("[scrubbed:private-key]\n")
+                self.emitted = True
+            return
+        sys.stdout.write(scrub(text))
+        sys.stdout.flush()
+        self.emitted = True
+
+    def close(self):
+        if self.pending:
+            self.write(self.pending)
+            self.pending = ""
+        if self.holding:
+            self.holding = False
+            sys.stdout.write("[scrubbed:private-key]")
+            self.emitted = True
+        if self.emitted:
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+
+
+def payload_for(messages, tools, max_tokens, effort, temp, seed, stream):
     payload = {
         "model": MODEL,
         "messages": messages,
@@ -408,15 +456,32 @@ def call(messages, key, tools=None, max_tokens=2048, effort="low"):
     }
     if tools:
         payload["tools"] = tools
-    body = json.dumps(payload).encode()
-    request = urllib.request.Request(
+    if temp is not None:
+        payload["temperature"] = temp
+    if seed is not None:
+        payload["seed"] = seed
+    if stream:
+        payload["stream"] = True
+        payload["stream_options"] = {"include_usage": True}
+    return payload
+
+
+def build_request(payload, key):
+    return urllib.request.Request(
         ENDPOINT + "/chat/completions",
-        data=body,
+        data=json.dumps(payload).encode(),
         headers={
             "Content-Type": "application/json",
             "Authorization": "Bearer " + key,
         },
     )
+
+
+def call(messages, key, tools=None, max_tokens=2048, effort="low",
+         temp=None, seed=None):
+    request = build_request(
+        payload_for(messages, tools, max_tokens, effort, temp, seed, False),
+        key)
     delay = 2
     for attempt in range(3):
         try:
@@ -434,6 +499,53 @@ def call(messages, key, tools=None, max_tokens=2048, effort="low"):
         time.sleep(delay)
         delay *= 3
     raise SystemExit("inference unreachable")
+
+
+def stream_call(messages, key, max_tokens=2048, effort="low", temp=None,
+                seed=None, think=True):
+    request = build_request(
+        payload_for(messages, None, max_tokens, effort, temp, seed, True), key)
+    out = Emitter(think)
+    chunks = []
+    finish = None
+    usage = {}
+    try:
+        with urllib.request.urlopen(request, timeout=1200) as response:
+            for raw in response:
+                line = raw.decode(errors="replace").strip()
+                if not line.startswith("data: "):
+                    continue
+                body = line[6:]
+                if body == "[DONE]":
+                    break
+                try:
+                    chunk = json.loads(body)
+                except json.JSONDecodeError:
+                    continue
+                if chunk.get("usage"):
+                    usage = chunk["usage"]
+                choice = (chunk.get("choices") or [{}])[0]
+                if choice.get("finish_reason"):
+                    finish = choice["finish_reason"]
+                delta = choice.get("delta") or {}
+                if delta.get("reasoning_content"):
+                    out.reasoning(delta["reasoning_content"])
+                if delta.get("content"):
+                    chunks.append(delta["content"])
+                    out.content(delta["content"])
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode(errors="replace")
+        out.close()
+        raise SystemExit("inference error %d: %s" % (error.code, detail))
+    except urllib.error.URLError as error:
+        out.close()
+        raise SystemExit("cannot reach %s: %s" % (ENDPOINT, error))
+    out.close()
+    return {
+        "content": "".join(chunks),
+        "finish_reason": finish,
+        "usage": usage,
+    }
 
 
 def transcript_path():
@@ -485,7 +597,8 @@ def run_agent(options):
 
         response = call(messages, key, tools=TOOLS,
                         max_tokens=options.max_tokens,
-                        effort=options.effort)
+                        effort=options.effort,
+                        temp=options.temp, seed=options.seed)
         totals["turns"] += 1
         usage = response.get("usage", {})
         totals["tokens"] += usage.get("total_tokens", 0)
@@ -496,6 +609,12 @@ def run_agent(options):
             "tool_calls": message.get("tool_calls"),
             "usage": usage,
         })
+
+        if choice.get("finish_reason") == "length":
+            record("truncated", {"max_tokens": options.max_tokens})
+            stop = "truncated"
+            answer = message.get("content") or ""
+            break
 
         if usage.get("prompt_tokens", 0) > CTX_LIMIT:
             stop = "context_exhausted"
@@ -579,7 +698,8 @@ def run_agent(options):
         })
         try:
             response = call(messages, key, max_tokens=options.max_tokens,
-                            effort="low")
+                            effort="low", temp=options.temp,
+                            seed=options.seed)
             answer = response["choices"][0]["message"].get("content") or ""
             usage = response.get("usage", {})
             totals["tokens"] += usage.get("total_tokens", 0)
@@ -675,16 +795,20 @@ def run_chat(options):
             handle.close()
             continue
         try:
-            response = call(messages, key, max_tokens=options.max_tokens,
-                            effort=options.effort)
+            result = stream_call(messages, key,
+                                 max_tokens=options.max_tokens,
+                                 effort=options.effort,
+                                 temp=options.temp,
+                                 seed=options.seed,
+                                 think=options.think)
         finally:
             fcntl.flock(handle, fcntl.LOCK_UN)
             handle.close()
-        message = response["choices"][0]["message"]
-        used = response.get("usage", {}).get("total_tokens", used)
-        messages.append({"role": "assistant",
-                         "content": message.get("content") or ""})
-        print(scrub(message.get("content") or ""))
+        messages.append({"role": "assistant", "content": result["content"]})
+        used = result["usage"].get("total_tokens", used)
+        if result["finish_reason"] == "length":
+            print("answer truncated at %d tokens; raise --max-tokens"
+                  % options.max_tokens)
         if used > CTX_LIMIT:
             print("context nearly full, /reset recommended")
 
@@ -711,6 +835,8 @@ def main():
                        choices=["low", "medium", "high"])
     agent.add_argument("--wait", action="store_true")
     agent.add_argument("--model", default=None)
+    agent.add_argument("--temp", type=float, default=None)
+    agent.add_argument("--seed", type=int, default=None)
 
     chat = sub.add_parser("chat")
     chat.add_argument("--max-tokens", type=int, default=2048)
@@ -718,6 +844,10 @@ def main():
     chat.add_argument("--effort", default="low",
                       choices=["low", "medium", "high"])
 
+    chat.add_argument("--temp", type=float, default=None)
+    chat.add_argument("--seed", type=int, default=None)
+    chat.add_argument("--think", action="store_true", default=True)
+    chat.add_argument("--no-think", dest="think", action="store_false")
     global MODEL
 
     options = parser.parse_args()
