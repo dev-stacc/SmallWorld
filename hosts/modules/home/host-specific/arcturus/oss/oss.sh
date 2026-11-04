@@ -13,7 +13,7 @@ model=${OSS_MODEL:-gpt-oss-20b-uncensored}
 max_tokens=2048
 effort=low
 raw=0
-wait_slot=0
+wait_slot=1
 stream=1
 think=auto
 strict=0
@@ -24,11 +24,10 @@ usage() {
     cat <<'USAGE'
 oss [-M MODEL] [-m MAX_TOKENS] [-e low|medium|high] [OPTIONS] PROMPT
 oss agent [--model MODEL] [--text] [--max-turns N] TASK
-oss chat [--model MODEL]
-oss models
-oss running
+oss chat [--model MODEL] [--resume]
+oss models | running | runs | show N
 
-  -M, --model MODEL  model alias; OSS_MODEL overrides the default
+  -M, --model MODEL  model name or alias: @aliasNames@
   -m MAX_TOKENS      output cap, default 2048
   -e EFFORT          reasoning effort: low, medium, high
   --temp T           sampling temperature; unset means the model default
@@ -38,12 +37,13 @@ oss running
   --think            show reasoning and load progress on stderr
   --no-think         hide them; default is --think while streaming
   --strict           exit 3 when the answer was truncated
-  --wait             queue for the inference slot instead of failing
+  --no-wait          fail instead of queueing for the inference slot
 
 Stdin is appended to PROMPT as context when it is not a terminal. Only the
 answer goes to stdout, so pipes stay clean; reasoning, load progress and
 warnings go to stderr. Truncation always warns.
 
+"oss runs" lists agent transcripts newest first, "oss show N" replays one.
 Altair serves one model at a time; asking for one that is not loaded costs
 about two minutes. Check with "oss running".
 USAGE
@@ -97,6 +97,10 @@ while [ $# -gt 0 ]; do
             ;;
         --wait)
             wait_slot=1
+            shift
+            ;;
+        --no-wait)
+            wait_slot=0
             shift
             ;;
         -h | --help)
@@ -158,10 +162,99 @@ if [ -n "$seed" ]; then
     esac
 fi
 
+resolve_model() {
+    case $model in
+        @aliasArms@
+    esac
+}
+
+resolve_model
+
 if [ $# -eq 0 ] && [ -t 0 ]; then
     usage >&2
     exit 2
 fi
+
+state_dir=${XDG_STATE_HOME:-$HOME/.local/state}/oss
+
+run_files() {
+    local f
+    shopt -s nullglob
+    for f in "$state_dir"/[0-9]*.jsonl; do
+        printf '%s\n' "$f"
+    done
+    shopt -u nullglob
+}
+
+list_runs() {
+    local files=() i n
+    mapfile -t files < <(run_files)
+    if [ ${#files[@]} -eq 0 ]; then
+        printf 'no agent runs in %s\n' "$state_dir"
+        return
+    fi
+    n=1
+    for ((i = ${#files[@]} - 1; i >= 0; i--)); do
+        printf '%s\t%s\t%s\n' "$n" \
+            "$(date -r "${files[i]}" '+%Y-%m-%d %H:%M')" \
+            "$(jq -rs '
+                ((map(select(.kind == "task")) | first | .data.task) // "?")
+                    as $task
+                | ((map(select(.kind == "result")) | last | .data) // {}) as $r
+                | [($r.stop_reason // "incomplete"),
+                   (($r.turns // 0) | tostring) + " turns",
+                   (($r.tokens // 0) | tostring) + " tok",
+                   ($task | gsub("\\s+"; " ") | .[0:60])] | join("  ")
+            ' "${files[i]}")"
+        n=$((n + 1))
+    done
+}
+
+show_run() {
+    local files=() index=$1 target
+    mapfile -t files < <(run_files)
+    case $index in
+        '' | *[!0-9]*)
+            printf 'oss show takes a run number from "oss runs"\n' >&2
+            return 2
+            ;;
+    esac
+    if [ "$index" -lt 1 ] || [ "$index" -gt ${#files[@]} ]; then
+        printf 'no such run: %s\n' "$index" >&2
+        return 2
+    fi
+    target=${files[${#files[@]} - index]}
+    printf '%s\n\n' "$target"
+    jq -r '
+        ((.t // 0) | tostring) as $t
+        | if .kind == "task" then "task: " + (.data.task // "?")
+          elif .kind == "assistant" then
+            $t + "s turn"
+            + (if .data.tool_calls then " -> "
+                 + ([.data.tool_calls[].function.name] | join(", "))
+               else "" end)
+            + (if (.data.content // "") == "" then ""
+               else "\n" + .data.content end)
+          elif .kind == "tool" then
+            $t + "s   " + (.data.name // "?") + " "
+            + ((.data.args // {}) | tojson) + " -> "
+            + (if .data.error then .data.error
+               else ((.data.bytes // 0) | tostring) + " bytes" end)
+          else $t + "s " + .kind + ": " + (.data | tojson)
+          end
+    ' "$target"
+}
+
+case "${1-}" in
+    runs)
+        list_runs
+        exit 0
+        ;;
+    show)
+        show_run "${2-1}"
+        exit $?
+        ;;
+esac
 
 if [ ! -r "$key_file" ]; then
     printf 'cannot read %s\n' "$key_file" >&2
@@ -214,7 +307,7 @@ jq -n \
     | (if $t == "" then . else .temperature = ($t | tonumber) end)
     | (if $sd == "" then . else .seed = ($sd | tonumber) end)' > "$tmp/payload"
 
-loaded=$(curl -sS --max-time 10 --config <(printf '%s\n' "$auth") \
+loaded=$(curl -s --max-time 10 --config <(printf '%s\n' "$auth") \
     "${url%/v1}/running" \
     | jq -r '.running[]? | select(.state == "ready") | .model') || loaded=""
 
@@ -228,11 +321,13 @@ fi
 
 lock=${XDG_RUNTIME_DIR:-/tmp}/oss.lock
 exec 9>>"$lock"
-if [ "$wait_slot" = 1 ]; then
+if ! flock -n 9; then
+    if [ "$wait_slot" = 0 ]; then
+        printf 'the single inference slot is busy: %s\n' "$(cat "$lock")" >&2
+        exit 1
+    fi
+    printf 'waiting for the inference slot, held by %s\n' "$(cat "$lock")" >&2
     flock 9
-elif ! flock -n 9; then
-    printf 'the single inference slot is busy: %s\n' "$(cat "$lock")" >&2
-    exit 1
 fi
 printf 'pid %s since %s\n' "$$" "$(date +%s)" > "$lock"
 

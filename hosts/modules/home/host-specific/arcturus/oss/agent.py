@@ -21,6 +21,13 @@ KUBECTL = "@kubectl@"
 GIT = "@git@"
 RUN0 = "@run0@"
 TRUE = "@true@"
+FD = "@fd@"
+NIXPARSE = "@nixparse@"
+SHELLCHECK = "@shellcheck@"
+YQ = "@yq@"
+JQBIN = "@jqbin@"
+PLACEHOLDER = re.compile(r"@[a-z][a-z0-9_]*@")
+ALIASES = @aliases@
 
 ENDPOINT = os.environ.get("OSS_URL", "http://altair:8080/v1")
 KEY_FILE = os.environ.get("OSS_KEY_FILE", "/run/secrets/llama-api-key")
@@ -62,6 +69,34 @@ INJECTION_HINTS = [
 ]
 
 TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "find",
+            "description": "List repository files whose name matches a glob. Use this to locate files instead of walking directories with list_dir.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "glob": {"type": "string"},
+                    "path": {"type": "string"},
+                    "depth": {"type": "integer"},
+                },
+                "required": ["glob"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "validate",
+            "description": "Run the real parser over one file and report whether it is syntactically valid. Handles .nix, .sh, .yaml and .json.",
+            "parameters": {
+                "type": "object",
+                "properties": {"path": {"type": "string"}},
+                "required": ["path"],
+            },
+        },
+    },
     {
         "type": "function",
         "function": {
@@ -155,7 +190,9 @@ report that something is absent until you have searched for it and read the
 candidates.
 
 Your tool budget is small. Prefer one grep over walking the tree with list_dir:
-listing directories you do not then read is wasted budget. Read a file only when
+listing directories you do not then read is wasted budget. Use find to locate
+files by name. Never judge syntax by eye: validate runs the real parser and
+tells you whether a file is valid. Read a file only when
 its contents will change your answer. Keep calling tools until you can cite the
 paths that support your answer, then answer concisely and cite them.
 
@@ -206,7 +243,7 @@ def jail(path, root):
     return target
 
 
-def bwrap(root, argv, net=False, extra=None):
+def bwrap_run(root, argv, net=False, extra=None):
     cmd = [
         BWRAP,
         "--ro-bind", "/nix/store", "/nix/store",
@@ -230,7 +267,11 @@ def bwrap(root, argv, net=False, extra=None):
         cmd += ["--unshare-all"]
     cmd += extra or []
     cmd += ["--"] + argv
-    out = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+
+
+def bwrap(root, argv, net=False, extra=None):
+    out = bwrap_run(root, argv, net, extra)
     text = out.stdout if out.stdout else out.stderr
     if out.returncode != 0 and not text.strip():
         text = "command failed with status %d" % out.returncode
@@ -308,10 +349,68 @@ def tool_kubectl(args, root):
     return bwrap(root, argv, net=True, extra=extra)
 
 
+def tool_find(args, root):
+    pattern = args["glob"]
+    if len(pattern) > 200:
+        raise Denied("glob too long")
+    target = jail(args.get("path", "."), root)
+    depth = min(int(args.get("depth", 6)), 12)
+    out = bwrap(root, [
+        FD, "--glob", "--type", "f", "--hidden", "--no-ignore-vcs",
+        "--exclude", ".git", "--max-depth", str(depth),
+        "--max-results", "200", pattern, target,
+    ])
+    kept = []
+    withheld = 0
+    for line in out.splitlines():
+        if any(rule.search(line) for rule in DENY):
+            withheld += 1
+            continue
+        if line.startswith(root + os.sep):
+            line = line[len(root) + 1:]
+        kept.append(line)
+    if withheld:
+        kept.append("[%d match withheld by policy]" % withheld)
+    if not kept:
+        return "no file matches %s under %s" % (pattern, target)
+    return "\n".join(kept)
+
+
+def tool_validate(args, root):
+    target = jail(args["path"], root)
+    name = os.path.basename(target)
+    extension = os.path.splitext(target)[1]
+    if extension in (".sh", ".bash"):
+        kind = "shell"
+        argv = [SHELLCHECK, "--format", "gcc", "--severity", "warning", target]
+    elif extension == ".nix":
+        kind = "nix"
+        argv = [NIXPARSE, "--parse", target]
+    elif extension in (".yaml", ".yml"):
+        kind = "yaml"
+        argv = [YQ, "eval-all", ".", target]
+    elif extension == ".json" or name == "flake.lock":
+        kind = "json"
+        argv = [JQBIN, "empty", target]
+    else:
+        return "no validator for %s; validate handles .nix, .sh, .yaml, .json" % name
+    out = bwrap_run(root, argv)
+    if out.returncode == 0:
+        return "ok: %s is valid %s" % (name, kind)
+    detail = (out.stderr or out.stdout).strip()[:2000]
+    if PLACEHOLDER.search(bwrap(root, [CAT, target])):
+        detail += ("\nnote: this file contains @placeholder@ markers, so it is"
+                   " a build-time template and is not expected to parse as"
+                   " written")
+    return "%s is not valid %s:\n%s" % (name, kind, detail)
+
+
 HANDLERS = {
     "read_file": tool_read_file,
     "list_dir": tool_list_dir,
     "grep": tool_grep,
+    "find": tool_find,
+    "validate": tool_validate,
     "journalctl": tool_journalctl,
     "kubectl": tool_kubectl,
 }
@@ -386,12 +485,17 @@ def slot_lock():
 
 
 def take_lock(handle, wait):
-    mode = fcntl.LOCK_EX if wait else fcntl.LOCK_EX | fcntl.LOCK_NB
     try:
-        fcntl.flock(handle, mode)
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         handle.seek(0)
-        return handle.read().strip() or "another oss process"
+        holder = handle.read().strip() or "another oss process"
+        if not wait:
+            return holder
+        sys.stderr.write("waiting for the inference slot, held by %s\n"
+                         % holder)
+        sys.stderr.flush()
+        fcntl.flock(handle, fcntl.LOCK_EX)
     handle.seek(0)
     handle.truncate()
     handle.write("pid %d since %d\n" % (os.getpid(), int(time.time())))
@@ -548,13 +652,59 @@ def stream_call(messages, key, max_tokens=2048, effort="low", temp=None,
     }
 
 
-def transcript_path():
+def state_dir():
     state = os.environ.get(
         "XDG_STATE_HOME", os.path.expanduser("~/.local/state"))
     directory = os.path.join(state, "oss")
     os.makedirs(directory, exist_ok=True)
+    return directory
+
+
+def chat_sessions():
+    directory = state_dir()
+    return sorted(
+        os.path.join(directory, f) for f in os.listdir(directory)
+        if f.startswith("chat-") and f.endswith(".jsonl"))
+
+
+def chat_path():
+    sessions = chat_sessions()
+    for stale in sessions[:-19]:
+        os.unlink(stale)
+    return os.path.join(
+        state_dir(), "chat-%d-%d.jsonl" % (int(time.time()), os.getpid()))
+
+
+def latest_chat():
+    sessions = chat_sessions()
+    return sessions[-1] if sessions else None
+
+
+def read_chat(path):
+    entries = []
+    try:
+        with open(path) as handle:
+            for raw in handle:
+                try:
+                    entry = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                if entry.get("role") in ("user", "assistant"):
+                    entries.append(entry)
+    except OSError:
+        return []
+    return entries
+
+
+def resolve_model(name):
+    return ALIASES.get(name, name)
+
+
+def transcript_path():
+    directory = state_dir()
     runs = sorted(
-        f for f in os.listdir(directory) if f.endswith(".jsonl"))
+        f for f in os.listdir(directory)
+        if f.endswith(".jsonl") and f[0].isdigit())
     for stale in runs[:-49]:
         os.unlink(os.path.join(directory, stale))
     return os.path.join(
@@ -656,6 +806,8 @@ def run_agent(options):
                 except Alarm as error:
                     record("alarm", {"name": name, "args": args,
                                      "reason": str(error)})
+                    record("result", {"stop_reason": "denied_access",
+                                      "turns": totals["turns"]})
                     log.close()
                     emit({
                         "answer": "",
@@ -707,8 +859,7 @@ def run_agent(options):
         except SystemExit as error:
             record("forced_answer_failed", {"error": str(error)})
 
-    log.close()
-    emit({
+    result = {
         "answer": scrub(answer),
         "turns": totals["turns"],
         "tokens": totals["tokens"],
@@ -717,7 +868,12 @@ def run_agent(options):
         "injection_suspected": flagged,
         "transcript": log.name,
         "trust": "untrusted model output",
-    }, options)
+    }
+    record("result", {"stop_reason": stop, "turns": totals["turns"],
+                      "tokens": totals["tokens"],
+                      "wall": round(time.time() - started, 1)})
+    log.close()
+    emit(result, options)
 
 
 def emit(result, options):
@@ -738,10 +894,7 @@ def run_chat(options):
     import readline
     root = repo_root()
     key = load_key()
-    state = os.environ.get(
-        "XDG_STATE_HOME", os.path.expanduser("~/.local/state"))
-    directory = os.path.join(state, "oss")
-    os.makedirs(directory, exist_ok=True)
+    directory = state_dir()
     history = os.path.join(directory, "chat_history")
     try:
         readline.read_history_file(history)
@@ -750,6 +903,14 @@ def run_chat(options):
 
     messages = []
     used = 0
+    path = latest_chat() if options.resume else None
+    if path:
+        messages = read_chat(path)
+        print("resumed %d messages from %s" % (len(messages), path))
+    else:
+        path = chat_path()
+    session = open(path, "a")
+
     print("%s on altair. /reset /add <path> /ctx /quit" % MODEL)
 
     while True:
@@ -765,7 +926,9 @@ def run_chat(options):
         if line == "/reset":
             messages = []
             used = 0
-            print("context cleared")
+            session.close()
+            session = open(chat_path(), "a")
+            print("context cleared, new session")
             continue
         if line == "/ctx":
             print("%d / %d tokens used (%d%%)"
@@ -783,12 +946,14 @@ def run_chat(options):
                 "role": "user",
                 "content": "Untrusted file %s:\n\n%s" % (target, body),
             })
+            session.write(json.dumps(messages[-1]) + "\n")
+            session.flush()
             print("added %s (%d bytes)" % (target, len(body)))
             continue
 
         messages.append({"role": "user", "content": line})
         handle = slot_lock()
-        holder = take_lock(handle, False)
+        holder = take_lock(handle, options.wait)
         if holder:
             print("the single inference slot is busy: %s" % holder)
             messages.pop()
@@ -805,6 +970,9 @@ def run_chat(options):
             fcntl.flock(handle, fcntl.LOCK_UN)
             handle.close()
         messages.append({"role": "assistant", "content": result["content"]})
+        session.write(json.dumps(messages[-2]) + "\n")
+        session.write(json.dumps(messages[-1]) + "\n")
+        session.flush()
         used = result["usage"].get("total_tokens", used)
         if result["finish_reason"] == "length":
             print("answer truncated at %d tokens; raise --max-tokens"
@@ -812,6 +980,7 @@ def run_chat(options):
         if used > CTX_LIMIT:
             print("context nearly full, /reset recommended")
 
+    session.close()
     try:
         readline.write_history_file(history)
     except OSError:
@@ -833,7 +1002,8 @@ def main():
     agent.add_argument("--text", action="store_true")
     agent.add_argument("--effort", default="medium",
                        choices=["low", "medium", "high"])
-    agent.add_argument("--wait", action="store_true")
+    agent.add_argument("--wait", action="store_true", default=True)
+    agent.add_argument("--no-wait", dest="wait", action="store_false")
     agent.add_argument("--model", default=None)
     agent.add_argument("--temp", type=float, default=None)
     agent.add_argument("--seed", type=int, default=None)
@@ -843,17 +1013,19 @@ def main():
     chat.add_argument("--model", default=None)
     chat.add_argument("--effort", default="low",
                       choices=["low", "medium", "high"])
-
     chat.add_argument("--temp", type=float, default=None)
     chat.add_argument("--seed", type=int, default=None)
     chat.add_argument("--think", action="store_true", default=True)
     chat.add_argument("--no-think", dest="think", action="store_false")
+    chat.add_argument("--resume", action="store_true")
+    chat.add_argument("--wait", action="store_true", default=True)
+    chat.add_argument("--no-wait", dest="wait", action="store_false")
+
     global MODEL
 
     options = parser.parse_args()
 
-    if options.model:
-        MODEL = options.model
+    MODEL = resolve_model(options.model or MODEL)
 
     if options.mode == "chat":
         run_chat(options)
