@@ -85,6 +85,8 @@ in {
                     cmd = cmd [
                         "--model ${modelDir}/Qwen3-Coder-30B-A3B-Instruct-UD-Q3_K_XL.gguf"
                         "--alias qwen3-coder"
+                        "--tensor-split 0.50,0.50"
+                        "--spec-type ngram-simple"
                         "--ctx-size 32768"
                         kv8
                         qwenSampling
@@ -104,41 +106,36 @@ in {
                     ];
                 };
 
-                "probe-ts-5644" = {
-                    name = "probe tensor-split 0.56/0.44";
+
+
+
+
+
+
+                "probe-gpt-5050" = {
+                    name = "probe gpt-oss tensor-split 0.50/0.50";
                     description = "Benchmark probe. Delete after measuring.";
-                    filters.stripParams = "chat_template_kwargs";
-                    cmd = cmd [ coderModel "--alias probe-ts-5644" "--ctx-size 32768" "--tensor-split 0.56,0.44" kv8 qwenSampling ];
+                    cmd = cmd [
+                        "--model ${modelDir}/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf"
+                        "--alias probe-gpt-5050"
+                        "--ctx-size 32768"
+                        kv8
+                        "--tensor-split 0.50,0.50"
+                    ];
                 };
 
-                "probe-ts-6535" = {
-                    name = "probe tensor-split 0.65/0.35";
+                "probe-gpt-ngram" = {
+                    name = "probe gpt-oss ngram speculation";
                     description = "Benchmark probe. Delete after measuring.";
-                    filters.stripParams = "chat_template_kwargs";
-                    cmd = cmd [ coderModel "--alias probe-ts-6535" "--ctx-size 32768" "--tensor-split 0.65,0.35" kv8 qwenSampling ];
+                    cmd = cmd [
+                        "--model ${modelDir}/huihui-ai_Huihui-gpt-oss-20b-BF16-abliterated-MXFP4_MOE.gguf"
+                        "--alias probe-gpt-ngram"
+                        "--ctx-size 32768"
+                        kv8
+                        "--tensor-split 0.56,0.44"
+                        "--spec-type ngram-simple"
+                    ];
                 };
-
-                "probe-ts-5050" = {
-                    name = "probe tensor-split 0.50/0.50";
-                    description = "Benchmark probe. Delete after measuring.";
-                    filters.stripParams = "chat_template_kwargs";
-                    cmd = cmd [ coderModel "--alias probe-ts-5050" "--ctx-size 32768" "--tensor-split 0.50,0.50" kv8 qwenSampling ];
-                };
-
-                "probe-kv4" = {
-                    name = "probe q4_0 KV";
-                    description = "Benchmark probe. Delete after measuring.";
-                    filters.stripParams = "chat_template_kwargs";
-                    cmd = cmd [ coderModel "--alias probe-kv4" "--ctx-size 32768" kv4 qwenSampling ];
-                };
-
-                "probe-ngram" = {
-                    name = "probe ngram speculation";
-                    description = "Benchmark probe. Delete after measuring.";
-                    filters.stripParams = "chat_template_kwargs";
-                    cmd = cmd [ coderModel "--alias probe-ngram" "--ctx-size 32768" "--spec-type ngram-simple" kv8 qwenSampling ];
-                };
-
                 "probe-draft" = {
                     name = "probe 0.6B draft speculation";
                     description = "Benchmark probe. Delete after measuring.";
