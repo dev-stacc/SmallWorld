@@ -5,7 +5,9 @@
         [ "{{sanctuaryIp}}" "{{argusIp}}" ]
         [ tailnet.ips.sanctuary tailnet.ips.argus ]
         (builtins.readFile ./raw-files/kitty-control.sh));
-in { 
+        
+    nnnWrapper = pkgs.writeShellScript "nnn-wrapper" (builtins.readFile ./raw-files/nnn-wrapper.sh);
+in {
     home.file = {
         ".local/bin/kitty-launcher" = {
             source = kittyLauncher;
@@ -15,10 +17,14 @@ in {
             source = kittyControl;
             executable = true;
         };
+        ".local/bin/nnn-wrapper" = {
+            source = nnnWrapper;
+            executable = true;
+        };
         ".config/xdg-desktop-portal-termfilechooser/config" = {
             text = ''
                 [filechooser]
-                cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
+                cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/nnn-wrapper.sh
                 default_dir=$HOME
             '';
         };
