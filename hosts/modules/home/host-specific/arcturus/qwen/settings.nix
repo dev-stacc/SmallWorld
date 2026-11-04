@@ -197,8 +197,17 @@ in pkgs.writeText "qwen-system-defaults.json" (builtins.toJSON {
             "save_memory"
             "notebook_edit"
             "web_fetch"
+            "send_message"
+            "enter_worktree"
+            "exit_worktree"
             "lsp"
         ];
+    };
+
+    memory = {
+        enableManagedAutoMemory = false;
+        enableManagedAutoDream = false;
+        enableAutoSkill = false;
     };
 
     privacy.usageStatisticsEnabled = false;
