@@ -21,6 +21,7 @@ tags
 
 # OS junk
 .DS_Store
+*.orig
 
 # Credentials and certs (defense in depth — these should never be committed)
 *.kubeconfig

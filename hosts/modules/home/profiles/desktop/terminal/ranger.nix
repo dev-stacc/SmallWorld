@@ -1,5 +1,5 @@
-{ pkgs, ... } : {
-    home.packages = with pkgs; [
+{ pkgs, ... } : let
+    tools = with pkgs; [
         bat
         glow
         ffmpegthumbnailer
@@ -10,16 +10,21 @@
         ripgrep
         tdf
     ];
+in {
+    home.packages = tools;
 
     programs.ranger = {
         enable = true;
         package = pkgs.ranger;
-        options = {
-            # Basic settings for ranger
+
+        extraPackages = tools;
+
+        settings = {
+            show_hidden = true;
             preview_images = true;
             preview_images_method = "kitty";
-            save_history = true;
-            history_length = 1000;
+            save_console_history = true;
+            max_console_history_size = 1000;
         };
     };
 }
