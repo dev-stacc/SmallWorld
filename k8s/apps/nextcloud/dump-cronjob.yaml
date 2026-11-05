@@ -66,6 +66,9 @@ spec:
                   mv "$${out}.tmp" "$${out}"
                   echo "wrote $${out} ($$(stat -c %s "$${out}") bytes)"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
