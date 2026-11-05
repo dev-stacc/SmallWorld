@@ -5,3 +5,17 @@ resources:
   - gotk-sync.yaml
   - apps.yaml
   - cluster-config.yaml
+patches:
+  - target:
+      kind: Deployment
+      labelSelector: control-plane=controller
+    patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --leader-election-lease-duration=120s
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --leader-election-renew-deadline=110s
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --leader-election-retry-period=20s

@@ -9,6 +9,7 @@
         ./suricata.nix
         ./cluster-dumps.nix
         ./disk-io.nix
+        ./flaresolverr-restart.nix
     ];
 
     biggerworld.ups = {
