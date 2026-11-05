@@ -162,13 +162,14 @@ if [ -n "$seed" ]; then
     esac
 fi
 
-resolve_model() {
-    case $model in
-        @aliasArms@
-    esac
-}
+model_aliases=(@aliasPairs@)
 
-resolve_model
+for pair in "${model_aliases[@]}"; do
+    if [ "${pair%%=*}" = "$model" ]; then
+        model=${pair#*=}
+        break
+    fi
+done
 
 if [ $# -eq 0 ] && [ -t 0 ]; then
     usage >&2
