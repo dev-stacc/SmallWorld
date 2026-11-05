@@ -5,6 +5,8 @@
         [ "{{sanctuaryIp}}" "{{argusIp}}" ]
         [ tailnet.ips.sanctuary tailnet.ips.argus ]
         (builtins.readFile ./raw-files/kitty-control.sh));
+
+    rangerWrapper = pkgs.writeShellScript "ranger-wrapper" (builtins.readFile ./raw-files/ranger-wrapper.sh);
 in {
     home.file = {
         ".local/bin/kitty-launcher" = {
@@ -15,10 +17,14 @@ in {
             source = kittyControl;
             executable = true;
         };
+        ".local/bin/ranger-wrapper" = {
+            source = rangerWrapper;
+            executable = true;
+        };
         ".config/xdg-desktop-portal-termfilechooser/config" = {
             text = ''
                 [filechooser]
-                cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/nnn-wrapper.sh
+                cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/ranger-wrapper.sh
                 default_dir=$HOME
             '';
         };
