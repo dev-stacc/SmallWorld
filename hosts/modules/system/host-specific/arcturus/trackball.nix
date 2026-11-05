@@ -39,6 +39,7 @@ in {
 
         serviceConfig = {
             Type = "simple";
+            ExecStartPre = "+${pkgs.acl}/bin/setfacl -m u:trackball:rw /dev/uinput";
             ExecStart = "${runner}/bin/trackball-scroll";
             Restart = "always";
             RestartSec = 5;
