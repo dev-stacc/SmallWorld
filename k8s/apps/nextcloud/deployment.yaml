@@ -20,7 +20,7 @@ spec:
       containers:
         - name: nextcloud
           # major pinned deliberately: nextcloud refuses to skip majors
-          image: nextcloud:32-apache
+          image: nextcloud:35-apache
           ports:
             - containerPort: 80
           env:
@@ -116,7 +116,7 @@ spec:
             periodSeconds: 30
             failureThreshold: 4
         - name: cron
-          image: nextcloud:32-apache
+          image: nextcloud:35-apache
           command: ["/cron.sh"]
           env:
             - name: POSTGRES_HOST
