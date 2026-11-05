@@ -23,6 +23,14 @@
 in {
     hardware.uinput.enable = true;
 
+    users.groups.trackball = { };
+
+    users.users.trackball = {
+        isSystemUser = true;
+        group = "trackball";
+        description = "trackball scroll mode";
+    };
+
     systemd.services.trackball-scroll = {
         description = "Scroll Lock toggles trackball scroll mode";
         wantedBy = [ "multi-user.target" ];
@@ -34,6 +42,39 @@ in {
             ExecStart = "${runner}/bin/trackball-scroll";
             Restart = "always";
             RestartSec = 5;
+
+            User = "trackball";
+            SupplementaryGroups = [ "input" "uinput" ];
+
+            PrivateNetwork = true;
+            RestrictAddressFamilies = [ "AF_UNIX" ];
+            IPAddressDeny = "any";
+
+            ProtectHome = true;
+            ProtectSystem = "strict";
+            PrivateTmp = true;
+            ProtectProc = "invisible";
+            ProcSubset = "pid";
+
+            DevicePolicy = "closed";
+            DeviceAllow = [ "char-input rw" "/dev/uinput rw" ];
+
+            CapabilityBoundingSet = "";
+            NoNewPrivileges = true;
+            RestrictNamespaces = true;
+            RestrictSUIDSGID = true;
+            RestrictRealtime = true;
+            LockPersonality = true;
+            MemoryDenyWriteExecute = true;
+            RemoveIPC = true;
+            ProtectKernelTunables = true;
+            ProtectKernelModules = true;
+            ProtectKernelLogs = true;
+            ProtectClock = true;
+            ProtectControlGroups = true;
+            SystemCallFilter = [ "@system-service" ];
+            SystemCallArchitectures = "native";
+            UMask = "0077";
         };
     };
 }
