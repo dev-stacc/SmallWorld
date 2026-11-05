@@ -26,6 +26,12 @@
         "ghcr.io/dev-stacc/**"
       ],
       "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/immich-app/postgres"
+      ],
+      "enabled": false
     }
   ],
   "flux": {
