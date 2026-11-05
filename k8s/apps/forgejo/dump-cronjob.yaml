@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: forgejo-db-dump
+  namespace: forgejo
+spec:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: forgejo-dump
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: asta
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          containers:
+            - name: pg-dump
+              image: postgres:18
+              env:
+                - name: PGHOST
+                  value: postgres
+                - name: PGDATABASE
+                  value: forgejo
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: forgejo-secrets
+                      key: FORGEJO_DB_USERNAME
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: forgejo-secrets
+                      key: FORGEJO_DB_PASSWORD
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+                  out=/dumps/forgejo.sql.gz
+                  ready=0
+                  for i in $$(seq 1 30); do
+                    if pg_isready -q; then ready=1; break; fi
+                    sleep 2
+                  done
+                  if [ "$${ready}" -ne 1 ]; then
+                    echo "postgres unreachable after 60s" >&2
+                    exit 1
+                  fi
+                  pg_dump --clean --if-exists | gzip -9 > "$${out}.tmp"
+                  mv "$${out}.tmp" "$${out}"
+                  echo "wrote $${out} ($$(stat -c %s "$${out}") bytes)"
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+                limits:
+                  memory: 512Mi
+                  cpu: 500m
+              volumeMounts:
+                - name: dumps
+                  mountPath: /dumps
+          volumes:
+            - name: dumps
+              hostPath:
+                path: /var/lib/cluster-dumps/forgejo
+                type: Directory

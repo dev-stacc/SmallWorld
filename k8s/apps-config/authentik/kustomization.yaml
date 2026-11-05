@@ -20,4 +20,11 @@ resources:
   - blueprint-open-webui.yaml
   - blueprint-nextcloud-oidc.yaml
   - externalsecret-blueprint-nextcloud-env.yaml
+  - blueprint-immich-oidc.yaml
+  - blueprint-arr.yaml
+  - externalsecret-blueprint-immich-env.yaml
+  - blueprint-forgejo-oidc.yaml
+  - externalsecret-blueprint-forgejo-env.yaml
+  - blueprint-audiobookshelf-oidc.yaml
+  - externalsecret-blueprint-audiobookshelf-env.yaml
   - dump-cronjob.yaml

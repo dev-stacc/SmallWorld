@@ -3,9 +3,10 @@
         ./graphics.nix
         ./hyprland.nix
         ./k3s-kubeconfig.nix
+        ./llama-key.nix
         ./lid.nix
         ./overlays.nix
-        ./searx.nix
+        ./fourget.nix
         ./virtualisation.nix
     ];
 

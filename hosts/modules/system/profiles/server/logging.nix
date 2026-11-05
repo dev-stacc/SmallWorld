@@ -27,6 +27,12 @@ in {
                 }
 
                 rule {
+                    source_labels = ["__journal_unit"]
+                    regex         = "(.+)"
+                    target_label  = "unit"
+                }
+
+                rule {
                     source_labels = ["__journal__hostname"]
                     target_label  = "host"
                 }

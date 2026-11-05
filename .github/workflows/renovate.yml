@@ -1,0 +1,37 @@
+name: renovate
+
+on:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: renovate log level
+        type: choice
+        default: info
+        options:
+          - info
+          - debug
+      dryRun:
+        description: run without creating branches or PRs
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: renovatebot/github-action@a63d9a7bc606f7336fd20b47f2f32259a35e6213
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || 'null' }}

@@ -5,7 +5,7 @@
         "$mod,T,exec,librewolf-ephemeral"
         "$mod,D,exec,pkill kitty-launcher || kitty --title kitty-launcher -e ~/.local/bin/kitty-launcher"
         "$mod,N,exec,pkill kitty-control || kitty --title kitty-control -e ~/.local/bin/kitty-control"
-        "$mod,E,exec,pkill yazi || kitty --title kitty-explorer -e yazi"
+        "$mod,E,exec,pkill -x .ranger-wrapped || kitty --title kitty-explorer -e ranger"
         "$mod SHIFT,C,exec,hyprctl reload"
         "$mod,L,exec,~/.local/bin/lockout"
         "$mod,M,exit,Hyprland"

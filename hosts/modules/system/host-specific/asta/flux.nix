@@ -74,4 +74,36 @@
             Environment = [ "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" ];
         };
     };
+
+    systemd.services.flux-reconcile-after-boot = {
+        description = "Force a Flux reconcile once the cluster is back up";
+        after = [ "k3s.service" "flux-bootstrap.service" "network-online.target" ];
+        wants = [ "network-online.target" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            Environment = [ "KUBECONFIG=/etc/rancher/k3s/k3s.yaml" ];
+            ExecStart = pkgs.writeShellScript "flux-reconcile-after-boot" ''
+                until ${pkgs.kubectl}/bin/kubectl get nodes &>/dev/null; do
+                    sleep 5
+                done
+
+                ${pkgs.kubectl}/bin/kubectl rollout status deployment/source-controller \
+                    -n flux-system --timeout=10m || exit 0
+                ${pkgs.kubectl}/bin/kubectl rollout status deployment/helm-controller \
+                    -n flux-system --timeout=10m || exit 0
+
+                ${pkgs.fluxcd}/bin/flux reconcile kustomization flux-system --with-source || true
+
+                ${pkgs.kubectl}/bin/kubectl get helmreleases -A -o json \
+                    | ${pkgs.jq}/bin/jq -r '.items[]
+                        | select([.status.conditions[]? | select(.type == "Ready" and .status == "True")] | length == 0)
+                        | "\(.metadata.namespace) \(.metadata.name)"' \
+                    | while read -r ns hr; do
+                        ${pkgs.fluxcd}/bin/flux reconcile helmrelease "$hr" -n "$ns" --force || true
+                    done
+            '';
+        };
+    };
 }

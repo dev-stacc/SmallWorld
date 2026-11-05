@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+configMapGenerator:
+  - name: fourget-theme
+    namespace: fourget
+    files:
+      - biggerworld.css=fourget.css
+  - name: fourget-apache
+    namespace: fourget
+    files:
+      - forwarded.conf

@@ -19,10 +19,12 @@ spec:
         kubernetes.io/hostname: asta
       containers:
         - name: open-webui
-          image: ghcr.io/open-webui/open-webui:v0.6.18
+          image: ghcr.io/open-webui/open-webui:v0.13.0
           ports:
             - containerPort: 8080
           env:
+            - name: ENABLE_PERSISTENT_CONFIG
+              value: "false"
             - name: OPENAI_API_BASE_URL
               value: http://altair-egress.tailscale.svc.cluster.local:8080/v1
             - name: OPENAI_API_KEY
@@ -33,6 +35,18 @@ spec:
             - name: ENABLE_OPENAI_API
               value: "true"
             - name: ENABLE_OLLAMA_API
+              value: "false"
+            - name: DEFAULT_MODELS
+              value: gpt-oss-20b-uncensored
+            - name: TASK_MODEL_EXTERNAL
+              value: gpt-oss-20b-uncensored
+            - name: ENABLE_TITLE_GENERATION
+              value: "false"
+            - name: ENABLE_TAGS_GENERATION
+              value: "false"
+            - name: ENABLE_AUTOCOMPLETE_GENERATION
+              value: "false"
+            - name: ENABLE_FOLLOW_UP_GENERATION
               value: "false"
             - name: WEBUI_URL
               value: https://chat.${TAILNET_DOMAIN}
@@ -55,9 +69,7 @@ spec:
             - name: ENABLE_WEB_SEARCH
               value: "true"
             - name: WEB_SEARCH_ENGINE
-              value: searxng
-            - name: SEARXNG_QUERY_URL
-              value: http://searxng.searxng.svc.cluster.local:8080/search
+              value: duckduckgo
             - name: WEB_SEARCH_RESULT_COUNT
               value: "3"
             - name: WEB_SEARCH_CONCURRENT_REQUESTS
@@ -65,6 +77,25 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /app/backend/data
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: "512Mi"

@@ -12,9 +12,16 @@ resources:
   - sewing-assistant/
   - marketing-tool/
   - prose/
-  - nfs-provisioner/
+  - coredns-custom/
   - crowdsec/
   - kiwix/
+  - immich/
   - nextcloud/
   - open-webui/
-  - searxng/
+  - fourget/
+  - algol-monitor/
+  - arr/
+  - oss-agent/
+  - generic-device-plugin/
+  - audiobookshelf/
+  - forgejo/

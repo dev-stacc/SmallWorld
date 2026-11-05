@@ -1,0 +1,37 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "gitAuthor": "Renovate Bot <renovate@biggerworld.invalid>",
+  "pinDigests": true,
+  "ignorePaths": [
+    "**/node_modules/**",
+    "k8s/flux/flux-system/gotk-components.yaml"
+  ],
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/^k8s/.+\\.ya?ml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchFileNames": [
+        "k8s/apps/arr/**"
+      ],
+      "groupName": "arr stack"
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/dev-stacc/**"
+      ],
+      "enabled": false
+    }
+  ],
+  "flux": {
+    "managerFilePatterns": [
+      "/^k8s/.+\\.ya?ml$/"
+    ]
+  },
+  "prHourlyLimit": 3
+}

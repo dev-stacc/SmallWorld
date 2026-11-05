@@ -1,5 +1,5 @@
-{ pkgs, ... } : {
-    imports = [ ./userchrome.nix ./tridactyl.nix ./homepage.nix ./privacy.nix ./ephemeral.nix ];
+{ pkgs, tailnet, ... } : {
+    imports = [ ./userchrome.nix ./usercontent.nix ./tridactyl.nix ./homepage.nix ./privacy.nix ./ephemeral.nix ./bookmarks.nix ];
 
     programs.librewolf = {
         enable = true;
@@ -7,13 +7,30 @@
         nativeMessagingHosts = [ pkgs.tridactyl-native ];
 
         policies.SearchEngines = {
-            Add = [{
-                Name = "searxng";
-                URLTemplate = "http://127.0.0.1:12345/search.html?q={searchTerms}";
-                Alias = "s";
-                Method = "GET";
-            }];
-            Default = "searxng";
+            Add = [
+                {
+                    Name = "4get";
+                    URLTemplate = "http://127.0.0.1:12345/search.html?q={searchTerms}";
+                    Alias = "s";
+                    Method = "GET";
+                }
+                {
+                    Name = "4get-cluster";
+                    URLTemplate = "https://search.${tailnet.domain}/web?s={searchTerms}";
+                    Alias = "sc";
+                    Method = "GET";
+                }
+                {
+                    Name = "duckduckgo";
+                    URLTemplate = "https://duckduckgo.com/?q={searchTerms}";
+                    Alias = "ddg";
+                    Method = "GET";
+                }
+            ];
+
+            Remove = [ "DuckDuckGo No-AI" "Mojeek" "Startpage" "Wikipedia (en)" ];
+
+            Default = "4get";
         };
 
         profiles.default = {
@@ -26,6 +43,8 @@
                 "browser.newtabpage.enabled" = false;
                 "privacy.resistFingerprinting.letterboxing" = true;
                 "extensions.autoDisableScopes" = 0;
+                "browser.translations.enable" = true;
+                "browser.translations.automaticallyPopup" = true;
             };
 
             extensions = {

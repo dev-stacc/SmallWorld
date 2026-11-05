@@ -16,7 +16,7 @@ spec:
       containers:
         - name: redis
           # nextcloud needs redis for transactional file locking
-          image: redis:7-alpine
+          image: redis:8-alpine
           ports:
             - containerPort: 6379
           resources:

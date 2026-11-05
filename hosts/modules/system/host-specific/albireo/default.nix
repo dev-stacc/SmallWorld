@@ -1,12 +1,16 @@
 { ... } : {
     imports = [
         ./storage.nix
-        ./nfs-server.nix
-        ./media-sync.nix
         ./backup.nix
+        ./restic-cluster-server.nix
         ./k3s-service.nix
         ./crowdsec-bouncer.nix
     ];
+
+    biggerworld.ups = {
+        role = "slave";
+        master = "algol";
+    };
 
     boot.loader.grub = {
         enable = true;

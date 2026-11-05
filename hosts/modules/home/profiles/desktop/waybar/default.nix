@@ -11,8 +11,10 @@
     ];
 
     styles = builtins.replaceStrings
-        (map (n: "{{${n}}}") colorNames)
-        (map (n: "#${colors.${n}}") colorNames)
+        (map (n: "{{${n}}}") colorNames ++ [ "{{glyphSize}}" ])
+        (map (n: "#${colors.${n}}") colorNames ++ [
+            (toString theme.fonts.sizes.desktopGlyphs)
+        ])
         (builtins.readFile ./style.css);
 
     finalCss = pkgs.writeText "waybar-stylesheet.css" ''
@@ -21,7 +23,7 @@
                 "${theme.fonts.monospace}",
                 "JetBrainsMono Nerd Font",
                 monospace;
-            font-size: 15px;
+            font-size: ${toString theme.fonts.sizes.desktop}pt;
         }
         ${styles}
     '';
@@ -86,7 +88,7 @@ in {
                 };
                                 
                 cpu = {
-                    format = "{usage}%";
+                    format = "{usage}";
                     interval = 1;
                     tooltip = false;
                 };
@@ -100,29 +102,24 @@ in {
                 
                 "custom/cpu-temp" = {
                     exec = "${cpuTempsScript}";
-                    format = "{}°c";
+                    format = "{}";
                     interval = 2;
                     tooltip = false;
                 };
 
                 "memory" = {
                     interval = 30;
-                    format = "{used}/{total}  ";
+                    format = "{used}/{total}";
                     tooltip = false;
                 };
 
                 battery = {
-                    format = "{capacity}% {icon}";
-                    format-icons = [
-                        "󰁺" "󰁻" "󰁼" "󰁽" "󰁾"
-                        "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"
-                    ];
+                    format = "{capacity}";
                 };
 
                 "wireplumber" = {
                     format = "{volume} {icon}";
-                    format-muted = "󰝟 muted";
-                    format-icons = ["󰕿 " "󰖀 " "󰕾 " " "];
+                    format-muted = "muted";
                     tooltip = false;
                 };
 
@@ -134,12 +131,11 @@ in {
 
                 backlight = {
                     format = "{percent} {icon}";
-                    format-icons = ["󱩎 " "󱩏 " "󱩐 " "󱩐 " "󱩒 " "󱩓 " "󱩔 " "󱩕 " "󱩖 "];
                     tooltip = false;
                 };
 
                 "clock" = {
-                    format = "{0:%d/%m/%Y} 󰃭    {0:%H:%M}  ";
+                    format = "{0:%d/%m/%Y}  {0:%H:%M} ";
                     tooltip = false;
                 };
 
@@ -150,8 +146,8 @@ in {
                 };
 
                 "network" = {
-                    "format-wifi" = "{bandwidthDownBits} {bandwidthUpBits}";
-                    "format-ethernet" = "{bandwidthDownBits} {bandwidthUpBits}";
+                    "format-wifi" = "{bandwidthDownBits} {bandwidthUpBits}";
+                    "format-ethernet" = "{bandwidthDownBits} {bandwidthUpBits}";
                     "format-disconnected" = "󰤭 ";
                     "format-disabled" = "󰤭 ";
                     "tooltip" = false;

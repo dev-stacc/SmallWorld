@@ -11,11 +11,12 @@ let
     verify = pkgs.writeShellScript "restic-verify" ''
         set -euo pipefail
         restic=${pkgs.restic}/bin/restic
+        awk=${pkgs.gawk}/bin/awk
 
         $restic check --read-data-subset=5%
 
         target=$($restic ls --long latest 2>/dev/null \
-            | awk '$1 ~ /^-/ && $4 + 0 > 0 && !found { print $NF; found = 1 }')
+            | $awk '$1 ~ /^-/ && $4 + 0 > 0 && !found { print $NF; found = 1 }')
 
         if [ -z "$target" ]; then
             echo "no regular file found in the latest snapshot"
@@ -48,6 +49,7 @@ in {
                 CacheDirectory = "restic";
                 Environment = env;
                 ExecStart = "${pkgs.restic}/bin/restic forget --prune "
+                    + "--retry-lock 30m "
                     + "--keep-daily 14 --keep-weekly 8 --keep-monthly 12";
             };
         };

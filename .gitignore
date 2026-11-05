@@ -21,6 +21,7 @@ tags
 
 # OS junk
 .DS_Store
+*.orig
 
 # Credentials and certs (defense in depth — these should never be committed)
 *.kubeconfig
@@ -44,3 +45,6 @@ dnsmasq-pxe.*
 # Python bytecode (py_compile leaves these beside the monitor scripts)
 __pycache__/
 *.pyc
+
+# Aider session files
+.aider*

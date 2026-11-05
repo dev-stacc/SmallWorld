@@ -13,7 +13,7 @@ spec:
   chart:
     spec:
       chart: authentik
-      version: ">=2024.0.0"
+      version: "2026.8.5"
       sourceRef:
         kind: HelmRepository
         name: authentik
@@ -27,15 +27,34 @@ spec:
     # as env vars from the authentik-secrets ExternalSecret via global.envFrom
     # below, which is what authentik actually reads.
     global:
+      env:
+        - name: AUTHENTIK_DISABLE_UPDATE_CHECK
+          value: "true"
+        - name: AUTHENTIK_DISABLE_STARTUP_ANALYTICS
+          value: "true"
+        - name: AUTHENTIK_ERROR_REPORTING__ENABLED
+          value: "false"
       envFrom:
         - secretRef:
             name: authentik-secrets
         - secretRef:
             name: authentik-blueprint-grafana-env
+            optional: true
         - secretRef:
             name: authentik-blueprint-jellyfin-env
+            optional: true
         - secretRef:
             name: authentik-blueprint-nextcloud-env
+            optional: true
+        - secretRef:
+            name: authentik-blueprint-immich-env
+            optional: true
+        - secretRef:
+            name: authentik-blueprint-forgejo-env
+            optional: true
+        - secretRef:
+            name: authentik-blueprint-audiobookshelf-env
+            optional: true
     blueprints:
       configMaps:
         - authentik-blueprint-grafana
@@ -48,6 +67,10 @@ spec:
         - authentik-blueprint-marketing-tool
         - authentik-blueprint-kiwix
         - authentik-blueprint-open-webui
+        - authentik-blueprint-immich-oidc
+        - authentik-blueprint-arr
+        - authentik-blueprint-forgejo-oidc
+        - authentik-blueprint-audiobookshelf-oidc
     postgresql:
       enabled: true
       auth:

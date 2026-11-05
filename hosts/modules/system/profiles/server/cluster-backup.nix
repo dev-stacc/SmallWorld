@@ -11,6 +11,7 @@ let
         "${storage}/*_monitoring_storage-loki-*"
         "${storage}/*_monitoring_storage-tempo-*"
         "${storage}/*_kiwix_kiwix-data"
+        "${storage}/*_crowdsec_crowdsec-db"
         "${storage}/*_jellyfin_jellyfin-config/cache"
         "${storage}/*_jellyfin_jellyfin-config/transcodes"
     ];
@@ -22,6 +23,9 @@ in {
         restic-amateus-repository = {
             sopsFile = ../../../../../secrets/secrets.yaml;
         };
+        restic-cluster-repository = {
+            sopsFile = ../../../../../secrets/secrets.yaml;
+        };
     };
 
     systemd.tmpfiles.rules = lib.mkIf active [
@@ -30,6 +34,7 @@ in {
         "d ${dumps}/k3s        0750 root root -"
         "d ${dumps}/authentik  0750 999  999  -"
         "d ${dumps}/prose      0750 999  999  -"
+        "d ${dumps}/forgejo    0750 999  999  -"
     ];
 
     services.restic.backups = lib.mkIf active {
@@ -42,6 +47,20 @@ in {
 
             timerConfig = {
                 OnCalendar = "01:30";
+                RandomizedDelaySec = "30m";
+                Persistent = true;
+            };
+        };
+
+        cluster-smallstorage = {
+            repositoryFile = config.sops.secrets.restic-cluster-repository.path;
+            passwordFile = config.sops.secrets.restic-password.path;
+            initialize = true;
+            paths = [ storage dumps ];
+            inherit exclude;
+
+            timerConfig = {
+                OnCalendar = "02:30";
                 RandomizedDelaySec = "30m";
                 Persistent = true;
             };

@@ -7,6 +7,11 @@
         ./power.nix
     ];
 
+    biggerworld.ups = {
+        role = "slave";
+        master = "algol";
+    };
+
     boot.loader.grub = {
         enable = true;
         device = "/dev/disk/by-id/ata-TOSHIBA_THNSNF128GCSS_13US1068TH2Y";

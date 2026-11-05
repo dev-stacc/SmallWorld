@@ -7,3 +7,4 @@ resources:
   - tailscale-ingress.yaml
   - unseal-secret.yaml
   - unsealer.yaml
+  - networkpolicy.yaml

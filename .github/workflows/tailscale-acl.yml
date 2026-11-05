@@ -1,0 +1,52 @@
+name: tailscale-acl
+
+on:
+  pull_request:
+    paths:
+      - secrets/tailscale-policy.yaml
+      - .github/scripts/check-acl.sh
+      - .github/workflows/tailscale-acl.yml
+  push:
+    branches: [main]
+    paths:
+      - secrets/tailscale-policy.yaml
+      - .github/scripts/check-acl.sh
+      - .github/workflows/tailscale-acl.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tailscale-acl
+  cancel-in-progress: false
+
+jobs:
+  acl:
+    name: acl
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: nixpkgs
+        run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+      - id: policy
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+          TS_TAILNET: ${{ vars.TS_TAILNET }}
+        run: |
+          : "${SOPS_AGE_KEY:?repo secret SOPS_AGE_KEY is not set}"
+          : "${TS_TAILNET:?repo variable TS_TAILNET is not set}"
+          nix shell '${{ steps.nixpkgs.outputs.ref }}#sops' --command \
+            sops -d --output-type binary secrets/tailscale-policy.yaml > "$RUNNER_TEMP/policy.hujson"
+          echo "path=$RUNNER_TEMP/policy.hujson" >> "$GITHUB_OUTPUT"
+      - run: |
+          nix shell '${{ steps.nixpkgs.outputs.ref }}#python3' '${{ steps.nixpkgs.outputs.ref }}#jq' \
+            --command .github/scripts/check-acl.sh '${{ steps.policy.outputs.path }}'
+      - uses: tailscale/gitops-acl-action@5a4a17f5708e9bf96f4ee915a95e9f83c2eebe1a
+        with:
+          tailnet: ${{ vars.TS_TAILNET }}
+          oauth-client-id: ${{ secrets.TS_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_CLIENT_SECRET }}
+          policy-file: ${{ steps.policy.outputs.path }}
+          action: ${{ github.event_name == 'push' && 'apply' || 'test' }}

@@ -1,7 +1,7 @@
 { pkgs, tailnet, theme, ... } : let
     colors = theme.base16;
 
-    searxPort = 12346;
+    fourgetPort = 12346;
     localTimeout = 250;
     clusterTimeout = 800;
 
@@ -23,7 +23,7 @@
         (map (n: "#${colors.${n}}") colorNames ++ [
             theme.fonts.monospace
             (toString theme.fonts.sizes.terminal)
-            "http://127.0.0.1:${toString searxPort}"
+            "http://127.0.0.1:${toString fourgetPort}"
             "https://search.${tailnet.domain}"
             (toString localTimeout)
             (toString clusterTimeout)

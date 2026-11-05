@@ -3,14 +3,17 @@
         inputs.nixcord.homeModules.nixcord
         ./nixcord/default.nix
         ./hyprland/default.nix
+        ./eww/default.nix
         ./hyprpaper.nix
         ./k3s-control/default.nix
+        ./coder/default.nix
+        ./oss/default.nix
+        ./qwen/default.nix
+        ./quickshell/default.nix
         ./ssh.nix
-        ./waybar/default.nix
     ];
     
     home.packages = with pkgs; [
-        claude-code
         libreoffice
     ];
 

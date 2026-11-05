@@ -8,7 +8,7 @@ in {
         "${mod}+Return" = "exec kitty";
         "${mod}+d"      = "exec pkill kitty-launcher || kitty --title kitty-launcher -e ~/.local/bin/kitty-launcher";
         "${mod}+n"      = "exec pkill kitty-control || kitty --title kitty-control -e ~/.local/bin/kitty-control";
-        "${mod}+e"      = "exec pkill yazi || kitty --title kitty-explorer -e yazi";
+        "${mod}+e"      = "exec pkill -x .ranger-wrapped || kitty --title kitty-explorer -e ranger";
 
         "${mod}+Shift+c" = "reload";
         "${mod}+m"       = "exit";

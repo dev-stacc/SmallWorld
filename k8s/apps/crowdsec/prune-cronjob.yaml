@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crowdsec-machines-prune
+  namespace: crowdsec
+spec:
+  schedule: "17 4 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: prune
+              image: crowdsecurity/crowdsec:v1.8.1@sha256:0f2523fa61ef507f15d953045cface490cc880670c62f2755ced17524107f71a
+              command:
+                - sh
+                - -c
+                - ln -s /staging/etc/crowdsec /etc/crowdsec && exec cscli machines prune --duration 72h --force
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              volumeMounts:
+                - name: crowdsec-db
+                  mountPath: /var/lib/crowdsec/data
+                  subPath: crowdsec
+          volumes:
+            - name: crowdsec-db
+              persistentVolumeClaim:
+                claimName: crowdsec-db

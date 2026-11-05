@@ -57,3 +57,15 @@ jobs:
         run: echo "ref=github:NixOS/nixpkgs/$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
       - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#shellcheck' --command .github/scripts/check-shell.sh
       - run: nix shell '${{ steps.nixpkgs.outputs.ref }}#actionlint' --command actionlint
+
+  theme:
+    name: theme
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+      - id: fourget
+        run: echo "path=$(nix build --no-link --print-out-paths .#fourget-root)" >> "$GITHUB_OUTPUT"
+      - run: .github/scripts/check-fourget-theme.sh '${{ steps.fourget.outputs.path }}'
+

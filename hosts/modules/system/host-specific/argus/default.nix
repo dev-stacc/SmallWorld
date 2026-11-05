@@ -8,6 +8,11 @@
         ./pihole-sync.nix
     ];
 
+    biggerworld.ups = {
+        role = "slave";
+        master = "algol";
+    };
+
     biggerworld.serve = {
         node."/" = "http://127.0.0.1:8081";
         services.pihole."/" = "http://127.0.0.1:8081";

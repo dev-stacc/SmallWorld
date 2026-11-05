@@ -44,7 +44,7 @@
                 argus = "100.92.77.2";
                 sanctuary = "100.113.161.17";
                 alula = "100.104.236.122";
-                atlas = "PLACEHOLDER";
+                avior = "PLACEHOLDER";
                 albireo = "100.114.197.75";
                 altair = "100.116.223.58";
                 algol = "100.79.222.127";
@@ -69,6 +69,11 @@
         inherit tailnet;
 
         nixosConfigurations = byHostName mkSystem hosts;
+
+        packages.x86_64-linux.fourget-root = import ./k8s/apps/fourget/root.nix {
+            pkgs = nixpkgs.legacyPackages.x86_64-linux;
+            inherit lib theme;
+        };
 
         colmena = {
             meta = {

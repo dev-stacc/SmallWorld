@@ -1,10 +1,14 @@
 { ... } : {
     imports = [
-        ./nfs-server.nix
         ./restic-server.nix
         ./restic-retention.nix
         ./monitor-display.nix
     ];
+
+    biggerworld.ups = {
+        role = "slave";
+        master = "algol";
+    };
 
 
     boot.loader.grub = {

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: generic-device-plugin
+  namespace: generic-device-plugin
+spec:
+  selector:
+    matchLabels:
+      app: generic-device-plugin
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: generic-device-plugin
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: asta
+      priorityClassName: system-node-critical
+      containers:
+        - name: generic-device-plugin
+          image: ghcr.io/squat/generic-device-plugin:0.2.0
+          args:
+            - --device
+            - |
+              name: dri
+              groups:
+                - count: 10
+                  paths:
+                    - path: /dev/dri/renderD128
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+            - name: dev
+              mountPath: /dev
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+        - name: dev
+          hostPath:
+            path: /dev

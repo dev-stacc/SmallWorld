@@ -6,6 +6,5 @@
         ./mako.nix
         ./session.nix
         ./terminal/default.nix
-        ./waybar/default.nix
     ];
 }

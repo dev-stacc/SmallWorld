@@ -11,7 +11,7 @@
             background: {{base00}};
             color: {{base02}};
             font-family: "{{fontName}}", monospace;
-            font-size: {{fontSize}}px;
+            font-size: {{fontSize}}pt;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -29,8 +29,8 @@
             var local = "{{localOrigin}}";
             var cluster = "{{clusterOrigin}}";
 
-            var searx = function (origin) {
-                return q ? origin + "/search?q=" + encodeURIComponent(q) : origin;
+            var fourget = function (origin) {
+                return q ? origin + "/web?s=" + encodeURIComponent(q) : origin;
             };
 
             var ddg = function () {
@@ -40,7 +40,7 @@
             };
 
             var probe = function (origin, ms) {
-                return fetch(origin + "/healthz", {
+                return fetch(origin + "/favicon.ico", {
                     mode: "no-cors",
                     cache: "no-store",
                     signal: AbortSignal.timeout(ms)
@@ -54,7 +54,7 @@
                     return probe(cluster, {{clusterTimeout}});
                 })
                 .then(function (origin) {
-                    location.replace(searx(origin));
+                    location.replace(fourget(origin));
                 })
                 .catch(function () {
                     location.replace(ddg());

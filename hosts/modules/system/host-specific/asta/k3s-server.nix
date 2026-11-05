@@ -17,13 +17,13 @@
             "--tls-san=asta"
             "--tls-san=${tailnet.ips.asta}"
             "--flannel-backend=wireguard-native"
+            "--kube-controller-manager-arg=terminated-pod-gc-threshold=20"
         ];
     };
 
     boot = {
         kernel.sysctl."net.ipv4.ip_forward" = 1;
         kernelModules = [ "br_netfilter"  "overlay" ];
-        supportedFilesystems = [ "nfs" "nfs4" ];
     };
 
     networking.firewall.allowedUDPPorts = [ 51820 ];

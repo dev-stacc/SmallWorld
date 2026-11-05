@@ -15,9 +15,16 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: asta
+      initContainers:
+        - name: wait-for-media
+          image: alpine:3.24
+          command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for media; sleep 2; done"]
+          volumeMounts:
+            - name: music
+              mountPath: /gate
       containers:
         - name: navidrome
-          image: deluan/navidrome:latest
+          image: deluan/navidrome:0.64.2
           ports:
             - containerPort: 4533
           env:
@@ -27,6 +34,8 @@ spec:
               value: /data
             - name: ND_LOGLEVEL
               value: info
+            - name: ND_ENABLEINSIGHTS
+              value: "false"
             - name: ND_REVERSEPROXYUSERHEADER
               value: X-Authentik-Username
             - name: ND_REVERSEPROXYWHITELIST
@@ -36,6 +45,25 @@ spec:
               mountPath: /data
             - name: music
               mountPath: /music
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 4533
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 4533
+            periodSeconds: 10
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 4533
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             requests:
               memory: "128Mi"
