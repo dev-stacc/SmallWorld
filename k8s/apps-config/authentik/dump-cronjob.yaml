@@ -60,6 +60,9 @@ spec:
                   pg_dump --clean --if-exists | gzip -9 > "$${out}.tmp"
                   mv "$${out}.tmp" "$${out}"
                   echo "wrote $${out} ($$(stat -c %s "$${out}") bytes)"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               resources:
                 requests:

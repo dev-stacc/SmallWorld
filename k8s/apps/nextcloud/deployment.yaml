@@ -25,7 +25,11 @@ spec:
         - name: nextcloud
           # major pinned deliberately: nextcloud refuses to skip majors
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           image: nextcloud:31-apache
+=======
+          image: nextcloud:35-apache
+>>>>>>> Stashed changes
 =======
           image: nextcloud:35-apache
 >>>>>>> Stashed changes
@@ -125,7 +129,11 @@ spec:
             failureThreshold: 4
         - name: cron
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           image: nextcloud:31-apache
+=======
+          image: nextcloud:35-apache
+>>>>>>> Stashed changes
 =======
           image: nextcloud:35-apache
 >>>>>>> Stashed changes
