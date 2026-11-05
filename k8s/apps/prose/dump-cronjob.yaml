@@ -46,9 +46,24 @@ spec:
                 - |
                   set -eu
                   out=/dumps/prose.sql.gz
+<<<<<<< Updated upstream
                   pg_dump --clean --if-exists | gzip -9 > "$out.tmp"
                   mv "$out.tmp" "$out"
                   echo "wrote $out ($(stat -c %s "$out") bytes)"
+=======
+                  ready=0
+                  for i in $$(seq 1 30); do
+                    if pg_isready -q; then ready=1; break; fi
+                    sleep 2
+                  done
+                  if [ "$${ready}" -ne 1 ]; then
+                    echo "postgres unreachable after 60s" >&2
+                    exit 1
+                  fi
+                  pg_dump --clean --if-exists | gzip -9 > "$${out}.tmp"
+                  mv "$${out}.tmp" "$${out}"
+                  echo "wrote $${out} ($$(stat -c %s "$${out}") bytes)"
+>>>>>>> Stashed changes
               resources:
                 requests:
                   memory: 64Mi
