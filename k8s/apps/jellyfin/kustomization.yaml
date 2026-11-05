@@ -8,4 +8,5 @@ resources:
   - service.yaml
   - ingress.yaml
   - ingress-root.yaml
+  - ingress-api.yaml
   - authentik-svc.yaml
