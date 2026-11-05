@@ -28,6 +28,12 @@ spec:
           volumeMounts:
             - name: transcode
               mountPath: /gate
+        - name: wait-for-jellyfin-config
+          image: alpine:3.24
+          command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for jellyfin-config; sleep 2; done"]
+          volumeMounts:
+            - name: config
+              mountPath: /gate
         - name: install-sso-plugin
           image: alpine:3.24
           command:
@@ -217,8 +223,9 @@ spec:
               devic.es/dri: 1
       volumes:
         - name: config
-          persistentVolumeClaim:
-            claimName: jellyfin-config
+          hostPath:
+            path: ${JELLYFIN_CONFIG_HOST_PATH}
+            type: Directory
         - name: media
           hostPath:
             path: ${MEDIA_HOST_PATH}

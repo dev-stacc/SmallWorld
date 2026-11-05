@@ -1,9 +1,10 @@
-{ config, lib, ... } :
+{ config, lib, username, ... } :
 let
     active = config.services.k3s.enable && config.biggerworld.secrets.enable;
 
     storage = "/var/lib/rancher/k3s/storage";
     dumps = "/var/lib/cluster-dumps";
+    jellyfinConfig = "/home/${username}/jellyfin-config";
 
     exclude = [
         "${storage}/*_monitoring_prometheus-*-prometheus-db-*"
@@ -14,6 +15,9 @@ let
         "${storage}/*_crowdsec_crowdsec-db"
         "${storage}/*_jellyfin_jellyfin-config/cache"
         "${storage}/*_jellyfin_jellyfin-config/transcodes"
+        "${jellyfinConfig}/cache"
+        "${jellyfinConfig}/transcodes"
+        "${jellyfinConfig}/log"
     ];
 in {
     sops.secrets = lib.mkIf active {
@@ -42,7 +46,8 @@ in {
             repositoryFile = config.sops.secrets.restic-amateus-repository.path;
             passwordFile = config.sops.secrets.restic-password.path;
             initialize = true;
-            paths = [ storage dumps ];
+            paths = [ storage dumps ]
+                ++ lib.optional (config.fileSystems ? ${jellyfinConfig}) jellyfinConfig;
             inherit exclude;
 
             timerConfig = {
@@ -56,7 +61,8 @@ in {
             repositoryFile = config.sops.secrets.restic-cluster-repository.path;
             passwordFile = config.sops.secrets.restic-password.path;
             initialize = true;
-            paths = [ storage dumps ];
+            paths = [ storage dumps ]
+                ++ lib.optional (config.fileSystems ? ${jellyfinConfig}) jellyfinConfig;
             inherit exclude;
 
             timerConfig = {
