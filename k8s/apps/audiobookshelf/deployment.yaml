@@ -23,7 +23,7 @@ spec:
         fsGroup: 100
       initContainers:
         - name: wait-for-media
-          image: alpine:3.19
+          image: alpine:3.24
           command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for media; sleep 2; done"]
           volumeMounts:
             - name: media

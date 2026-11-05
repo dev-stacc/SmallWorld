@@ -17,13 +17,13 @@ spec:
         kubernetes.io/hostname: asta
       initContainers:
         - name: wait-for-media
-          image: alpine:3.19
+          image: alpine:3.24
           command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for media; sleep 2; done"]
           volumeMounts:
             - name: media
               mountPath: /gate
         - name: install-sso-plugin
-          image: alpine:3.19
+          image: alpine:3.24
           command:
             - sh
             - -c
@@ -63,7 +63,7 @@ spec:
             - name: config
               mountPath: /config
         - name: configure-sso
-          image: alpine:3.19
+          image: alpine:3.24
           envFrom:
             - secretRef:
                 name: jellyfin-oidc
@@ -146,7 +146,7 @@ spec:
               mountPath: /config
       containers:
         - name: jellyfin
-          image: jellyfin/jellyfin:12.2.20261005-225228
+          image: jellyfin/jellyfin:12.4.20261026-211555
           ports:
             - containerPort: 8096
           env:
