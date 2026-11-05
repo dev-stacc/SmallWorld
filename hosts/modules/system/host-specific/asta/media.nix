@@ -8,6 +8,12 @@
     options = [ "subvol=@media" "noatime" "space_cache=v2" ];
   };
 
+  fileSystems."/home/${username}/transcode" = {
+    device = "/dev/disk/by-uuid/02e853be-d53c-4a43-b419-718097c0417b";
+    fsType = "btrfs";
+    options = [ "subvol=@transcode" "noatime" "space_cache=v2" ];
+  };
+
   services.btrfs.autoScrub = {
     enable = true;
     fileSystems = [ "/home/${username}/media" ];

@@ -22,6 +22,12 @@ spec:
           volumeMounts:
             - name: media
               mountPath: /gate
+        - name: wait-for-transcode
+          image: alpine:3.24
+          command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for transcode; sleep 2; done"]
+          volumeMounts:
+            - name: transcode
+              mountPath: /gate
         - name: install-sso-plugin
           image: alpine:3.24
           command:
@@ -144,6 +150,29 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+        - name: configure-transcode-path
+          image: alpine:3.24
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              ENC=/config/config/encoding.xml
+              TP=/transcode
+              if [ ! -f "$$ENC" ]; then
+                echo "encoding.xml absent, jellyfin will create it"
+              elif grep -q "<TranscodingTempPath>$$TP</TranscodingTempPath>" "$$ENC"; then
+                echo "TranscodingTempPath already $$TP"
+              elif grep -q "<TranscodingTempPath>" "$$ENC"; then
+                sed -i "s#<TranscodingTempPath>.*</TranscodingTempPath>#<TranscodingTempPath>$$TP</TranscodingTempPath>#" "$$ENC"
+                echo "repointed TranscodingTempPath to $$TP"
+              else
+                sed -i "/<EncodingOptions/a <TranscodingTempPath>$$TP</TranscodingTempPath>" "$$ENC"
+                echo "inserted TranscodingTempPath $$TP"
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /config
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:12.4.20261026-211555
@@ -157,6 +186,8 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
+            - name: transcode
+              mountPath: /transcode
           startupProbe:
             httpGet:
               path: /health
@@ -191,4 +222,8 @@ spec:
         - name: media
           hostPath:
             path: ${MEDIA_HOST_PATH}
+            type: Directory
+        - name: transcode
+          hostPath:
+            path: ${TRANSCODE_HOST_PATH}
             type: Directory
