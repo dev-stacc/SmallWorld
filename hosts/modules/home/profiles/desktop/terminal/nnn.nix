@@ -1,5 +1,5 @@
-{ pkgs, ... } : {
-    home.packages = with pkgs; [
+{ pkgs, ... } : let
+    tools = with pkgs; [
         bat
         glow
         ffmpegthumbnailer
@@ -10,18 +10,23 @@
         ripgrep
         tdf
     ];
+in {
+    home.packages = tools;
 
     programs.nnn = {
         enable = true;
         package = pkgs.nnn;
-        options = {
-            # Basic settings for nnn
-            NNN_BMS = "";
-            NNN_FIFO = "/tmp/nnn.fifo";
-            NNN_PLUG = "";
-            NNN_TRASH = "";
-            NNN_OPENER = "";
-            NNN_OPTS = "ce";
+
+        extraPackages = tools;
+
+        plugins = {
+            src = pkgs.nnn.src + "/plugins";
+            mappings.p = "preview-tui";
         };
+    };
+
+    home.sessionVariables = {
+        NNN_OPTS = "ce";
+        NNN_FIFO = "/tmp/nnn.fifo";
     };
 }

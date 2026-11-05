@@ -94,7 +94,6 @@ in {
                     ];
                 };
 
-
                 "qwen3-coder-fast" = {
                     name = "Qwen3-Coder 30B-A3B (small)";
                     description = "Coding. UD-Q2_K_XL, full context, lower quality";
@@ -107,14 +106,6 @@ in {
                         qwenSampling
                     ];
                 };
-
-
-
-
-
-
-
-
 
                 "qwen3-coder-max" = {
                     name = "Qwen3-Coder 30B-A3B (overnight)";
