@@ -55,7 +55,7 @@ in {
             LANG = config.i18n.defaultLocale;
             LOCALE_ARCHIVE = "/run/current-system/sw/lib/locale/locale-archive";
             DISPLAY_STATE_URL =
-                "http://${tailnet.ips.algol}:${toString port}/state.json";
+                "http://${tailnet.ips.aperture}:${toString port}/state.json";
             DISPLAY_FETCH_INTERVAL = "15";
             DISPLAY_STALE_AFTER = "90";
             DISPLAY_DEAD_AFTER = "300";

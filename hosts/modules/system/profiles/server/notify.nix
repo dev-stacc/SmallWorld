@@ -58,7 +58,7 @@ in {
             description = ''
                 Base URL of the ntfy server alerts are posted to, without a topic.
 
-                Defaults to the self-hosted instance on algol, reached over the
+                Defaults to the self-hosted instance on aperture, reached over the
                 tailnet. Posts are anonymous: the tailnet is the trust boundary and
                 the server has no user database, so sending a bearer token it cannot
                 verify would be rejected.
@@ -72,7 +72,7 @@ in {
                 Base URL tried only when a post to endpoint fails.
 
                 Reached with the ntfy-token bearer credential. This exists so that
-                algol being down - which takes the self-hosted server with it - does
+                aperture being down - which takes the self-hosted server with it - does
                 not silently swallow a disk or UPS alert from any other host.
             '';
         };
