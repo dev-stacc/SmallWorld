@@ -25,9 +25,4 @@
     fileSystems = [ "/home/${username}/media" ];
     interval = "Sun *-*-* 09:00:00";
   };
-
-  systemd.tmpfiles.rules = [
-    "d /home/${username}/jellyfin/config 0755 ${username} users -"
-    "s /home/${username}/navidrome 0755 ${username} users -"
-  ];
 }

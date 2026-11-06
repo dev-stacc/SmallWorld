@@ -164,7 +164,8 @@ spec:
             - |
               set -e
               ENC=/config/config/encoding.xml
-              TP=/transcode
+              TP=/transcode/work
+              mkdir -p "$$TP"
               if [ ! -f "$$ENC" ]; then
                 echo "encoding.xml absent, jellyfin will create it"
               elif grep -q "<TranscodingTempPath>$$TP</TranscodingTempPath>" "$$ENC"; then
@@ -176,9 +177,22 @@ spec:
                 sed -i "/<EncodingOptions/a <TranscodingTempPath>$$TP</TranscodingTempPath>" "$$ENC"
                 echo "inserted TranscodingTempPath $$TP"
               fi
+              if [ ! -f "$$ENC" ]; then
+                echo "encoding.xml absent, skipping segment deletion"
+              elif grep -q "<EnableSegmentDeletion>true</EnableSegmentDeletion>" "$$ENC"; then
+                echo "EnableSegmentDeletion already true"
+              elif grep -q "<EnableSegmentDeletion>" "$$ENC"; then
+                sed -i "s#<EnableSegmentDeletion>.*</EnableSegmentDeletion>#<EnableSegmentDeletion>true</EnableSegmentDeletion>#" "$$ENC"
+                echo "enabled segment deletion"
+              else
+                sed -i "/<EncodingOptions/a <EnableSegmentDeletion>true</EnableSegmentDeletion>" "$$ENC"
+                echo "inserted EnableSegmentDeletion"
+              fi
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: transcode
+              mountPath: /transcode
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:12.4.20261026-211555
