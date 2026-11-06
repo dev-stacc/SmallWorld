@@ -1,8 +1,5 @@
 { ... } : {
-    biggerworld.ups = {
-        role = "slave";
-        master = "aperture";
-    };
+    biggerworld.ups.role = "master";
 
     boot.loader.grub = {
         enable = true;
