@@ -16,10 +16,10 @@ let
         elif [ -n "''${UPSMON_MESSAGE:-}" ]; then
             body="$(${pkgs.inetutils}/bin/hostname): ''${UPSMON_MESSAGE}"
         else
-            body="$(cat)"
+            body="$(${pkgs.coreutils}/bin/cat)"
         fi
 
-        topic="$(cat ${config.sops.secrets.ntfy-topic.path})"
+        topic="$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.ntfy-topic.path})"
 
         post() {
             ${pkgs.curl}/bin/curl -fsS --max-time 10 \
@@ -35,7 +35,7 @@ let
         fi
 
         post "${cfg.fallback}/$topic" \
-            -H "Authorization: Bearer $(cat ${config.sops.secrets.ntfy-token.path})"
+            -H "Authorization: Bearer $(${pkgs.coreutils}/bin/cat ${config.sops.secrets.ntfy-token.path})"
     '';
 in {
     options.biggerworld.notify = {

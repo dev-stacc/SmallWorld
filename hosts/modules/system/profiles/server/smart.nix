@@ -6,14 +6,14 @@ let
     mailer = pkgs.writeShellScript "smartd-ntfy" ''
         set -eu
 
-        message="$(cat)"
+        message="$(${pkgs.coreutils}/bin/cat)"
         subject="$(printf '%s\n' "$message" \
             | ${pkgs.gnused}/bin/sed -n 's/^Subject: *//p' \
-            | head -1)"
+            | ${pkgs.coreutils}/bin/head -1)"
         detail="$(printf '%s\n' "$message" \
             | ${pkgs.gawk}/bin/awk 'f && /^smartctl [0-9]/ {exit} f && NF {print} /^$/ {f=1}' \
-            | head -3 \
-            | cut -c1-160)"
+            | ${pkgs.coreutils}/bin/head -3 \
+            | ${pkgs.coreutils}/bin/cut -c1-160)"
 
         summary="''${subject:-smartd alert}"
         if [ -n "$detail" ]; then
