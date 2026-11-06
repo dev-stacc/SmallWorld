@@ -5,8 +5,7 @@ cd "$(git rev-parse --show-toplevel)"
 
 policy="${1:?usage: check-acl.sh <policy.hujson>}"
 
-RESOLVER_TAG="tag:offcluster"
-RESOLVER_HOST="argus"
+RESOLVER_HOST="aperture"
 DNS_PORTS=("udp:53" "tcp:53")
 
 blocked=0
@@ -73,7 +72,7 @@ check_dns_reaches_every_identity() {
     identities=$(jq -r '(.tagOwners | keys[]), "autogroup:member"' "$json")
 
     while IFS= read -r id; do
-        missing=$(jq -r --arg id "$id" --arg dst "$RESOLVER_TAG" \
+        missing=$(jq -r --arg id "$id" --arg dst "$RESOLVER_HOST" \
             --arg udp "${DNS_PORTS[0]}" --arg tcp "${DNS_PORTS[1]}" '
             [ .grants[]
               | select((.src // []) | index($id))
@@ -81,7 +80,7 @@ check_dns_reaches_every_identity() {
               | select(((.ip // []) | index($udp)) and ((.ip // []) | index($tcp)))
             ] | length' "$json")
 
-        [ "$missing" != "0" ] || report "no :53 grant from $id to $RESOLVER_TAG"
+        [ "$missing" != "0" ] || report "no :53 grant from $id to $RESOLVER_HOST"
     done <<< "$identities"
 }
 

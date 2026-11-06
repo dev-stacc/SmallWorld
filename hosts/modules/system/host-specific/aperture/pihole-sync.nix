@@ -37,10 +37,10 @@ in {
     '';
 
     systemd.services.pihole-sync-pull = mkService config.sops.templates."pihole-sync-pull.env".path // {
-        description = "Pi-hole sync (pull: remote -> argus)";
+        description = "Pi-hole sync (pull: remote -> aperture)";
     };
     systemd.services.pihole-sync-push = mkService config.sops.templates."pihole-sync-push.env".path // {
-        description = "Pi-hole sync (push: argus -> remote)";
+        description = "Pi-hole sync (push: aperture -> remote)";
     };
 
     systemd.timers.pihole-sync-pull = {

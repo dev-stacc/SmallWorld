@@ -1,21 +1,7 @@
 { ... } : {
-    imports = [
-        ./networking.nix
-        ./unbound.nix
-        ./pihole.nix
-        ./smartdns.nix
-        ./crowdsec-bouncer.nix
-        ./pihole-sync.nix
-    ];
-
     biggerworld.ups = {
         role = "slave";
-        master = "algol";
-    };
-
-    biggerworld.serve = {
-        node."/" = "http://127.0.0.1:8081";
-        services.pihole."/" = "http://127.0.0.1:8081";
+        master = "aperture";
     };
 
     boot.loader.grub = {
@@ -34,13 +20,4 @@
         device = "/swapfile";
         size = 8192;
     }];
-
-    virtualisation = {
-        oci-containers.backend = "podman";
-        podman = {
-            enable = true;
-            autoPrune.enable = true;
-            defaultNetwork.settings.dns_enabled = false;
-        };
-    };
 }

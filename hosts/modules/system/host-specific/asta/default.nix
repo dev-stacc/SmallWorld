@@ -14,7 +14,7 @@
 
     biggerworld.ups = {
         role = "slave";
-        master = "algol";
+        master = "aperture";
     };
 
 

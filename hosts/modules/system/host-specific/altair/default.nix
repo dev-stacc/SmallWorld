@@ -9,7 +9,7 @@
 
     biggerworld.ups = {
         role = "slave";
-        master = "algol";
+        master = "aperture";
     };
 
     boot.loader.grub = {
