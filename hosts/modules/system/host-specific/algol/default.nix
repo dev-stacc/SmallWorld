@@ -1,12 +1,5 @@
 { ... } : {
-    imports = [ ./monitor.nix ./ntfy.nix ];
-
     biggerworld.ups.role = "master";
-
-    biggerworld.serve = {
-        node."/" = "http://127.0.0.1:9847";
-        services.home."/" = "http://127.0.0.1:9847";
-    };
 
     boot.loader.grub = {
         enable = true;

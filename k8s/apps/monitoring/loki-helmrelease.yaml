@@ -39,7 +39,7 @@ spec:
     singleBinary:
       replicas: 1
       nodeSelector:
-        kubernetes.io/hostname: asta
+        kubernetes.io/hostname: aperture
       persistence:
         enabled: true
         storageClass: local-path

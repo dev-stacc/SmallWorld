@@ -19,7 +19,7 @@ spec:
       storageClassName: local-path
       size: 10Gi
     nodeSelector:
-      kubernetes.io/hostname: asta
+      kubernetes.io/hostname: aperture
     tempo:
       storage:
         trace:
