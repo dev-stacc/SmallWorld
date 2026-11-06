@@ -1,21 +1,22 @@
 { ... } : {
     imports = [
         ./k3s-service.nix
+        ./networking.nix
         ./monitor.nix
         ./ntfy.nix
         ./unbound.nix
         ./pihole.nix
         ./smartdns.nix
+        ./crowdsec-bouncer.nix
+        ./pihole-sync.nix
     ];
 
-    biggerworld.ups = {
-        role = "slave";
-        master = "algol";
-    };
+    biggerworld.ups.role = "master";
 
     biggerworld.serve = {
         node."/" = "http://127.0.0.1:9847";
         services.home."/" = "http://127.0.0.1:9847";
+        services.pihole."/" = "http://127.0.0.1:8081";
     };
 
     boot.loader = {

@@ -31,7 +31,7 @@ vpn_menu() {
         fi
         DEVICE=$(tailscale status --self 2>/dev/null | head -1 | awk '{print $1, $2}')
         
-        SELECTION=$(printf 'tailscale: [%s]\n%s\n\nturn on\nexit at sanctuary\nexit at argus\nturn off' \
+        SELECTION=$(printf 'tailscale: [%s]\n%s\n\nturn on\nexit at sanctuary\nexit at aperture\nturn off' \
             "$TS_STATUS" "$DEVICE" | \
             fzf --height=100% --border=none --prompt="  vpn: " --header="<- esc" \
                 --bind="esc:abort")
@@ -39,7 +39,7 @@ vpn_menu() {
         case "$SELECTION" in
             "turn on") sudo tailscale up --exit-node= ;;
             "exit at sanctuary") sudo tailscale up --exit-node={{sanctuaryIp}} ;;
-            "exit at argus") sudo tailscale up --exit-node={{argusIp}} ;;
+            "exit at aperture") sudo tailscale up --exit-node={{apertureIp}} ;;
             "turn off") sudo tailscale down ;;
             *) return ;;
         esac

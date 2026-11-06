@@ -74,7 +74,7 @@ def watchdog(age):
         return
 
     if not WATCHDOG["firing"]:
-        notify("collector stale, no state from algol", "high")
+        notify("collector stale, no state from aperture", "high")
         WATCHDOG["firing"] = True
         WATCHDOG["sent"] = now
     elif now - WATCHDOG["sent"] >= COOLDOWN:
