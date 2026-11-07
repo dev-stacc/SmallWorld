@@ -48,3 +48,6 @@ __pycache__/
 
 # Aider session files
 .aider*
+
+# Argus SD image out-link (2.6 GB build artifact; also a nix GC root)
+hosts/modules/system/host-specific/argus/sd-image

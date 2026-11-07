@@ -56,7 +56,7 @@ in {
 
                 Advertising requires the node to be a tagged device: Tailscale
                 rejects it on a user-owned node with "service hosts must be
-                tagged nodes". Aperture, Algol and Argus carry tag:offcluster
+                tagged nodes". Aperture and Algol carry tag:offcluster
                 for this reason; a host without a tag cannot set this option.
 
                 Tagging changes a host's ACL identity, and per the SSH policy in

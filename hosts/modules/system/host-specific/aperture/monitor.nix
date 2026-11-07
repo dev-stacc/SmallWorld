@@ -35,7 +35,6 @@ let
         albireo   = "critical";
         argus     = "critical";
         amateus   = "critical";
-        sanctuary = "critical";
         algol     = "watch";
         arcturus  = "watch";
         altair    = "watch";
@@ -43,9 +42,7 @@ let
         avior     = "ignore";
     };
 
-    ports = {
-        sanctuary = 80;
-    };
+    ports = { };
 
     reachable = lib.filterAttrs
         (name: _: tailnet.ips.${name} != "PLACEHOLDER")
@@ -81,6 +78,16 @@ let
 
     grouped = group: apps: map (app: app // { inherit group; }) apps;
 
+    offsitePihole = {
+        name = "argus";
+        role = "off-site dns";
+        url = "http://argus.${tailnet.domain}:8081/admin";
+        label = "argus.${tailnet.domain}:8081";
+        auth = false;
+        nav = true;
+        alert = true;
+    };
+
     monitoring = grouped "monitoring" ([
         (hostPage "flux" "fleet" "home" "/flux")
         (hostPage "backups" "-" "home" "/backups")
@@ -104,6 +111,7 @@ let
         forge = "git";
     } ++ [
         (hostPage "pihole" "dns" "pihole" "/admin")
+        offsitePihole
     ] ++ clusterApps true {
         jellyfin = "streaming";
         navidrome = "music";

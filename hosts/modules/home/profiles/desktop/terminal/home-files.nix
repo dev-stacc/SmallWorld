@@ -2,8 +2,8 @@
     kittyLauncher = pkgs.writeShellScript "kitty-launcher" (builtins.readFile ./raw-files/kitty-launcher.sh);
 
     kittyControl = pkgs.writeShellScript "kitty-control" (builtins.replaceStrings
-        [ "{{sanctuaryIp}}" "{{apertureIp}}" ]
-        [ tailnet.ips.sanctuary tailnet.ips.aperture ]
+        [ "{{apertureIp}}" ]
+        [ tailnet.ips.aperture ]
         (builtins.readFile ./raw-files/kitty-control.sh));
 in {
     home.file = {
