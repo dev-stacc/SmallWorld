@@ -7,7 +7,6 @@ resources:
   - navidrome/
   - uptime-kuma/
   - vault/
-  - external-secrets/
   - ingress-nginx/
   - sewing-assistant/
   - marketing-tool/
