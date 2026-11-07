@@ -72,4 +72,8 @@ in {
             };
         };
     };
+
+    systemd.services.restic-backups-cluster-smallstorage = lib.mkIf active {
+        after = [ "restic-backups-cluster.service" ];
+    };
 }
