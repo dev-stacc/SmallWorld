@@ -3,6 +3,7 @@
         ./k3s-service.nix
         ./networking.nix
         ./monitor.nix
+        ./homepage.nix
         ./ntfy.nix
         ./unbound.nix
         ./pihole.nix
@@ -17,7 +18,7 @@
 
     biggerworld.serve = {
         node."/" = "http://127.0.0.1:9847";
-        services.home."/" = "http://127.0.0.1:9847";
+        services.home."/" = "http://127.0.0.1:9850";
         services.pihole."/" = "http://127.0.0.1:8081";
     };
 
