@@ -6,6 +6,8 @@ metadata:
 spec:
   interval: 10m
   timeout: 30m
+  dependsOn:
+    - name: infra
   sourceRef:
     kind: GitRepository
     name: flux-system
