@@ -11,6 +11,8 @@
         ./pihole-sync.nix
     ];
 
+    biggerworld.statAgent.enable = true;
+
     biggerworld.ups.role = "master";
 
     biggerworld.serve = {

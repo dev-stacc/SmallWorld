@@ -5,6 +5,8 @@
         ./monitor-display.nix
     ];
 
+    biggerworld.statAgent.enable = true;
+
     biggerworld.ups = {
         role = "slave";
         master = "aperture";
