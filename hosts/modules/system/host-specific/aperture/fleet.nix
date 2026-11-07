@@ -153,6 +153,8 @@ in {
 
     backupStaleHours = 36;
 
+    resticRepo = "amateus:/srv/restic";
+
     agents = map (name: {
         host = name;
         url = "http://${tailnet.ips.${name}}:${toString agentPort}";

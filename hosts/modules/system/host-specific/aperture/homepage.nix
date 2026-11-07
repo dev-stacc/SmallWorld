@@ -15,7 +15,7 @@ let
 
     settings = {
         inherit links;
-        inherit (fleet) expectedBackups backupStaleHours agents;
+        inherit (fleet) expectedBackups backupStaleHours agents resticRepo;
     };
 
     configFile = pkgs.writeText "homepage-config.json" (builtins.toJSON settings);
