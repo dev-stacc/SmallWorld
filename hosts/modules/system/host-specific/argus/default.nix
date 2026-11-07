@@ -2,6 +2,7 @@
     imports = [
         ./lean.nix
         ./provision.nix
+        ./standalone.nix
         ./unbound.nix
         ./pihole.nix
     ];
