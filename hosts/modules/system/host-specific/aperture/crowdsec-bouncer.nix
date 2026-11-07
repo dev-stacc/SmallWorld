@@ -6,7 +6,7 @@
     sops.templates."crowdsec-bouncer.env".content = ''
         LAPI_URL=http://${tailnet.ips.crowdsec}:8080
         BOUNCER_API_KEY=${config.sops.placeholder.crowdsec-bouncer-api-key}
-        PIHOLE_URL=http://127.0.0.1
+        PIHOLE_URL=http://127.0.0.1:8081
         PIHOLE_PASSWORD=${config.sops.placeholder.pihole-web-password}
     '';
 

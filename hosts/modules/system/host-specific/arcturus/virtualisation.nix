@@ -5,4 +5,6 @@
     users.users.${username}.extraGroups = [
         "docker"
     ];
+
+    boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 }

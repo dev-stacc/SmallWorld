@@ -41,8 +41,7 @@
                 asta = "100.75.73.92";
                 amateus = "100.70.98.107";
                 aperture = "100.111.78.27";
-                argus = "100.92.77.2";
-                sanctuary = "100.113.161.17";
+                argus = "PLACEHOLDER";
                 alula = "100.104.236.122";
                 avior = "PLACEHOLDER";
                 albireo = "100.114.197.75";
@@ -70,6 +69,9 @@
 
         nixosConfigurations = byHostName mkSystem hosts;
 
+        packages.aarch64-linux.argus-sd-image =
+            self.nixosConfigurations.Argus.config.system.build.sdImage;
+
         packages.x86_64-linux.fourget-root = import ./k8s/apps/fourget/root.nix {
             pkgs = nixpkgs.legacyPackages.x86_64-linux;
             inherit lib theme;
@@ -78,6 +80,7 @@
         colmena = {
             meta = {
                 nixpkgs = nixpkgs.legacyPackages.x86_64-linux;
+                nodeNixpkgs.Argus = nixpkgs.legacyPackages.aarch64-linux;
                 inherit specialArgs;
             };
         } // byHostName mkNode (

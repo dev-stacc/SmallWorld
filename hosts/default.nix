@@ -20,7 +20,8 @@
 
     argus = {
         hostName = "Argus";
-        roles = [ "server" ];
+        roles = [ "wireless" ];
+        secrets = false;
     };
 
     asta = {
