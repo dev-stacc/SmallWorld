@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: fourget
-          image: docker.io/luuul/4get@sha256:926be838e8303c0b5bf7a8e01c8232efb73e76fbed307a2f29c7ef4ddc3b4275
+          image: docker.io/luuul/4get@sha256:c850fe1d48e19e45414a1bb419446f4ca7612fa44d35e03d0479f3723e1ef260
           ports:
             - containerPort: 80
           env:
