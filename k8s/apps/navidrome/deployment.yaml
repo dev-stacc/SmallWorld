@@ -17,14 +17,14 @@ spec:
         kubernetes.io/hostname: asta
       initContainers:
         - name: wait-for-media
-          image: alpine:3.24
+          image: alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
           command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for media; sleep 2; done"]
           volumeMounts:
             - name: music
               mountPath: /gate
       containers:
         - name: navidrome
-          image: deluan/navidrome:0.64.2
+          image: deluan/navidrome:0.64.2@sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52
           ports:
             - containerPort: 4533
           env:

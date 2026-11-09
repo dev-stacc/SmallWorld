@@ -23,14 +23,14 @@ spec:
         fsGroup: 100
       initContainers:
         - name: wait-for-media
-          image: alpine:3.24
+          image: alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
           command: ["sh", "-c", "until [ -f /gate/.mounted ]; do echo waiting for media; sleep 2; done"]
           volumeMounts:
             - name: media
               mountPath: /gate
       containers:
         - name: audiobookshelf
-          image: advplyr/audiobookshelf:2.37.2
+          image: advplyr/audiobookshelf:2.37.2@sha256:b897c33f05972fb1bf484f7487bc878fa91ec8691335c1db6e2929c3a7658efa
           ports:
             - containerPort: 13378
           env:
