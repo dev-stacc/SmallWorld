@@ -2,6 +2,7 @@
     imports = [
         ./storage.nix
         ./backup.nix
+        ./forge-mirror.nix
         ./restic-cluster-server.nix
         ./k3s-service.nix
         ./crowdsec-bouncer.nix
