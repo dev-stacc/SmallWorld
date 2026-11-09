@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 import curses
-import locale
 import json
+import locale
 import os
 import sys
 import threading
 import time
+import urllib.error
 import urllib.request
 
 STATE_URL = os.environ["DISPLAY_STATE_URL"]
 FETCH_INTERVAL = int(os.environ["DISPLAY_FETCH_INTERVAL"])
 STALE_AFTER = int(os.environ["DISPLAY_STALE_AFTER"])
 DEAD_AFTER = int(os.environ["DISPLAY_DEAD_AFTER"])
+AGENTS = json.loads(os.environ["DISPLAY_AGENTS"])
+AGENT_TOKEN = os.environ["DISPLAY_AGENT_TOKEN"]
+AGENT_STALE_AFTER = int(os.environ["DISPLAY_AGENT_STALE_AFTER"])
+STALE_HOURS = float(os.environ["DISPLAY_BACKUP_STALE_HOURS"])
 NTFY_TOPIC = os.environ["NTFY_TOPIC"]
 NTFY_TOKEN = os.environ["NTFY_TOKEN"]
 NTFY_URL = os.environ["NTFY_URL"]
@@ -19,7 +24,6 @@ NTFY_FALLBACK_URL = os.environ["NTFY_FALLBACK_URL"]
 DEEP_LINK = os.environ["DISPLAY_DEEP_LINK"]
 
 COOLDOWN = 1800
-STALE_HOURS = 36
 OK = "ok"
 WARN = "warn"
 BAD = "bad"
@@ -27,10 +31,33 @@ HEAD = "head"
 DIM = "dim"
 
 PAIRS = {OK: 1, WARN: 2, BAD: 3, HEAD: 4, DIM: 5}
+RANK = {DIM: 0, OK: 1, WARN: 2, BAD: 3}
+PRIORITY_RANK = {"critical": 0, "watch": 1, "ignore": 2}
+
+BLOCKS = "░▒▓█"
+SPARK_WIDTH = 16
+
+CPU_TEMP_WARN = 80.0
+CPU_TEMP_BAD = 90.0
+GPU_TEMP_WARN = 85.0
+GPU_TEMP_BAD = 95.0
+DISK_TEMP_WARN = 55.0
+DISK_TEMP_BAD = 65.0
 
 LOCK = threading.Lock()
 LATEST = {"state": None, "fetched": 0.0, "error": None}
 WATCHDOG = {"firing": False, "sent": 0.0}
+
+AGENT_LOCK = threading.Lock()
+AGENT_STATE = {
+    entry["host"]: {"stats": None, "error": "pending", "fetched": 0.0}
+    for entry in AGENTS
+}
+AGENT_HOSTS = {entry["host"] for entry in AGENTS}
+
+
+def worst(*states):
+    return max(states, key=lambda state: RANK.get(state, 0))
 
 
 def fetch_once():
@@ -101,35 +128,55 @@ def poller():
         time.sleep(FETCH_INTERVAL)
 
 
-def local_stats():
-    try:
-        with open("/proc/loadavg") as handle:
-            load1 = float(handle.read().split()[0])
-        meminfo = {}
-        with open("/proc/meminfo") as handle:
-            for line in handle:
-                key, _, rest = line.partition(":")
-                fields = rest.split()
-                if fields:
-                    meminfo[key] = float(fields[0])
-        total = meminfo.get("MemTotal") or 1.0
-        available = meminfo.get("MemAvailable") or 0.0
-        root = os.statvfs("/")
-        srv = os.statvfs("/srv")
-        return {
-            "load1": load1,
-            "mem_used": 1 - available / total,
-            "disk_used": 1 - root.f_bavail / root.f_blocks,
-            "srv_used": 1 - srv.f_bavail / srv.f_blocks,
-        }
-    except Exception:
-        return None
+def fetch_agent(entry):
+    request = urllib.request.Request(
+        entry["url"].rstrip("/") + "/stats",
+        headers={"Authorization": "Bearer " + AGENT_TOKEN},
+    )
+    with urllib.request.urlopen(request, timeout=4) as response:
+        return json.loads(response.read())
 
 
-def pct(value):
+def agent_poller(entry):
+    host = entry["host"]
+    while True:
+        try:
+            stats = fetch_agent(entry)
+            with AGENT_LOCK:
+                AGENT_STATE[host] = {
+                    "stats": stats,
+                    "error": None,
+                    "fetched": time.time(),
+                }
+        except urllib.error.HTTPError as error:
+            note = "rejected" if error.code in (401, 403) else f"HTTP {error.code}"
+            with AGENT_LOCK:
+                AGENT_STATE[host]["error"] = note
+        except Exception as error:
+            with AGENT_LOCK:
+                AGENT_STATE[host]["error"] = type(error).__name__
+        time.sleep(FETCH_INTERVAL)
+
+
+def pct(value, width=4):
     if value is None:
-        return "   -"
-    return f"{value * 100:3.0f}%"
+        return "--%".rjust(width)
+    return f"{value * 100:.0f}%".rjust(width)
+
+
+def size(value):
+    if value is None:
+        return "-"
+    scaled = float(value)
+    for suffix in ("B", "K", "M", "G", "T", "P"):
+        if scaled < 1024 or suffix == "P":
+            return f"{scaled:.0f}{suffix}"
+        scaled /= 1024
+    return "-"
+
+
+def temp(value):
+    return "--C" if value is None else f"{value:.0f}C"
 
 
 def level(value, warn, bad):
@@ -140,6 +187,65 @@ def level(value, warn, bad):
     if value >= warn:
         return WARN
     return OK
+
+
+def compact(age):
+    if age < 90:
+        return f"{int(age)}s"
+    if age < 5400:
+        return f"{int(age / 60)}m"
+    if age < 172800:
+        return f"{int(age / 3600)}h"
+    return f"{int(age / 86400)}d"
+
+
+def uptime_label(seconds):
+    if seconds is None:
+        return "-"
+    days, rest = divmod(int(seconds), 86400)
+    hours, rest = divmod(rest, 3600)
+    minutes = rest // 60
+    if days:
+        return f"{days}d {hours}h"
+    if hours:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
+
+
+def spark(series, width, floor=0.0, ceiling=1.0):
+    values = list(series or [])
+    if not values:
+        return " " * width
+    span = len(values) / width
+    scale = (ceiling - floor) or 1.0
+    out = ""
+    for index in range(width):
+        start = int(index * span)
+        stop = max(int((index + 1) * span), start + 1)
+        chunk = [value for value in values[start:stop] if value is not None]
+        if not chunk:
+            out += " "
+            continue
+        position = (sum(chunk) / len(chunk) - floor) / scale
+        position = min(max(position, 0.0), 1.0)
+        out += BLOCKS[min(int(position * len(BLOCKS)), len(BLOCKS) - 1)]
+    return out
+
+
+def pack(cells, room):
+    out = ""
+    for index, cell in enumerate(cells):
+        candidate = cell if not out else out + "   " + cell
+        if len(candidate) > room:
+            return (out or cell[:room]) + f"  +{len(cells) - index}"
+        out = candidate
+    return out
+
+
+def serial_tail(disk):
+    name = disk.get("name") or ""
+    tail = name.rsplit("_", 1)[-1] if "_" in name else name
+    return (tail[-7:] or "?")
 
 
 SECTION_LIMIT = {
@@ -159,14 +265,6 @@ FLUX_NAMES = {
 }
 
 
-def compact(age):
-    if age < 90:
-        return f"{int(age)}s"
-    if age < 5400:
-        return f"{int(age / 60)}m"
-    return f"{int(age / 3600)}h"
-
-
 def panel(state, label, section):
     stamp = ((state or {}).get("updated_at") or {}).get(section)
     if not stamp:
@@ -175,61 +273,204 @@ def panel(state, label, section):
     if age > SECTION_LIMIT[section]:
         return (f"{label}  (stale {compact(age)})", BAD)
     return (label, HEAD)
-def build_hosts(state):
-    rows = [panel(state, "HOSTS", "hosts")]
+
+
+def host_body(stats, width):
+    rows = []
+    status = DIM
+    history = stats.get("history") or {}
+    room = width - 7
+
+    cpu = stats.get("cpu") or {}
+    usage = cpu.get("usage")
+    load1 = cpu.get("load1")
+    cores = cpu.get("cores") or 0
+    cpu_temp = cpu.get("temp_c")
+    cpu_status = worst(
+        level(usage, 0.85, 0.95),
+        level(cpu_temp, CPU_TEMP_WARN, CPU_TEMP_BAD),
+    )
+    status = worst(status, cpu_status)
+    rows.append((
+        f"  cpu  {spark(history.get('cpu_usage'), SPARK_WIDTH)} {pct(usage)}"
+        f"   load {load1 if load1 is not None else 0:5.2f}/{cores:<3}"
+        f" {temp(cpu_temp):>5}",
+        cpu_status,
+    ))
+
+    memory = stats.get("memory") or {}
+    used = memory.get("used")
+    total = memory.get("total")
+    available = memory.get("available")
+    swap = memory.get("swap_used")
+    consumed = total - available if total and available is not None else None
+    mem_status = worst(level(used, 0.85, 0.95), level(swap, 0.5, 0.8))
+    status = worst(status, mem_status)
+    rows.append((
+        f"  mem  {spark(history.get('mem_used'), SPARK_WIDTH)} {pct(used)}"
+        f"   {size(consumed):>5}/{size(total):<5}"
+        f"  swap {pct(swap)}",
+        mem_status,
+    ))
+
+    filesystems = stats.get("filesystems") or []
+    if filesystems:
+        fs_status = OK
+        cells = []
+        for entry in filesystems:
+            fs_status = worst(fs_status, level(entry.get("used"), 0.85, 0.95))
+            cells.append(f"{entry.get('mount') or '?'} {pct(entry.get('used'))}")
+        status = worst(status, fs_status)
+        rows.append(("  fs   " + pack(cells, room), fs_status))
+
+    gpus = stats.get("gpus") or []
+    if gpus:
+        gpu_status = DIM
+        cells = []
+        for entry in gpus:
+            gpu_status = worst(
+                gpu_status,
+                level(entry.get("temp_c"), GPU_TEMP_WARN, GPU_TEMP_BAD),
+            )
+            cells.append(
+                f"{entry.get('model') or entry.get('name') or '?'}"
+                f" {pct(entry.get('usage'))}"
+                f" vram {pct(entry.get('vram_used'))}/{size(entry.get('vram_total'))}"
+                f" {temp(entry.get('temp_c'))}"
+            )
+        status = worst(status, gpu_status)
+        rows.append(("  gpu  " + pack(cells, room), gpu_status))
+
+    disks = stats.get("disks") or []
+    if disks:
+        disk_status = OK
+        flagged = []
+        for entry in disks:
+            health = entry.get("health")
+            each = worst(
+                BAD if health and health != "PASSED" else OK,
+                level(entry.get("temp_c"), DISK_TEMP_WARN, DISK_TEMP_BAD),
+            )
+            disk_status = worst(disk_status, each)
+            if each != OK:
+                note = "" if health == "PASSED" else f" {health or '?'}"
+                flagged.append(f"{serial_tail(entry)} {temp(entry.get('temp_c'))}{note}")
+        status = worst(status, disk_status)
+        summary = f"{len(disks) - len(flagged)}/{len(disks)} clear"
+        rows.append(("  disk " + pack([summary] + flagged, room), disk_status))
+
+    return rows, status
+
+
+def host_card(entry, width):
+    host = entry["host"]
+    priority = entry.get("priority") or "watch"
+    with AGENT_LOCK:
+        record = dict(AGENT_STATE.get(host) or {})
+    stats = record.get("stats")
+    error = record.get("error")
+
+    if not stats:
+        status = BAD if priority == "critical" else WARN
+        return [(
+            f"{host.upper():<11} {priority:<9} {error or 'unreachable'}",
+            status,
+        )], status
+
+    rows, status = host_body(stats, width)
+    age = time.time() - (stats.get("at") or 0)
+    notes = []
+    if age > AGENT_STALE_AFTER:
+        notes.append(f"stale {compact(age)}")
+        status = worst(status, WARN)
+    if error:
+        notes.append(error)
+        status = worst(status, WARN)
+    probe = stats.get("errors") or {}
+    if probe:
+        notes.append(",".join(sorted(probe))[:24])
+
+    head = f"{host.upper():<11} {priority:<9} up {uptime_label(stats.get('uptime'))}"
+    if notes:
+        head = f"{head:<40}" + "   ".join(notes)
+    return [(head, status)] + rows, status
+
+
+def compact_card(entry, width):
+    card, status = host_card(entry, width)
+    host = entry["host"]
+    with AGENT_LOCK:
+        stats = (AGENT_STATE.get(host) or {}).get("stats")
+    if not stats:
+        return card, status
+    cpu = stats.get("cpu") or {}
+    memory = stats.get("memory") or {}
+    disks = stats.get("disks") or []
+    root = next(
+        (entry["used"] for entry in stats.get("filesystems") or []
+         if entry.get("mount") == "/"),
+        None,
+    )
+    return [(
+        f"{host.upper():<10} {pct(cpu.get('usage'))} {temp(cpu.get('temp_c')):>5}"
+        f" {pct(memory.get('used'))} {pct(root)} {len(disks)}d",
+        status,
+    )], status
+
+
+def build_fleet(width):
+    renderer = host_card if width >= 60 else compact_card
+    cards = []
+    for entry in AGENTS:
+        rows, status = renderer(entry, width)
+        cards.append((entry, status, rows))
+    cards.sort(key=lambda item: (
+        PRIORITY_RANK.get(item[0].get("priority"), 1),
+        -RANK.get(item[1], 0),
+        item[0]["host"],
+    ))
+    rows = [("FLEET", HEAD)]
+    for _, _, card in cards:
+        rows.append(("", DIM))
+        rows.extend(card)
+    return rows
+
+
+def build_reach(state):
+    rows = [panel(state, "REACHABILITY", "hosts")]
     hosts = (state or {}).get("hosts") or {}
-    for name in sorted(hosts):
+    agentless = [name for name in sorted(hosts) if name not in AGENT_HOSTS]
+    if not agentless:
+        rows.append(("  every host has an agent", DIM))
+        return rows
+    for name in agentless:
         host = hosts[name]
-        mark = "up  " if host.get("up") else "DOWN"
-        colour = OK if host.get("up") else (BAD if host.get("class") == "critical" else WARN)
+        up = host.get("up")
+        mark = "up  " if up else "DOWN"
+        colour = OK if up else (BAD if host.get("class") == "critical" else WARN)
         latency = host.get("ms")
         shown = f"{latency:6.1f}ms" if latency is not None else "       -"
         rows.append((f"  {name:<10} {mark} {shown}", colour))
     return rows
 
 
-def build_nodes(state):
-    rows = [("", DIM), panel(state, "CLUSTER NODES", "nodes"),
-            ("  node        load   mem  disk  temp", DIM)]
-    nodes = (state or {}).get("nodes") or {}
-    for name in sorted(nodes):
-        node = nodes[name]
-        load = node.get("load1")
-        temp = node.get("temp_c")
-        rows.append((
-            f"  {name:<10} {load if load is not None else 0:5.2f}"
-            f"  {pct(node.get('mem_used'))}  {pct(node.get('disk_used'))}"
-            f"  {temp if temp is not None else 0:3.0f}C",
-            level(node.get("mem_used"), 0.85, 0.95),
-        ))
-    return rows
-
-
-def build_local(state):
-    rows = [("", DIM), ("THIS HOST", HEAD)]
-    stats = local_stats()
-    if not stats:
+def build_apps(state):
+    rows = [("", DIM), panel(state, "APPS", "apps")]
+    apps = (state or {}).get("apps") or []
+    if not apps:
         rows.append(("  unavailable", WARN))
         return rows
+    down = [app for app in apps if not app.get("up")]
     rows.append((
-        f"  load {stats['load1']:.2f}   mem {pct(stats['mem_used'])}"
-        f"   / {pct(stats['disk_used'])}   /srv {pct(stats['srv_used'])}",
-        level(max(stats["disk_used"], stats["srv_used"]), 0.85, 0.95),
+        f"  {len(apps) - len(down)}/{len(apps)} up",
+        OK if not down else BAD,
     ))
-    return rows
-
-
-def build_apps(state):
-    rows = [panel(state, "APPS", "apps")]
-    for app in (state or {}).get("apps") or []:
+    for app in down[:6]:
         code = app.get("code")
         shown = str(code) if code else "---"
         latency = app.get("ms")
         timing = f"{latency:7.1f}ms" if latency is not None else "        -"
-        rows.append((
-            f"  {app['name']:<11} {shown:>4} {timing}",
-            OK if app.get("up") else BAD,
-        ))
+        rows.append((f"    {app['name']:<13} {shown:>4} {timing}", BAD))
     return rows
 
 
@@ -356,7 +597,7 @@ def build_flux(state):
     ]
     for entry in broken[:3]:
         rows.append((f"  {entry['namespace']}/{entry['name'][:22]} FAIL", BAD))
-    for slot in (flux.get("timeline") or [])[:4]:
+    for slot in (flux.get("timeline") or [])[:3]:
         ok = slot.get("status") == "ReconciliationSucceeded"
         names = ", ".join(
             FLUX_NAMES.get(name, name) for name in slot.get("resources") or []
@@ -379,22 +620,11 @@ def build_alerts(state):
         f"  active {len(active)}   suppressed {alerts.get('suppressed', 0)}",
         OK if not active else WARN,
     ))
-    for alert in active[:6]:
+    for alert in active[:5]:
         severity = alert.get("severity", "")
         colour = BAD if severity in ("critical", "warning") else WARN
         rows.append((f"    {alert['alertname'][:28]:<28} {severity}", colour))
     return rows
-
-
-def size(value):
-    if value is None:
-        return "-"
-    scaled = float(value)
-    for suffix in ("B", "K", "M", "G", "T"):
-        if scaled < 1024 or suffix == "T":
-            return f"{scaled:.0f}{suffix}"
-        scaled /= 1024
-    return "-"
 
 
 def build_backups(state):
@@ -443,54 +673,34 @@ def build_backups(state):
     return rows
 
 
-def build_disks(state):
-    rows = [("", DIM), panel(state, "DISKS", "disks")]
-    disks = (state or {}).get("disks")
-    if not disks:
-        rows.append(("  unavailable", WARN))
-        return rows
-    failing = sorted(
-        name for name, disk in disks.items() if not disk.get("ok", True)
-    )
-    rows.append((
-        f"  {len(disks) - len(failing)}/{len(disks)} hosts clear",
-        BAD if failing else OK,
-    ))
-    for name in failing[:4]:
-        rows.append((
-            f"    {name:<9} {disks[name].get('fails', 0)} warnings 24h",
-            BAD,
-        ))
-    return rows
-
-
-def compose(state):
-    left = (
-        build_hosts(state)
-        + build_nodes(state)
-        + build_cluster(state)
-        + build_local(state)
-        + build_backups(state)
-        + build_disks(state)
-    )
+def compose(state, width):
+    left = build_fleet(width)
     right = (
-        build_apps(state)
+        build_reach(state)
+        + build_apps(state)
+        + build_cluster(state)
         + build_flux(state)
         + build_alerts(state)
+        + build_backups(state)
     )
     return left, right
 
 
 def header(state, age, error):
     stamp = time.strftime("%Y-%m-%d %H:%M")
+    with AGENT_LOCK:
+        live = sum(1 for record in AGENT_STATE.values() if record.get("stats"))
+    tally = f"agents {live}/{len(AGENTS)}"
+    agent_colour = OK if live == len(AGENTS) else (BAD if not live else WARN)
+
     if state is None:
-        return f"BIGGERWORLD   {stamp}   NO STATE", BAD
+        return f"BIGGERWORLD   {stamp}   NO STATE   {tally}", BAD
     if age is None or age > STALE_AFTER:
         shown = f"{int(age)}s" if age is not None else "never"
-        return f"BIGGERWORLD   {stamp}   STALE {shown}", BAD
+        return f"BIGGERWORLD   {stamp}   STALE {shown}   {tally}", BAD
     if error:
-        return f"BIGGERWORLD   {stamp}   fetch {error}", WARN
-    return f"BIGGERWORLD   {stamp}   live", OK
+        return f"BIGGERWORLD   {stamp}   fetch {error}   {tally}", WARN
+    return f"BIGGERWORLD   {stamp}   live   {tally}", agent_colour
 
 
 def put(window, y, x, text, attr):
@@ -508,10 +718,11 @@ def draw(window, signature):
     generated = (state or {}).get("generated_at") or 0
     age = time.time() - generated if generated else None
     title, title_colour = header(state, age, error)
-    left, right = compose(state)
 
     rows, cols = window.getmaxyx()
     split = max(38, cols // 2)
+    left, right = compose(state, split - 3)
+
     footer = STATE_URL
     if fetched:
         footer = (
@@ -524,7 +735,6 @@ def draw(window, signature):
     joined = "\n".join(fresh)
     if joined == signature:
         return signature
-
 
     window.erase()
     frame = curses.color_pair(PAIRS[HEAD])
@@ -570,6 +780,8 @@ def main(window):
     window.nodelay(True)
 
     threading.Thread(target=poller, daemon=True).start()
+    for entry in AGENTS:
+        threading.Thread(target=agent_poller, args=(entry,), daemon=True).start()
 
     signature = None
     while True:

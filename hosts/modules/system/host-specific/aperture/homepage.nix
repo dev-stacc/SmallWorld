@@ -5,7 +5,7 @@ let
 
     secretsFile = ../../../../../secrets/secrets.yaml;
 
-    fleet = import ./fleet.nix { inherit lib tailnet; };
+    fleet = import ../../../fleet.nix { inherit lib tailnet; };
 
     selfPages = "https://home.${tailnet.domain}";
 

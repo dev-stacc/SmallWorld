@@ -1,7 +1,9 @@
-{ config, pkgs, tailnet, theme, ... } :
+{ config, lib, pkgs, tailnet, theme, ... } :
 let
     secretsFile = ../../../../../secrets/secrets.yaml;
     port = 9847;
+
+    fleet = import ../../../fleet.nix { inherit lib tailnet; };
 
     palette = with theme.base16; [
         base00
@@ -22,6 +24,13 @@ let
         base05
     ];
 in {
+    assertions = [{
+        assertion = config.biggerworld.statAgent.enable;
+        message =
+            "amateus monitor-display reads the stat agents and needs"
+            + " biggerworld.statAgent.enable for the shared token";
+    }];
+
     sops = {
         secrets = {
             ntfy-topic.sopsFile = secretsFile;
@@ -33,6 +42,7 @@ in {
             content = ''
                 NTFY_TOPIC=${config.sops.placeholder.ntfy-topic}
                 NTFY_TOKEN=${config.sops.placeholder.ntfy-token}
+                DISPLAY_AGENT_TOKEN=${config.sops.placeholder.stat-agent-token}
             '';
         };
     };
@@ -59,6 +69,9 @@ in {
             DISPLAY_FETCH_INTERVAL = "15";
             DISPLAY_STALE_AFTER = "90";
             DISPLAY_DEAD_AFTER = "300";
+            DISPLAY_AGENTS = builtins.toJSON fleet.agents;
+            DISPLAY_AGENT_STALE_AFTER = "90";
+            DISPLAY_BACKUP_STALE_HOURS = toString fleet.backupStaleHours;
             DISPLAY_DEEP_LINK = "https://home.${tailnet.domain}/";
             NTFY_URL = "https://ntfy.${tailnet.domain}";
             NTFY_FALLBACK_URL = "https://ntfy.sh";

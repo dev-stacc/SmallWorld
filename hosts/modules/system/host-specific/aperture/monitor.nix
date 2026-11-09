@@ -29,7 +29,7 @@ let
 
     k8sPage = pkgs.writeText "k8s-page.html" (themed ./files/k8s.html);
 
-    fleet = import ./fleet.nix { inherit lib tailnet; };
+    fleet = import ../../../fleet.nix { inherit lib tailnet; };
 
     targets = {
         hosts = fleet.hosts;
