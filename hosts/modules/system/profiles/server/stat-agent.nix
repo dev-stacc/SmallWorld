@@ -9,6 +9,9 @@ let
 
     runtimeDir = "stat-agent";
     smartPath = "/run/${runtimeDir}/smart.json";
+
+    stateDir = "stat-agent";
+    trendPath = "/var/lib/${stateDir}/trend.json";
 in {
     options.biggerworld.statAgent = {
         enable = lib.mkEnableOption ''
@@ -40,9 +43,30 @@ in {
             type = lib.types.ints.positive;
             default = 240;
             description = ''
-                Samples retained per series. At the default interval this is one
-                hour of history, held in memory and lost on restart by design -
-                there is no on-disk state to back up or corrupt.
+                Fine samples retained per series. At the default interval this
+                is one hour, held in memory and lost on restart by design. The
+                coarse `trendBucket` ring is the one that survives.
+            '';
+        };
+
+        trendBucket = lib.mkOption {
+            type = lib.types.ints.positive;
+            default = 300;
+            description = ''
+                Seconds per bucket in the coarse ring. Fine samples landing in a
+                bucket are averaged into one point when the bucket closes, which
+                is also when the ring is written to disk.
+            '';
+        };
+
+        trendDepth = lib.mkOption {
+            type = lib.types.ints.positive;
+            default = 2016;
+            description = ''
+                Buckets retained in the coarse ring. At the default bucket size
+                this is seven days. Unlike `depth` this survives restarts - it
+                is persisted under /var/lib/${stateDir}, so a deploy no longer
+                resets the long trend to an empty chart.
             '';
         };
 
@@ -133,6 +157,9 @@ in {
                 AGENT_SMART_PATH = smartPath;
                 AGENT_INTERVAL = toString cfg.interval;
                 AGENT_DEPTH = toString cfg.depth;
+                AGENT_TREND_BUCKET = toString cfg.trendBucket;
+                AGENT_TREND_DEPTH = toString cfg.trendDepth;
+                AGENT_TREND_PATH = trendPath;
             };
 
             serviceConfig = {
@@ -143,6 +170,8 @@ in {
                 Restart = "always";
                 RestartSec = 10;
                 DynamicUser = true;
+                StateDirectory = stateDir;
+                StateDirectoryMode = "0700";
                 CapabilityBoundingSet = [ "" ];
                 AmbientCapabilities = [ "" ];
                 NoNewPrivileges = true;

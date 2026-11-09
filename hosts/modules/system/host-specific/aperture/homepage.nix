@@ -41,7 +41,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.homepage = {
-        image = "ghcr.io/dev-stacc/biggerworldhomepage:20261107223603-f9c2f53658379e60f2c1ab9975597e0613fa5b3e";
+        image = "ghcr.io/dev-stacc/biggerworldhomepage:20261109214517-17cc8232c6007f6a0f84f855508fb8ae90b4ad91";
         autoStart = true;
 
         environment = palette // {

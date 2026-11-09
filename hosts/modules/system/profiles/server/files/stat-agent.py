@@ -11,6 +11,9 @@ BIND = os.environ["AGENT_BIND"]
 SMART_PATH = os.environ["AGENT_SMART_PATH"]
 INTERVAL = int(os.environ.get("AGENT_INTERVAL", "15"))
 DEPTH = int(os.environ.get("AGENT_DEPTH", "240"))
+TREND_BUCKET = int(os.environ.get("AGENT_TREND_BUCKET", "300"))
+TREND_DEPTH = int(os.environ.get("AGENT_TREND_DEPTH", "2016"))
+TREND_PATH = os.environ.get("AGENT_TREND_PATH", "")
 HOST = socket.gethostname().lower()
 
 CREDS = os.environ.get("CREDENTIALS_DIRECTORY")
@@ -19,8 +22,13 @@ if CREDS:
     with open(os.path.join(CREDS, "token")) as handle:
         TOKEN = handle.read().strip()
 
+SERIES = ("cpu_usage", "mem_used", "cpu_temp_c", "gpu_usage")
+
 LOCK = threading.Lock()
-HISTORY = {"cpu_usage": [], "mem_used": [], "cpu_temp_c": [], "gpu_usage": []}
+HISTORY = {key: [] for key in SERIES}
+TREND = {key: [] for key in SERIES}
+PENDING = {key: [] for key in SERIES}
+TREND_SLOT = {"value": None}
 PREVIOUS = {"total": 0.0, "idle": 0.0}
 
 SKIP_FS = {
@@ -267,11 +275,106 @@ def smart():
     return payload.get("disks") or [], payload.get("errors") or {}
 
 
+def trim(series, depth):
+    if len(series) > depth:
+        del series[0:len(series) - depth]
+
+
 def push(key, value):
     series = HISTORY[key]
     series.append(value)
-    if len(series) > DEPTH:
-        del series[0:len(series) - DEPTH]
+    trim(series, DEPTH)
+
+
+def slot_of(moment):
+    return int(moment // TREND_BUCKET)
+
+
+def trend_gap(count):
+    for _ in range(min(max(count, 0), TREND_DEPTH)):
+        for key in SERIES:
+            TREND[key].append(None)
+
+
+def trend_push(moment):
+    slot = slot_of(moment)
+    previous = TREND_SLOT["value"]
+    if previous is None:
+        TREND_SLOT["value"] = slot
+        return False
+    if slot <= previous:
+        return False
+    for key in SERIES:
+        values = [value for value in PENDING[key] if value is not None]
+        TREND[key].append(
+            round(sum(values) / len(values), 4) if values else None
+        )
+        PENDING[key].clear()
+    trend_gap(slot - previous - 1)
+    for key in SERIES:
+        trim(TREND[key], TREND_DEPTH)
+    TREND_SLOT["value"] = slot
+    return True
+
+
+def trend_payload():
+    payload = {"bucket": TREND_BUCKET, "slot": TREND_SLOT["value"]}
+    for key in SERIES:
+        payload[key] = list(TREND[key])
+    return payload
+
+
+def trend_save(payload):
+    if not TREND_PATH:
+        return
+    temporary = f"{TREND_PATH}.new"
+    try:
+        with open(temporary, "w") as handle:
+            json.dump(payload, handle)
+        os.replace(temporary, TREND_PATH)
+    except OSError as error:
+        print(f"trend save failed: {error}", flush=True)
+
+
+def trend_load():
+    if not TREND_PATH:
+        return
+    try:
+        with open(TREND_PATH) as handle:
+            payload = json.load(handle)
+    except FileNotFoundError:
+        return
+    except (OSError, ValueError) as error:
+        print(f"trend load failed: {error}", flush=True)
+        return
+    if payload.get("bucket") != TREND_BUCKET:
+        return
+    slot = payload.get("slot")
+    if not isinstance(slot, int):
+        return
+    for key in SERIES:
+        values = payload.get(key)
+        if not isinstance(values, list):
+            continue
+        TREND[key] = [
+            value if isinstance(value, (int, float)) else None
+            for value in values[-TREND_DEPTH:]
+        ]
+    width = max(len(TREND[key]) for key in SERIES)
+    for key in SERIES:
+        TREND[key] = [None] * (width - len(TREND[key])) + TREND[key]
+    TREND_SLOT["value"] = slot
+
+
+def trend_resume(moment):
+    previous = TREND_SLOT["value"]
+    if previous is None:
+        return
+    slot = slot_of(moment)
+    trend_gap(slot - previous)
+    for key in SERIES:
+        trim(TREND[key], TREND_DEPTH)
+    TREND_SLOT["value"] = slot
 
 
 def sample():
@@ -280,11 +383,21 @@ def sample():
     temperature = hwmon_temp()
     cards = gpus()
     busy = [card["usage"] for card in cards if card["usage"] is not None]
+    values = {
+        "cpu_usage": usage,
+        "mem_used": memory["used"],
+        "cpu_temp_c": temperature,
+        "gpu_usage": round(sum(busy) / len(busy), 4) if busy else None,
+    }
+    payload = None
     with LOCK:
-        push("cpu_usage", usage)
-        push("mem_used", memory["used"])
-        push("cpu_temp_c", temperature)
-        push("gpu_usage", round(sum(busy) / len(busy), 4) if busy else None)
+        for key in SERIES:
+            push(key, values[key])
+            PENDING[key].append(values[key])
+        if trend_push(time.time()):
+            payload = trend_payload()
+    if payload is not None:
+        trend_save(payload)
 
 
 def uptime():
@@ -306,6 +419,18 @@ def snapshot():
         if any(value is not None for value in HISTORY["gpu_usage"]):
             history["gpu_usage"] = list(HISTORY["gpu_usage"])
         recent = HISTORY["cpu_usage"][-1] if HISTORY["cpu_usage"] else None
+        span = len(TREND["cpu_usage"])
+        slot = TREND_SLOT["value"] or 0
+        trend = {
+            "bucket": TREND_BUCKET,
+            "start": (slot - span) * TREND_BUCKET,
+        }
+        for key in SERIES:
+            if key == "gpu_usage" and not any(
+                value is not None for value in TREND[key]
+            ):
+                continue
+            trend[key] = list(TREND[key])
 
     return {
         "host": HOST,
@@ -324,6 +449,7 @@ def snapshot():
         "disks": disks,
         "gpus": cards,
         "history": history,
+        "trend": trend,
         "errors": errors,
     }
 
@@ -387,6 +513,8 @@ def collect():
 
 
 cpu_times()
+trend_load()
+trend_resume(time.time())
 threading.Thread(target=collect, daemon=True).start()
 print(f"stat-agent on {BIND}:{PORT}", flush=True)
 ThreadingHTTPServer((BIND, PORT), Handler).serve_forever()
