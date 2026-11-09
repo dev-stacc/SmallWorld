@@ -135,11 +135,17 @@ in {
                 "/bigstorage/nextcloud/html"
                 "/bigstorage/nextcloud/dumps"
                 "/bigstorage/important"
+                "/bigstorage/immich/library"
+                "/bigstorage/immich/dumps"
             ];
         }
         {
             host = "asta";
-            paths = [ "/var/lib/rancher/k3s/storage" "/var/lib/cluster-dumps" ];
+            paths = [
+                "/var/lib/rancher/k3s/storage"
+                "/var/lib/cluster-dumps"
+                "/home/anastasia/jellyfin-config"
+            ];
         }
         {
             host = "aperture";

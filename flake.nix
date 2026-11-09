@@ -41,7 +41,7 @@
                 asta = "100.75.73.92";
                 amateus = "100.70.98.107";
                 aperture = "100.111.78.27";
-                argus = "PLACEHOLDER";
+                argus = "100.95.210.4";
                 alula = "100.104.236.122";
                 avior = "PLACEHOLDER";
                 albireo = "100.114.197.75";

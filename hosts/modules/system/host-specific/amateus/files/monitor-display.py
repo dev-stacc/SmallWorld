@@ -637,12 +637,16 @@ def build_backups(state):
     groups = backups.get("groups") or []
     repo = backups.get("repo") or {}
     if groups:
-        oldest = max(groups, key=lambda group: group["age_hours"])
-        late = [group for group in groups if group["age_hours"] > STALE_HOURS]
-        dead = [group for group in groups if group["age_hours"] > STALE_HOURS * 2]
+        tracked = [group for group in groups if group.get("expected", True)]
+        retired = len(groups) - len(tracked)
+        scope = tracked or groups
+        oldest = max(scope, key=lambda group: group["age_hours"])
+        late = [group for group in tracked if group["age_hours"] > STALE_HOURS]
+        dead = [group for group in tracked if group["age_hours"] > STALE_HOURS * 2]
+        note = f"  +{retired} retired" if retired else ""
         rows.append((
-            f"  sets {len(groups)}  oldest {oldest['age_hours']:.0f}h"
-            f"  {size(repo.get('size'))}",
+            f"  sets {len(tracked)}  oldest {oldest['age_hours']:.0f}h"
+            f"  {size(repo.get('size'))}{note}",
             BAD if dead else (WARN if late else OK),
         ))
         for group in sorted(late, key=lambda group: -group["age_hours"])[:4]:

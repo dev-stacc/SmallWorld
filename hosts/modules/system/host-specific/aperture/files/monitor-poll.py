@@ -661,6 +661,11 @@ def group_id(host, paths):
     return host.lower() + "|" + ",".join(sorted(paths))
 
 
+EXPECTED_KEYS = {
+    group_id(entry["host"], entry["paths"]) for entry in EXPECTED_BACKUPS
+}
+
+
 def restic_groups():
     grouped = restic(
         "snapshots", "--json", "--latest", "1", "--group-by", "host,paths"
@@ -681,6 +686,7 @@ def restic_groups():
                 "paths": paths,
                 "age_hours": round(snapshot_age(latest["time"]) / 3600, 1),
                 "short_id": latest.get("short_id", ""),
+                "expected": group_id(host, paths) in EXPECTED_KEYS,
             }
         )
     groups.sort(key=lambda item: (item["host"], item["paths"]))
@@ -1084,7 +1090,7 @@ def evaluate_backups(backups, disks, healthy):
 
             for key, group in groups.items():
                 age = group.get("age_hours")
-                if age is None:
+                if age is None or not group.get("expected", True):
                     continue
                 alert = "backup:stale:" + key
                 live.add(alert)
@@ -1425,7 +1431,9 @@ def render_links(snapshot):
     return LINKS_TEMPLATE.replace("{{body}}", "".join(parts))
 
 
-def backup_mark(age):
+def backup_mark(age, expected=True):
+    if not expected:
+        return ("retired", "dim")
     if age is None:
         return ("?", "warn")
     if age > BACKUP_STALE_HOURS * 2:
@@ -1479,7 +1487,9 @@ def render_backups(snapshot):
     if not groups:
         parts.append(row(span("no snapshots in repository", "bad")))
     for group in groups:
-        label, style = backup_mark(group.get("age_hours"))
+        label, style = backup_mark(
+            group.get("age_hours"), group.get("expected", True)
+        )
         hours = group.get("age_hours")
         parts.append(
             row(
