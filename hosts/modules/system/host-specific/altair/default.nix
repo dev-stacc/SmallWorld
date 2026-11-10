@@ -7,6 +7,8 @@
         ./power.nix
     ];
 
+    services.tailscale.extraUpFlags = [ "--advertise-tags=tag:ai" ];
+
     biggerworld.statAgent.enable = true;
 
     biggerworld.ups = {

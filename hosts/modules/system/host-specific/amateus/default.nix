@@ -5,6 +5,8 @@
         ./monitor-display.nix
     ];
 
+    services.tailscale.extraUpFlags = [ "--advertise-tags=tag:backup" ];
+
     biggerworld.statAgent.enable = true;
 
     biggerworld.ups = {
