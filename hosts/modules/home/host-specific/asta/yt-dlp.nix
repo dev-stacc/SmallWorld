@@ -3,7 +3,7 @@
         enable = true;
         package = pkgs.yt-dlp;
         settings = {
-            paths = "/home/${username}/media/fresh-downloads";
+            paths = "/home/${username}/media/yt-dlp";
             output = "%(title)s.%(ext)s";
             format = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best";
             merge-output-format = "mp4";
