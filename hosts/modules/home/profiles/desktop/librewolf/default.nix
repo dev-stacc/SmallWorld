@@ -16,7 +16,7 @@
                 }
                 {
                     Name = "4get-cluster";
-                    URLTemplate = "https://search.${tailnet.domain}/web?s={searchTerms}";
+                    URLTemplate = "https://search.${tailnet.domain}/search?q={searchTerms}";
                     Alias = "sc";
                     Method = "GET";
                 }

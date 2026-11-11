@@ -30,7 +30,12 @@
             var cluster = "{{clusterOrigin}}";
 
             var fourget = function (origin) {
-                return q ? origin + "/web?s=" + encodeURIComponent(q) : origin;
+                if (!q) {
+                    return origin;
+                }
+                return origin === cluster
+                    ? origin + "/search?q=" + encodeURIComponent(q)
+                    : origin + "/web?s=" + encodeURIComponent(q);
             };
 
             var ddg = function () {
@@ -39,8 +44,8 @@
                     : "https://duckduckgo.com/";
             };
 
-            var probe = function (origin, ms) {
-                return fetch(origin + "/favicon.ico", {
+            var probe = function (origin, ms, path) {
+                return fetch(origin + path, {
                     mode: "no-cors",
                     cache: "no-store",
                     signal: AbortSignal.timeout(ms)
@@ -49,9 +54,9 @@
                 });
             };
 
-            probe(local, {{localTimeout}})
+            probe(local, {{localTimeout}}, "/favicon.ico")
                 .catch(function () {
-                    return probe(cluster, {{clusterTimeout}});
+                    return probe(cluster, {{clusterTimeout}}, "/healthz");
                 })
                 .then(function (origin) {
                     location.replace(fourget(origin));
