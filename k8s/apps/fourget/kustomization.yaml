@@ -4,7 +4,6 @@ resources:
   - namespace.yaml
   - deployment.yaml
   - service.yaml
-  - ingress.yaml
 configMapGenerator:
   - name: fourget-theme
     namespace: fourget
