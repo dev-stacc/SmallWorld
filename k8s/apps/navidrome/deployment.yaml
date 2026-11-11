@@ -40,6 +40,8 @@ spec:
               value: X-Authentik-Username
             - name: ND_REVERSEPROXYWHITELIST
               value: 10.42.0.0/16
+            - name: ND_SCANNER_PURGEMISSING
+              value: full
           volumeMounts:
             - name: data
               mountPath: /data
