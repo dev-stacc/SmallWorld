@@ -5,7 +5,6 @@ keys:
   - &aperture age132hqe27z8z6t79uzsaxh6yfn2vnshvc0n0dmad53fss67tvhxcrsxuk5sa
   - &albireo age1jlmtpwzu3h38fe0qzgdh8ycw9g3unzt7mxg0zjtqc5r7a4zsga8s76nawj
   - &altair age1c6az60e3c4aj4unekdkve3cesfe2m5c5ynuua8kjzp0m24ffu9nqtt45jx
-  - &algol age15gzvgvxweghvz8x2ekq7e8jc7dm9wpqkwr5v726k34qkha2rfvuq5q7cxz
   - &ci-acl age149d2zmp0rtsqyzj6myu9cavaw7s7et3nlmf6vxthzhqlc8677pysuv7qlf
 creation_rules:
   - path_regex: secrets/tailscale-policy\.yaml
@@ -31,7 +30,6 @@ creation_rules:
         - *aperture
         - *albireo
         - *altair
-        - *algol
   - path_regex: k8s/.*
     key_groups:
       - age:

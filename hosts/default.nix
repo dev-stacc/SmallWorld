@@ -50,9 +50,4 @@
         hostName = "Altair";
         roles = [ "server" ];
     };
-
-    algol = {
-        hostName = "Algol";
-        roles = [ "server" ];
-    };
 }

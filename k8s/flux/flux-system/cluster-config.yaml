@@ -9,7 +9,7 @@ data:
   TRANSCODE_HOST_PATH: /home/anastasia/transcode
   JELLYFIN_CONFIG_HOST_PATH: /home/anastasia/jellyfin-config
   REMOTE_PIHOLE_URL: http://100.113.161.17
-  ALGOL_TAILNET_IP: 100.79.222.127
+  NTFY_TAILNET_IP: 100.111.78.27
   BASE00: "#0e0202"
   BASE01: "#000000"
   BASE02: "#ff4050"

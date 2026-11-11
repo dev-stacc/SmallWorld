@@ -6,7 +6,6 @@ let
         albireo   = "critical";
         argus     = "critical";
         amateus   = "critical";
-        algol     = "watch";
         arcturus  = "watch";
         altair    = "watch";
         alula     = "ignore";
