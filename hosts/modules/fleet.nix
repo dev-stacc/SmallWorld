@@ -32,8 +32,6 @@ let
         nav = true;
     };
 
-    clusterApps = auth: roles: lib.mapAttrsToList (clusterApp auth) roles;
-
     titledApp = auth: host: name: role:
         (clusterApp auth host role) // { inherit name; };
 
@@ -58,50 +56,45 @@ let
         alert = true;
     };
 
-    monitoring = grouped "monitoring" ([
-        (hostPage "flux" "fleet" "home" "/flux")
-        (hostPage "backups" "-" "home" "/backups")
-        (hostPage "k8s" "cluster" "home" "/k8s")
-    ] ++ clusterApps true {
-        grafana = "metrics";
-        uptime = "status";
-    });
-
-    identity = grouped "identity" (clusterApps false {
-        authentik = "login";
-        vault = "secrets";
-        nextcloud = "storage";
-    } ++ [
-        (titledApp false "immich" "Immich" "photos")
-    ]);
-
-    comfort = grouped "comfort" (clusterApps false {
-        search = "search";
-        audiobooks = "books";
-        forge = "git";
-    } ++ [
+    comfort = grouped "comfort" [
+        (clusterApp false "search" "search")
+        (clusterApp true "chat" "local ai")
+        (clusterApp true "jellyfin" "streaming")
+        (clusterApp false "forge" "git")
+        (clusterApp true "navidrome" "music")
+        (clusterApp false "audiobooks" "books")
         (hostPage "pihole" "dns" "pihole" "/admin")
         offsitePihole
-    ] ++ clusterApps true {
-        jellyfin = "streaming";
-        navidrome = "music";
-        wikipedia = "-";
-        chat = "local ai";
-        sewing = "-";
-        marketing = "-";
-    });
+        (clusterApp true "wikipedia" "-")
+        (clusterApp true "sewing" "-")
+        (clusterApp true "marketing" "-")
+    ];
 
-    arr = grouped "arr" (clusterApps true {
-        prowlarr = "indexers";
-        chaptarr = "audiobooks";
-        sonarr = "tv";
-        radarr = "movies";
-        lidarr = "albums";
-        bazarr = "subtitles";
-    } ++ [
+    arr = grouped "arr" [
         (titledApp true "torrents" "qBittorrent" "downloads")
         (titledApp true "requests" "Jellyseerr" "requests")
-    ]);
+        (clusterApp true "lidarr" "albums")
+        (clusterApp true "sonarr" "tv")
+        (clusterApp true "radarr" "movies")
+        (clusterApp true "chaptarr" "audiobooks")
+        (clusterApp true "prowlarr" "indexers")
+        (clusterApp true "bazarr" "subtitles")
+    ];
+
+    identity = grouped "identity" [
+        (clusterApp false "nextcloud" "storage")
+        (titledApp false "immich" "Immich" "photos")
+        (clusterApp false "authentik" "login")
+        (clusterApp false "vault" "secrets")
+    ];
+
+    monitoring = grouped "monitoring" [
+        (hostPage "flux" "fleet" "home" "/flux")
+        (hostPage "k8s" "cluster" "home" "/k8s")
+        (hostPage "backups" "-" "home" "/backups")
+        (clusterApp true "uptime" "status")
+        (clusterApp true "grafana" "metrics")
+    ];
 
     hidden = [{
         name = "loki";
@@ -125,7 +118,7 @@ let
 in {
     inherit classes hosts;
 
-    apps = monitoring ++ identity ++ comfort ++ arr ++ hidden;
+    apps = comfort ++ arr ++ identity ++ monitoring ++ hidden;
 
     expectedBackups = [
         {

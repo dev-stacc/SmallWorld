@@ -1,6 +1,16 @@
-{ pkgs, ... } : let
+{ pkgs, lib, ... } : let
+    vendor = "04d9";
+    product = "a0be";
+
     keyboard = "/dev/input/by-id/usb-04d9_a0be-event-kbd";
     trackball = "/dev/input/by-id/usb-04d9_a0be-if01-event-mouse";
+
+    deviceUnit = path: let
+        escaped = builtins.replaceStrings [ "-" ] [ "\\x2d" ] (lib.removePrefix "/" path);
+        joined = builtins.replaceStrings [ "/" ] [ "-" ] escaped;
+    in "${joined}.device";
+
+    deviceUnits = map deviceUnit [ keyboard trackball ];
 
     speed = 15;
 
@@ -23,6 +33,10 @@
 in {
     hardware.uinput.enable = true;
 
+    services.udev.extraRules = ''
+        ACTION=="add|change", SUBSYSTEM=="input", ATTRS{idVendor}=="${vendor}", ATTRS{idProduct}=="${product}", TAG+="systemd", ENV{SYSTEMD_WANTS}+="trackball-scroll.service"
+    '';
+
     users.groups.trackball = { };
 
     users.users.trackball = {
@@ -33,7 +47,8 @@ in {
 
     systemd.services.trackball-scroll = {
         description = "Scroll Lock toggles trackball scroll mode";
-        wantedBy = [ "multi-user.target" ];
+        bindsTo = deviceUnits;
+        after = deviceUnits;
 
         unitConfig.StartLimitIntervalSec = 0;
 
