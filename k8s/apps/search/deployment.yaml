@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: search
-          image: ghcr.io/dev-stacc/biggerworldsearch:20261112010829-d3870730c8dc6706ac924181b538725a6f263dfb # {"$imagepolicy": "flux-system:search"}
+          image: ghcr.io/dev-stacc/biggerworldsearch:20261112011314-6d7c229880d1cc26f23537a571c4c28ae924a7a8 # {"$imagepolicy": "flux-system:search"}
           ports:
             - containerPort: 3000
           env:
