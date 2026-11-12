@@ -14,3 +14,4 @@ resources:
   - loki-service.yaml
   - tempo-helmrelease.yaml
   - promtail-helmrelease.yaml
+  - fleet-monitor-rbac.yaml

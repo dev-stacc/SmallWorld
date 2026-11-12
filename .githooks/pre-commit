@@ -55,8 +55,13 @@ check_plaintext_k8s_secret() {
         *) return 0 ;;
     esac
     staged_is_encrypted "$1" && return 0
-    staged "$1" | grep -qaE '^kind:[[:space:]]*Secret[[:space:]]*$' || return 0
-    report "$1" "is an unencrypted kind: Secret manifest"
+    staged "$1" | awk '
+        /^---[[:space:]]*$/ { if (secret && data) bad = 1; secret = 0; data = 0; next }
+        /^kind:[[:space:]]*Secret[[:space:]]*$/ { secret = 1 }
+        /^(data|stringData):/ { data = 1 }
+        END { if (secret && data) bad = 1; exit (bad ? 1 : 0) }
+    ' && return 0
+    report "$1" "is an unencrypted kind: Secret manifest with inline data"
 }
 
 while IFS= read -r -d '' file; do
