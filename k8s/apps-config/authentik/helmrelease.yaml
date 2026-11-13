@@ -57,9 +57,9 @@ spec:
             optional: true
     blueprints:
       configMaps:
+        - authentik-blueprint-access
         - authentik-blueprint-grafana
         - authentik-blueprint-media
-        - authentik-blueprint-monitoring
         - authentik-blueprint-outpost
         - authentik-blueprint-jellyfin-oidc
         - authentik-blueprint-nextcloud-oidc

@@ -9,15 +9,6 @@ data:
     metadata:
       name: Application Access Policies
     entries:
-      - model: authentik_core.user
-        id: user-ahser
-        state: created
-        identifiers:
-          username: ahser
-        attrs:
-          name: Ahser
-          is_active: true
-
       - model: authentik_core.group
         id: group-infra
         state: present
@@ -37,7 +28,7 @@ data:
           is_superuser: false
           users:
             - !Find [authentik_core.user, [username, anastasia]]
-            - !KeyOf user-ahser
+            - !Find [authentik_core.user, [username, asher]]
 
       - model: authentik_core.group
         id: group-storage
@@ -48,7 +39,7 @@ data:
           is_superuser: false
           users:
             - !Find [authentik_core.user, [username, anastasia]]
-            - !KeyOf user-ahser
+            - !Find [authentik_core.user, [username, asher]]
 
       - model: authentik_core.group
         id: group-tools
@@ -59,6 +50,16 @@ data:
           is_superuser: false
           users:
             - !Find [authentik_core.user, [username, anastasia]]
+
+      - model: authentik_core.application
+        state: absent
+        identifiers:
+          slug: uptime-kuma
+
+      - model: authentik_providers_proxy.proxyprovider
+        state: absent
+        identifiers:
+          name: Uptime Kuma Provider
 
       - model: authentik_core.group
         state: absent
