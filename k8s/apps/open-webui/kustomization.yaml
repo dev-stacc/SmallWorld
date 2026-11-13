@@ -8,3 +8,4 @@ resources:
   - service.yaml
   - ingress.yaml
   - authentik-svc.yaml
+  - networkpolicy.yaml

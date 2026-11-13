@@ -49,3 +49,4 @@ data:
           name: Jellyfin OIDC
           slug: jellyfin-oidc
           provider: !KeyOf jellyfin-oidc-provider
+          policy_engine_mode: any

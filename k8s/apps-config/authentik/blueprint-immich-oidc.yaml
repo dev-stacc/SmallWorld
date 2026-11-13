@@ -46,3 +46,4 @@ data:
           name: Immich
           slug: immich-oidc
           provider: !KeyOf immich-oidc-provider
+          policy_engine_mode: any

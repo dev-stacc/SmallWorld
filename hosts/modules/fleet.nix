@@ -92,7 +92,6 @@ let
         (hostPage "flux" "fleet" "home" "/flux")
         (hostPage "k8s" "cluster" "home" "/k8s")
         (hostPage "backups" "-" "home" "/backups")
-        (clusterApp true "uptime" "status")
         (clusterApp true "grafana" "metrics")
     ];
 

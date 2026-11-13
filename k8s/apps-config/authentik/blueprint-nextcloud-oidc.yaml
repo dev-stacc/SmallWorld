@@ -48,3 +48,4 @@ data:
           name: Nextcloud
           slug: nextcloud-oidc
           provider: !KeyOf nextcloud-oidc-provider
+          policy_engine_mode: any

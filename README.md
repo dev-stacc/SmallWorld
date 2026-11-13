@@ -83,7 +83,6 @@ k8s/
 │   ├── open-webui/             Chat UI in front of altair's llama-swap, via a Tailscale egress proxy
 │   ├── oss-agent/              View-only ServiceAccount for the local-LLM CLI agent
 │   ├── tailscale/
-│   ├── uptime-kuma/
 │   ├── vault/
 │   ├── marketing-tool/         Version of an app I built during my internship at Enjoy Social
 │   ├── prose/                  Own app; Postgres backend, Tailscale sidecar, Flux image automation

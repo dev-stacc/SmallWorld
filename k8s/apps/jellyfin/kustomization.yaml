@@ -10,3 +10,4 @@ resources:
   - ingress-root.yaml
   - ingress-api.yaml
   - authentik-svc.yaml
+  - networkpolicy.yaml

@@ -30,6 +30,7 @@ data:
           name: Jellyfin
           slug: jellyfin
           provider: !KeyOf jellyfin-provider
+          policy_engine_mode: any
 
       - model: authentik_providers_proxy.proxyprovider
         id: navidrome-provider
@@ -51,4 +52,5 @@ data:
           name: Navidrome
           slug: navidrome
           provider: !KeyOf navidrome-provider
+          policy_engine_mode: any
 

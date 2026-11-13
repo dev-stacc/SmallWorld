@@ -42,3 +42,4 @@ data:
           name: Forgejo
           slug: forgejo-oidc
           provider: !KeyOf forgejo-oidc-provider
+          policy_engine_mode: any

@@ -7,7 +7,6 @@ resources:
   - externalsecret-blueprint-grafana-env.yaml
   - blueprint-grafana.yaml
   - blueprint-media.yaml
-  - blueprint-monitoring.yaml
   - blueprint-outpost.yaml
   - helmrelease.yaml
   - tailscale-ingress.yaml
@@ -27,4 +26,5 @@ resources:
   - externalsecret-blueprint-forgejo-env.yaml
   - blueprint-audiobookshelf-oidc.yaml
   - externalsecret-blueprint-audiobookshelf-env.yaml
+  - blueprint-access.yaml
   - dump-cronjob.yaml

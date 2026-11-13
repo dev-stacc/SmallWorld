@@ -46,3 +46,4 @@ data:
           name: Audiobookshelf
           slug: audiobookshelf-oidc
           provider: !KeyOf audiobookshelf-oidc-provider
+          policy_engine_mode: any

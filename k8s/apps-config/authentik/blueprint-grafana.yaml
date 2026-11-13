@@ -52,3 +52,4 @@ data:
           name: Grafana
           slug: grafana
           provider: !KeyOf grafana-provider
+          policy_engine_mode: any

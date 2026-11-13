@@ -1,4 +1,4 @@
-{ ... } : {
+{ config, ... } : {
     imports = [
         ./k3s-service.nix
         ./networking.nix
@@ -10,7 +10,13 @@
         ./smartdns.nix
         ./crowdsec-bouncer.nix
         ./pihole-sync.nix
+        ../../profiles/pihole-rules
     ];
+
+    biggerworld.piholeRules = {
+        envFile = config.sops.templates."pihole.env".path;
+        onCalendar = "*-*-* *:55:00";
+    };
 
     biggerworld.statAgent.enable = true;
 

@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - deployment.yaml
   - service.yaml
+  - networkpolicy.yaml
 configMapGenerator:
   - name: fourget-theme
     namespace: fourget
