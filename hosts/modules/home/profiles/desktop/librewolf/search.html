@@ -54,9 +54,9 @@
                 });
             };
 
-            probe(local, {{localTimeout}}, "/favicon.ico")
+            probe(cluster, {{clusterTimeout}}, "/healthz")
                 .catch(function () {
-                    return probe(cluster, {{clusterTimeout}}, "/healthz");
+                    return probe(local, {{localTimeout}}, "/favicon.ico");
                 })
                 .then(function (origin) {
                     location.replace(fourget(origin));
