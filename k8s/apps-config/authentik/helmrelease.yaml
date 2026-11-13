@@ -68,7 +68,6 @@ spec:
         - authentik-blueprint-kiwix
         - authentik-blueprint-open-webui
         - authentik-blueprint-immich-oidc
-        - authentik-blueprint-arr
         - authentik-blueprint-forgejo-oidc
         - authentik-blueprint-audiobookshelf-oidc
     postgresql:

@@ -78,42 +78,6 @@ data:
       - model: authentik_policies.policybinding
         state: present
         identifiers:
-          target: !Find [authentik_core.application, [slug, bazarr]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, bazarr]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, chaptarr]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, chaptarr]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
           target: !Find [authentik_core.application, [slug, grafana]]
           group: !KeyOf group-infra
           order: 0
@@ -124,96 +88,6 @@ data:
         state: present
         identifiers:
           target: !Find [authentik_core.application, [slug, grafana]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, lidarr]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, lidarr]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, prowlarr]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, prowlarr]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, qbittorrent]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, qbittorrent]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, radarr]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, radarr]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, sonarr]]
-          group: !KeyOf group-infra
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, sonarr]]
           policy: !KeyOf policy-superuser
           order: 10
         attrs:
@@ -268,24 +142,6 @@ data:
         state: present
         identifiers:
           target: !Find [authentik_core.application, [slug, jellyfin-oidc]]
-          policy: !KeyOf policy-superuser
-          order: 10
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, jellyseerr]]
-          group: !KeyOf group-media
-          order: 0
-        attrs:
-          enabled: true
-
-      - model: authentik_policies.policybinding
-        state: present
-        identifiers:
-          target: !Find [authentik_core.application, [slug, jellyseerr]]
           policy: !KeyOf policy-superuser
           order: 10
         attrs:

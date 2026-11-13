@@ -89,8 +89,6 @@
             "(\\.|^)tracking\\.swap\\.fm$"
             "(\\.|^)stationdm\\.com$"
             "(\\.|^)logagent-rum.*\\.centurygame\\.com$"
-            "(\\.|^)sentry\\.servarr\\.com$"
-            "(\\.|^)sentry\\.sonarr\\.tv$"
             "browser-intake-.*-datadoghq\\.com$"
             "(\\.|^)(bsync|log|aggr|rtlog|mon|mssdk|libra|jsb)[0-9]*-normal(-[a-z0-9]+)?\\.(tiktokv|tiktokcdn|byteoversea)\\.com$"
             "(\\.|^)lf[0-9]+-adsformat-sign\\.tiktokcdn\\.com$"

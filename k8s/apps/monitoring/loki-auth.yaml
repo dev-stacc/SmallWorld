@@ -1,0 +1,13 @@
+# Redacted: in BiggerWorld (private) this file is encrypted with sops and holds
+# the htpasswd file guarding Loki's push and query endpoints.
+# It is omitted from this public mirror entirely, not even in encrypted form, so a
+# future key leak has nothing here to declassify. This ConfigMap stub exists only to
+# keep the kustomize resource list intact.
+# See BiggerWorld (private) for the real deployment.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redacted-loki-auth
+  namespace: monitoring
+data:
+  redacted: "the htpasswd file guarding Loki's push and query endpoints"

@@ -18,7 +18,6 @@ resources:
   - open-webui/
   - fourget/
   - search/
-  - arr/
   - oss-agent/
   - generic-device-plugin/
   - audiobookshelf/

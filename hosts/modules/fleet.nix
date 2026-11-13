@@ -70,17 +70,6 @@ let
         (clusterApp true "marketing" "-")
     ];
 
-    arr = grouped "arr" [
-        (titledApp true "torrents" "qBittorrent" "downloads")
-        (titledApp true "requests" "Jellyseerr" "requests")
-        (clusterApp true "lidarr" "albums")
-        (clusterApp true "sonarr" "tv")
-        (clusterApp true "radarr" "movies")
-        (clusterApp true "chaptarr" "audiobooks")
-        (clusterApp true "prowlarr" "indexers")
-        (clusterApp true "bazarr" "subtitles")
-    ];
-
     identity = grouped "identity" [
         (clusterApp false "nextcloud" "storage")
         (titledApp false "immich" "Immich" "photos")
@@ -117,7 +106,7 @@ let
 in {
     inherit classes hosts;
 
-    apps = comfort ++ arr ++ identity ++ monitoring ++ hidden;
+    apps = comfort ++ identity ++ monitoring ++ hidden;
 
     expectedBackups = [
         {

@@ -68,8 +68,6 @@ k8s/
 ├── flux/
 │   └── flux-system/            Flux bootstrap + cluster-config ConfigMap
 ├── apps/                       Workload Kustomizations (one folder per app)
-│   ├── arr/                    Sonarr/Radarr/Lidarr/Bazarr/Prowlarr/qBittorrent behind gluetun,
-│   │                           plus the decluttarr, recyclarr and arr-config reconcilers
 │   ├── crowdsec/               IDS (Pi-hole bouncer now lives on argus as a systemd service)
 │   ├── external-secrets/       Vault-backed runtime secrets
 │   ├── fourget/                Self-hosted metasearch; upstream image, theme mounted as a ConfigMap

@@ -1,0 +1,13 @@
+# Redacted: in BiggerWorld (private) this file is encrypted with sops and holds
+# the kube-prometheus-stack HelmRelease, whose values embed Grafana's OIDC wiring.
+# It is omitted from this public mirror entirely, not even in encrypted form, so a
+# future key leak has nothing here to declassify. This ConfigMap stub exists only to
+# keep the kustomize resource list intact.
+# See BiggerWorld (private) for the real deployment.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redacted-monitoring-helmrelease
+  namespace: monitoring
+data:
+  redacted: "the kube-prometheus-stack HelmRelease, whose values embed Grafana's OIDC wiring"

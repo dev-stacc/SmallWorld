@@ -1382,7 +1382,6 @@ LINK_GROUPS = [
     ("monitoring", "monitoring"),
     ("identity", "auth and storage"),
     ("comfort", "quality of life"),
-    ("arr", "arr stack"),
 ]
 
 
